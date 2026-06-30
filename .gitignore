@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+lambda/**/node_modules/
+
+# Build outputs
+dist/
+*.zip
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*secret*
+*credentials*
+
+# Runtime logs and temporary files
+*.log
+nohup.out
+tmp/
+.DS_Store
+
+# Google Drive placeholder files
+*.gdoc
+*.gsheet
+*.gslides
+
+# Local rollback/generated scratch artifacts
+rollback-points/
+
+# Unrelated local demo project
+openai-loop-video/

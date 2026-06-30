@@ -1,0 +1,429 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: HTTP API and Lambda backend for Cloudwrxs Campaign Command.
+
+Parameters:
+  EnvironmentName:
+    Type: String
+    Default: dev
+    AllowedPattern: "^[a-z0-9-]+$"
+  CodeS3Bucket:
+    Type: String
+  CodeS3Key:
+    Type: String
+  UserPoolId:
+    Type: String
+    Default: ""
+  UserPoolClientId:
+    Type: String
+    Default: ""
+  BedrockSchemaModelId:
+    Type: String
+    Default: "global.anthropic.claude-haiku-4-5-20251001-v1:0"
+
+Conditions:
+  EnableJwtAuth: !And
+    - !Not [!Equals [!Ref UserPoolId, ""]]
+    - !Not [!Equals [!Ref UserPoolClientId, ""]]
+
+Resources:
+  CampaignApiFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CampaignApiDynamoAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:BatchGetItem
+                  - dynamodb:BatchWriteItem
+                  - dynamodb:Scan
+                  - dynamodb:Query
+                Resource:
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Campaigns-${EnvironmentName}"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignActivities-${EnvironmentName}"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignEmails-${EnvironmentName}"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignEmailAssignments-${EnvironmentName}"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignEmailSendRuns-${EnvironmentName}"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignEmailSends-${EnvironmentName}"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignSenderProfiles-${EnvironmentName}"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignAudienceLists-${EnvironmentName}"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignAudienceContacts-${EnvironmentName}"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignAudienceMemberships-${EnvironmentName}"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignContactEngagement-${EnvironmentName}"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignGoogleSheetSources-${EnvironmentName}"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignIntegrationSettings-${EnvironmentName}"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignPlaybooks-${EnvironmentName}"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Unsubscribers"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/EmailEvents"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Campaigns-${EnvironmentName}/index/*"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignActivities-${EnvironmentName}/index/*"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignEmails-${EnvironmentName}/index/*"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignEmailAssignments-${EnvironmentName}/index/*"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignEmailSendRuns-${EnvironmentName}/index/*"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignEmailSends-${EnvironmentName}/index/*"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignAudienceLists-${EnvironmentName}/index/*"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignAudienceContacts-${EnvironmentName}/index/*"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignAudienceMemberships-${EnvironmentName}/index/*"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignContactEngagement-${EnvironmentName}/index/*"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignGoogleSheetSources-${EnvironmentName}/index/*"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/CampaignPlaybooks-${EnvironmentName}/index/*"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/EmailEvents/index/*"
+              - Effect: Allow
+                Action:
+                  - secretsmanager:CreateSecret
+                  - secretsmanager:GetSecretValue
+                  - secretsmanager:PutSecretValue
+                Resource:
+                  - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:cloudwrxs-campaign-*"
+                  - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:campaign-*"
+              - Effect: Allow
+                Action:
+                  - bedrock:InvokeModel
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - ses:SendEmail
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "*"
+
+  CampaignApiFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "campaign-command-api-${EnvironmentName}"
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Role: !GetAtt CampaignApiFunctionRole.Arn
+      Timeout: 120
+      MemorySize: 1024
+      Code:
+        S3Bucket: !Ref CodeS3Bucket
+        S3Key: !Ref CodeS3Key
+      Environment:
+        Variables:
+          ENVIRONMENT_NAME: !Ref EnvironmentName
+          CAMPAIGNS_TABLE: !Sub "Campaigns-${EnvironmentName}"
+          CAMPAIGN_ACTIVITIES_TABLE: !Sub "CampaignActivities-${EnvironmentName}"
+          CAMPAIGN_EMAILS_TABLE: !Sub "CampaignEmails-${EnvironmentName}"
+          CAMPAIGN_EMAIL_ASSIGNMENTS_TABLE: !Sub "CampaignEmailAssignments-${EnvironmentName}"
+          CAMPAIGN_EMAIL_SEND_RUNS_TABLE: !Sub "CampaignEmailSendRuns-${EnvironmentName}"
+          CAMPAIGN_EMAIL_SENDS_TABLE: !Sub "CampaignEmailSends-${EnvironmentName}"
+          CAMPAIGN_SENDER_PROFILES_TABLE: !Sub "CampaignSenderProfiles-${EnvironmentName}"
+          CAMPAIGN_AUDIENCE_LISTS_TABLE: !Sub "CampaignAudienceLists-${EnvironmentName}"
+          CAMPAIGN_AUDIENCE_CONTACTS_TABLE: !Sub "CampaignAudienceContacts-${EnvironmentName}"
+          CAMPAIGN_AUDIENCE_MEMBERSHIPS_TABLE: !Sub "CampaignAudienceMemberships-${EnvironmentName}"
+          CAMPAIGN_CONTACT_ENGAGEMENT_TABLE: !Sub "CampaignContactEngagement-${EnvironmentName}"
+          CAMPAIGN_GOOGLE_SHEET_SOURCES_TABLE: !Sub "CampaignGoogleSheetSources-${EnvironmentName}"
+          CAMPAIGN_INTEGRATION_SETTINGS_TABLE: !Sub "CampaignIntegrationSettings-${EnvironmentName}"
+          CAMPAIGN_PLAYBOOKS_TABLE: !Sub "CampaignPlaybooks-${EnvironmentName}"
+          UNSUBSCRIBERS_TABLE: "Unsubscribers"
+          EMAIL_EVENTS_TABLE: "EmailEvents"
+          BEDROCK_SCHEMA_MODEL_ID: !Ref BedrockSchemaModelId
+          BEDROCK_REGION: !Ref "AWS::Region"
+          SES_CONFIGURATION_SET_NAME: "tracking"
+          SES_REGION: !Ref "AWS::Region"
+
+  CampaignSendEngineSchedule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub "campaign-command-send-engine-${EnvironmentName}"
+      Description: Runs the Cloudwrxs campaign email send engine every 15 minutes.
+      ScheduleExpression: "rate(15 minutes)"
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt CampaignApiFunction.Arn
+          Id: CampaignSendEngineTarget
+          Input: "{\"source\":\"campaign-command.scheduler\",\"action\":\"run-send-engine\"}"
+
+  CampaignSendEngineInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref CampaignApiFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt CampaignSendEngineSchedule.Arn
+
+  CampaignHttpApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: !Sub "campaign-command-api-${EnvironmentName}"
+      ProtocolType: HTTP
+      CorsConfiguration:
+        AllowHeaders:
+          - content-type
+          - authorization
+        AllowMethods:
+          - DELETE
+          - GET
+          - PUT
+          - POST
+          - OPTIONS
+        AllowOrigins:
+          - "*"
+
+  CampaignApiIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !GetAtt CampaignApiFunction.Arn
+      PayloadFormatVersion: "2.0"
+
+  CampaignJwtAuthorizer:
+    Type: AWS::ApiGatewayV2::Authorizer
+    Condition: EnableJwtAuth
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      AuthorizerType: JWT
+      IdentitySource:
+        - "$request.header.Authorization"
+      Name: !Sub "campaign-command-jwt-${EnvironmentName}"
+      JwtConfiguration:
+        Audience:
+          - !Ref UserPoolClientId
+        Issuer: !Sub "https://cognito-idp.${AWS::Region}.amazonaws.com/${UserPoolId}"
+
+  StateRouteGet:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "GET /state"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  StateRoutePut:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "PUT /state"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  GoogleSheetsReadRoutePost:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "POST /google-sheets/read"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  GoogleSheetsImportBatchRoutePost:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "POST /google-sheets/import-batch"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  GoogleSheetsSecretRoutePost:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "POST /google-sheets/secret"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  HubSpotSecretRoutePost:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "POST /hubspot/secret"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  HubSpotTestRoutePost:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "POST /hubspot/test"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  HubSpotListsRouteGet:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "GET /hubspot/lists"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  HubSpotImportSegmentBatchRoutePost:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "POST /hubspot/import-segment-batch"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  HubSpotImportContactsBatchRoutePost:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "POST /hubspot/import-contacts-batch"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  HubSpotExportAudienceRoutePost:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "POST /hubspot/export-audience"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  AudienceSyncSuppressionsRoutePost:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "POST /audience/sync-suppressions"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  HubSpotSyncContactRoutePost:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "POST /hubspot/sync-contact"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  HubSpotSyncLeadCallRoutePost:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "POST /hubspot/sync-lead-call"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  JustCallSecretRoutePost:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "POST /justcall/secret"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  JustCallTestRoutePost:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "POST /justcall/test"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  AudienceContactsRouteGet:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "GET /audience-contacts"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  AudienceContactsRoutePut:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "PUT /audience-contacts"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  AudienceContactsRouteDelete:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "DELETE /audience-contacts"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  SendRunsRouteGet:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "GET /send-runs"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  SendResultsRouteGet:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "GET /send-results"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  SendRunsRoutePost:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "POST /send-runs"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  SendRunsRoutePut:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "PUT /send-runs"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  CampaignApiStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      StageName: "$default"
+      AutoDeploy: true
+
+  CampaignApiLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref CampaignApiFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${CampaignHttpApi}/*/*/*"
+
+Outputs:
+  CampaignApiUrl:
+    Value: !GetAtt CampaignHttpApi.ApiEndpoint
+  CampaignApiFunctionName:
+    Value: !Ref CampaignApiFunction

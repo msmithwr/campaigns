@@ -1,0 +1,491 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: DynamoDB tables for Cloudwrxs campaign setup, activities, audience lists, email templates, campaign assignments, and version history.
+
+Parameters:
+  EnvironmentName:
+    Type: String
+    Default: dev
+    AllowedPattern: "^[a-z0-9-]+$"
+
+Resources:
+  CampaignsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "Campaigns-${EnvironmentName}"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: campaignId
+          AttributeType: S
+        - AttributeName: status
+          AttributeType: S
+        - AttributeName: startDate
+          AttributeType: S
+      KeySchema:
+        - AttributeName: campaignId
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: StatusStartDateIndex
+          KeySchema:
+            - AttributeName: status
+              KeyType: HASH
+            - AttributeName: startDate
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+
+  CampaignActivitiesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "CampaignActivities-${EnvironmentName}"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: campaignId
+          AttributeType: S
+        - AttributeName: activityId
+          AttributeType: S
+        - AttributeName: plannedDate
+          AttributeType: S
+      KeySchema:
+        - AttributeName: campaignId
+          KeyType: HASH
+        - AttributeName: activityId
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: CampaignPlannedDateIndex
+          KeySchema:
+            - AttributeName: campaignId
+              KeyType: HASH
+            - AttributeName: plannedDate
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+
+  CampaignEmailsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "CampaignEmails-${EnvironmentName}"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: emailId
+          AttributeType: S
+        - AttributeName: internalRef
+          AttributeType: S
+        - AttributeName: status
+          AttributeType: S
+        - AttributeName: updatedAt
+          AttributeType: S
+      KeySchema:
+        - AttributeName: emailId
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: InternalRefIndex
+          KeySchema:
+            - AttributeName: internalRef
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+        - IndexName: StatusUpdatedIndex
+          KeySchema:
+            - AttributeName: status
+              KeyType: HASH
+            - AttributeName: updatedAt
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+
+  CampaignEmailAssignmentsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "CampaignEmailAssignments-${EnvironmentName}"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: campaignId
+          AttributeType: S
+        - AttributeName: stepKey
+          AttributeType: S
+        - AttributeName: emailId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: campaignId
+          KeyType: HASH
+        - AttributeName: stepKey
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: EmailAssignmentsIndex
+          KeySchema:
+            - AttributeName: emailId
+              KeyType: HASH
+            - AttributeName: campaignId
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+
+  CampaignEmailSendRunsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "CampaignEmailSendRuns-${EnvironmentName}"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: sendRunId
+          AttributeType: S
+        - AttributeName: campaignId
+          AttributeType: S
+        - AttributeName: status
+          AttributeType: S
+        - AttributeName: createdAt
+          AttributeType: S
+      KeySchema:
+        - AttributeName: sendRunId
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: CampaignCreatedAtIndex
+          KeySchema:
+            - AttributeName: campaignId
+              KeyType: HASH
+            - AttributeName: createdAt
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+        - IndexName: StatusCreatedAtIndex
+          KeySchema:
+            - AttributeName: status
+              KeyType: HASH
+            - AttributeName: createdAt
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+
+  CampaignEmailSendsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "CampaignEmailSends-${EnvironmentName}"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: sendRunId
+          AttributeType: S
+        - AttributeName: recipientEmail
+          AttributeType: S
+        - AttributeName: campaignId
+          AttributeType: S
+        - AttributeName: createdAt
+          AttributeType: S
+      KeySchema:
+        - AttributeName: sendRunId
+          KeyType: HASH
+        - AttributeName: recipientEmail
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: CampaignRecipientIndex
+          KeySchema:
+            - AttributeName: campaignId
+              KeyType: HASH
+            - AttributeName: recipientEmail
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+        - IndexName: RecipientHistoryIndex
+          KeySchema:
+            - AttributeName: recipientEmail
+              KeyType: HASH
+            - AttributeName: createdAt
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+
+  CampaignEmailVersionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "CampaignEmailVersions-${EnvironmentName}"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: emailId
+          AttributeType: S
+        - AttributeName: version
+          AttributeType: N
+      KeySchema:
+        - AttributeName: emailId
+          KeyType: HASH
+        - AttributeName: version
+          KeyType: RANGE
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+
+  CampaignSenderProfilesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "CampaignSenderProfiles-${EnvironmentName}"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: ownerId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: ownerId
+          KeyType: HASH
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+
+  CampaignAudienceListsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "CampaignAudienceLists-${EnvironmentName}"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: listId
+          AttributeType: S
+        - AttributeName: sourceType
+          AttributeType: S
+        - AttributeName: updatedAt
+          AttributeType: S
+      KeySchema:
+        - AttributeName: listId
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: SourceUpdatedIndex
+          KeySchema:
+            - AttributeName: sourceType
+              KeyType: HASH
+            - AttributeName: updatedAt
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+
+  CampaignAudienceContactsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "CampaignAudienceContacts-${EnvironmentName}"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: listId
+          AttributeType: S
+        - AttributeName: contactId
+          AttributeType: S
+        - AttributeName: email
+          AttributeType: S
+      KeySchema:
+        - AttributeName: listId
+          KeyType: HASH
+        - AttributeName: contactId
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: ContactEmailIndex
+          KeySchema:
+            - AttributeName: email
+              KeyType: HASH
+            - AttributeName: listId
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+
+  CampaignAudienceMembershipsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "CampaignAudienceMemberships-${EnvironmentName}"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: listId
+          AttributeType: S
+        - AttributeName: contactId
+          AttributeType: S
+        - AttributeName: contactListId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: listId
+          KeyType: HASH
+        - AttributeName: contactId
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: ContactMembershipIndex
+          KeySchema:
+            - AttributeName: contactListId
+              KeyType: HASH
+            - AttributeName: listId
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+        - IndexName: ContactMembershipLookupIndex
+          KeySchema:
+            - AttributeName: contactListId
+              KeyType: HASH
+            - AttributeName: contactId
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+
+  CampaignContactEngagementTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "CampaignContactEngagement-${EnvironmentName}"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: contactId
+          AttributeType: S
+        - AttributeName: eventId
+          AttributeType: S
+        - AttributeName: email
+          AttributeType: S
+        - AttributeName: eventAt
+          AttributeType: S
+      KeySchema:
+        - AttributeName: contactId
+          KeyType: HASH
+        - AttributeName: eventId
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: EngagementEmailIndex
+          KeySchema:
+            - AttributeName: email
+              KeyType: HASH
+            - AttributeName: eventAt
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+
+  CampaignGoogleSheetSourcesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "CampaignGoogleSheetSources-${EnvironmentName}"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: sheetSourceId
+          AttributeType: S
+        - AttributeName: updatedAt
+          AttributeType: S
+      KeySchema:
+        - AttributeName: sheetSourceId
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: UpdatedAtIndex
+          KeySchema:
+            - AttributeName: sheetSourceId
+              KeyType: HASH
+            - AttributeName: updatedAt
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+
+  CampaignIntegrationSettingsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "CampaignIntegrationSettings-${EnvironmentName}"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: settingKey
+          AttributeType: S
+      KeySchema:
+        - AttributeName: settingKey
+          KeyType: HASH
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+
+  CampaignPlaybooksTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "CampaignPlaybooks-${EnvironmentName}"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: playbookId
+          AttributeType: S
+        - AttributeName: status
+          AttributeType: S
+        - AttributeName: updatedAt
+          AttributeType: S
+      KeySchema:
+        - AttributeName: playbookId
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: StatusUpdatedIndex
+          KeySchema:
+            - AttributeName: status
+              KeyType: HASH
+            - AttributeName: updatedAt
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+
+Outputs:
+  CampaignsTableName:
+    Value: !Ref CampaignsTable
+  CampaignActivitiesTableName:
+    Value: !Ref CampaignActivitiesTable
+  CampaignEmailsTableName:
+    Value: !Ref CampaignEmailsTable
+  CampaignEmailAssignmentsTableName:
+    Value: !Ref CampaignEmailAssignmentsTable
+  CampaignEmailSendRunsTableName:
+    Value: !Ref CampaignEmailSendRunsTable
+  CampaignEmailSendsTableName:
+    Value: !Ref CampaignEmailSendsTable
+  CampaignEmailVersionsTableName:
+    Value: !Ref CampaignEmailVersionsTable
+  CampaignSenderProfilesTableName:
+    Value: !Ref CampaignSenderProfilesTable
+  CampaignAudienceListsTableName:
+    Value: !Ref CampaignAudienceListsTable
+  CampaignAudienceContactsTableName:
+    Value: !Ref CampaignAudienceContactsTable
+  CampaignAudienceMembershipsTableName:
+    Value: !Ref CampaignAudienceMembershipsTable
+  CampaignContactEngagementTableName:
+    Value: !Ref CampaignContactEngagementTable
+  CampaignGoogleSheetSourcesTableName:
+    Value: !Ref CampaignGoogleSheetSourcesTable
+  CampaignIntegrationSettingsTableName:
+    Value: !Ref CampaignIntegrationSettingsTable
+  CampaignPlaybooksTableName:
+    Value: !Ref CampaignPlaybooksTable

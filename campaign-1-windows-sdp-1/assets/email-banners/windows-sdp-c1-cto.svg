@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="200" viewBox="0 0 600 200" role="img" aria-labelledby="title desc">
+  <title id="title">Windows SDP Campaign 1 CTO Email Banner</title>
+  <desc id="desc">Cloudwrxs Windows modernisation banner for CTO audience.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f4fbff"/>
+      <stop offset="0.58" stop-color="#e9f4fb"/>
+      <stop offset="1" stop-color="#fff7ee"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="7" stdDeviation="8" flood-color="#12352e" flood-opacity="0.13"/>
+    </filter>
+  </defs>
+  <rect width="600" height="200" rx="18" fill="url(#bg)"/>
+  <rect x="24" y="24" width="552" height="152" rx="16" fill="#ffffff" opacity="0.78"/>
+  <g transform="translate(42 38)">
+    <text x="0" y="0" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" fill="#12352e">cloudwrxs</text>
+    <text x="0" y="26" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="700" letter-spacing="1.4" fill="#667873">AWS ADVANCED TIER SERVICES PARTNER</text>
+  </g>
+  <g transform="translate(410 32)" filter="url(#shadow)">
+    <rect x="0" y="0" width="122" height="92" rx="14" fill="#0f6e56"/>
+    <rect x="18" y="22" width="38" height="28" rx="5" fill="#b9e8d6"/>
+    <rect x="64" y="22" width="38" height="28" rx="5" fill="#b9e8d6"/>
+    <rect x="18" y="58" width="84" height="12" rx="6" fill="#ffffff" opacity="0.9"/>
+    <path d="M56 36 C74 30 79 50 96 42" stroke="#ffffff" stroke-width="4" fill="none" stroke-linecap="round"/>
+  </g>
+  <text x="42" y="94" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="800" fill="#101816">Modernise Windows</text>
+  <text x="42" y="125" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="800" fill="#0f6e56">without overcommitting.</text>
+  <text x="42" y="150" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#53625e">Free Windows Estate Assessment for technology leaders</text>
+  <rect x="42" y="164" width="150" height="24" rx="12" fill="#ff9900"/>
+  <text x="62" y="181" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#101816">Book assessment</text>
+</svg>

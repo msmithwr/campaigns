@@ -1,0 +1,156 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Cognito authentication for Cloudwrxs Campaign Command with Google Workspace federation.
+
+Parameters:
+  EnvironmentName:
+    Type: String
+    Default: dev
+    AllowedPattern: "^[a-z0-9-]+$"
+  AppDomainName:
+    Type: String
+    Default: campaigns.cloudwrxs.com
+  AllowedEmailDomain:
+    Type: String
+    Default: cloudwrxs.com
+  GoogleClientId:
+    Type: String
+    NoEcho: true
+  GoogleClientSecret:
+    Type: String
+    NoEcho: true
+
+Resources:
+  PreSignUpFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CognitoPreSignUpLogs
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "*"
+
+  PreSignUpFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "campaign-command-pre-signup-${EnvironmentName}"
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Role: !GetAtt PreSignUpFunctionRole.Arn
+      Timeout: 5
+      MemorySize: 128
+      Code:
+        ZipFile: |
+          exports.handler = async (event) => {
+            const email = event.request.userAttributes?.email || "";
+            const allowedDomain = (process.env.ALLOWED_EMAIL_DOMAIN || "cloudwrxs.com").toLowerCase();
+            if (!email.toLowerCase().endsWith(`@${allowedDomain}`)) {
+              throw new Error(`Only ${allowedDomain} users can access Campaign Command.`);
+            }
+            event.response.autoConfirmUser = true;
+            event.response.autoVerifyEmail = true;
+            return event;
+          };
+      Environment:
+        Variables:
+          ALLOWED_EMAIL_DOMAIN: !Ref AllowedEmailDomain
+
+  CampaignUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub "campaign-command-${EnvironmentName}"
+      UsernameAttributes:
+        - email
+      AutoVerifiedAttributes:
+        - email
+      LambdaConfig:
+        PreSignUp: !GetAtt PreSignUpFunction.Arn
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 12
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: false
+          RequireUppercase: true
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: false
+
+  PreSignUpInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref PreSignUpFunction
+      Principal: cognito-idp.amazonaws.com
+      SourceArn: !GetAtt CampaignUserPool.Arn
+
+  GoogleIdentityProvider:
+    Type: AWS::Cognito::UserPoolIdentityProvider
+    Properties:
+      UserPoolId: !Ref CampaignUserPool
+      ProviderName: Google
+      ProviderType: Google
+      ProviderDetails:
+        client_id: !Ref GoogleClientId
+        client_secret: !Ref GoogleClientSecret
+        authorize_scopes: "openid email profile"
+      AttributeMapping:
+        email: email
+        given_name: given_name
+        family_name: family_name
+        name: name
+
+  CampaignUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    DependsOn:
+      - GoogleIdentityProvider
+    Properties:
+      ClientName: !Sub "campaign-command-web-${EnvironmentName}"
+      UserPoolId: !Ref CampaignUserPool
+      GenerateSecret: false
+      SupportedIdentityProviders:
+        - Google
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthFlows:
+        - implicit
+      AllowedOAuthScopes:
+        - openid
+        - email
+        - profile
+      CallbackURLs:
+        - !Sub "https://${AppDomainName}"
+      LogoutURLs:
+        - !Sub "https://${AppDomainName}"
+      PreventUserExistenceErrors: ENABLED
+      AccessTokenValidity: 60
+      IdTokenValidity: 60
+      TokenValidityUnits:
+        AccessToken: minutes
+        IdToken: minutes
+
+  CampaignUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: !Sub "cloudwrxs-campaign-command-${EnvironmentName}-${AWS::AccountId}"
+      UserPoolId: !Ref CampaignUserPool
+
+Outputs:
+  UserPoolId:
+    Value: !Ref CampaignUserPool
+  UserPoolClientId:
+    Value: !Ref CampaignUserPoolClient
+  CognitoDomain:
+    Value: !Sub "https://${CampaignUserPoolDomain}.auth.${AWS::Region}.amazoncognito.com"
+  LoginRedirectUri:
+    Value: !Sub "https://${AppDomainName}"

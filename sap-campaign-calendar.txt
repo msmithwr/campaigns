@@ -1,0 +1,294 @@
+﻿Campaign: SAP Modernisation, SAP Migration, SAP Cost Optimisation, S/4HANA Readiness
+1. Campaign Overview
+The purpose of this campaign is to operationalise Cloudwrxs’ new position as an AWS SAP Competency Partner, generating qualified SAP opportunities in KSA by focusing on:
+* SAP-to-AWS Migrations
+
+* SAP Modernisation & Performance Optimisation
+
+* S/4HANA Readiness Assessments
+
+* SAP TCO Reduction & Financial Optimisation
+
+* SAP HA/DR Redesign
+
+* SAP Security & Zero Trust
+
+* SAP Operations Automation
+
+The campaign targets CFOs, CTOs/Heads of IT, and IT Managers, using email cadences, WhatsApp follow-ups, LinkedIn content, landing pages, and structured call scripts.
+2. Campaign Timeline (January–March 2026)
+The campaign is structured into three monthly waves, each containing four email drops, continuous outreach, one major webinar, and multiple reinforcement activities.
+3. High-Level Monthly Themes
+
+
+
+
+
+
+Month
+	Theme
+	Primary CTA
+	January 2026
+	SAP Awareness & Cloud Readiness
+	Free SAP Modernisation Workshop
+	February 2026
+	SAP Cost Optimisation & TCO Reduction
+	SAP TCO & ROI Assessment
+	March 2026
+	S/4HANA Preparedness & HA/DR Excellence
+	S/4HANA Readiness Check
+	Each month’s messaging builds on the previous month to maintain momentum and drive conversion.
+4. Detailed Campaign Calendar (Weekly Breakdown)
+JANUARY 2026 – SAP AWARENESS & MODERNISATION
+Week 1 (1–7 January)
+Activities:
+   * Launch campaign landing pages (CTO, CFO, IT Manager).
+
+   * Publish LinkedIn announcement: “Cloudwrxs Achieves AWS SAP Competency” (corporate).
+
+   * Begin persona segmentation and email list refinement.
+
+   * Soft outreach to key accounts in KSA.
+
+Deliverables Used:
+      * Landing Pages
+      * CTA: Free SAP Modernisation Workshop
+
+Week 2 (8–14 January)
+Outbound:
+         * Email 1 to all personas (SAP introduction + benefits of SAP-on-AWS).
+
+         * WhatsApp Message 1
+Sales Activities:
+            * Stage 1 Calls.
+
+            * Qualify early opportunities.
+
+            * Update CRM with SAP-specific interest signals.
+
+Week 3 (15–21 January)
+Outbound:
+               * Email 2 to all personas (SAP deep dive: HA/DR, performance, architecture).
+
+               * WhatsApp Message 2.
+
+Sales Activities:
+                  * Stage 2 Calls using SAP call scripts.
+
+                  * Schedule the first round of SAP workshops with acquired leads.
+
+Week 4 (22–31 January)
+Outbound:
+                     * Email 3 (SAP case study + ROI).
+
+                     * WhatsApp Message 3.
+
+Sales Activities:
+                        * Stage 3 Calls using SAP scripts.
+
+                        * Deliver first 10–15 SAP workshops (goal).
+
+                        * Begin drafting account-specific SAP recommendations.
+
+KPI Targets:
+                           * 30% email open rate
+
+                           * 18% CTR
+
+                           * 8 SAP workshops booked
+
+FEBRUARY 2026 – SAP COST OPTIMISATION & TCO REDUCTION
+Week 1 (1–7 February)
+Activities:
+                              * Publish LinkedIn article: “Reducing SAP Hosting Costs by 35–50% Using AWS.”
+
+                              * Launch digital ads targeting KSA CIOs and CFOs.
+Week 2 (8–14 February)
+Outbound:
+                                 * Email 1 (February wave) – SAP TCO introduction for CFO & CTO
+
+                                 * WhatsApp Message 1
+Sales Activities:
+                                    * Stage 1 CFO Calls using cost-optimisation scripts.
+
+Week 3 (15–21 February)
+Outbound:
+                                       * Email 2 (February wave) – SAP financial modelling, S/4HANA cost planning
+
+                                       * WhatsApp Message 2
+
+Sales Activities:
+                                          * Stage 2 Calls
+
+                                          * Deliver TCO baselines for accounts that booked workshops in January.
+
+Week 4 (22–29 February)
+Outbound:
+                                             * Email 3 (SAP cost-saving case study)
+
+                                             * WhatsApp Message 3
+
+Sales Activities:
+                                                * Stage 3 Calls
+
+                                                * Deliver SAP TCO Assessments (10 targets)
+
+                                                * SAP-qualified pipeline review
+MARCH 2026 – S/4HANA READINESS & HA/DR EXCELLENCE
+Week 1 (1–7 March)
+Activities:
+                                                   * Launch LinkedIn post: “Is Your SAP Environment Ready for S/4HANA?”
+
+                                                   * Push microsite section: S/4HANA Readiness Assessment 
+Week 2 (8–14 March)
+Outbound:
+                                                      * Email 1 (March wave) – S/4HANA drivers, timelines, and AWS accelerators
+
+                                                      * WhatsApp Message 1
+
+Sales Activities:
+                                                         * Stage 1 Calls (SAP S/4HANA scripts)
+
+                                                         * Begin HA/DR gap assessment offer
+
+Week 3 (15–21 March)
+Outbound:
+                                                            * Email 2 – SAP HA/DR improvement strategies
+
+                                                            * WhatsApp Message 2
+
+Sales Activities:
+                                                               * Stage 2 Calls
+
+                                                               * Deliver HA/DR scoring for warm leads
+
+Week 4 (22–31 March)
+Outbound:
+                                                                  * Email 3 – S/4HANA success story + AWS accelerators
+
+                                                                  * Email 4 – Final CTA (S/4HANA readiness check)
+
+                                                                  * WhatsApp Message 3 & 4
+
+Sales Activities:
+                                                                     * Stage 3 & Stage 4 Calls
+
+                                                                     * End-of-quarter SAP pipeline consolidation
+
+                                                                     * Workshop output → opportunity conversion
+
+5. Integration of WhatsApp, Landing Pages, and Call Scripts 
+WhatsApp Messages – Operational Plan
+Usage Rules
+                                                                        1. Send 48 hours after each email.
+
+                                                                        2. Keep WhatsApp messages strictly short, personalised, and respectful.
+
+                                                                        3. Use Arabic greetings when required.
+
+                                                                        4. Ensure all SAP content aligns with persona insights (finance vs IT vs ops).
+
+Sequence Per Persona
+                                                                           * January → Messages 1 & 2
+
+                                                                           * February → Messages 1 & 2
+
+                                                                           * March → Messages 1, 2, 3, 4
+
+WhatsApp serves as the bridge between emails and calls.
+Landing Pages – Execution Plan
+Each landing page supports a key CTA:
+Persona
+	Landing Page
+	CTA
+	CTO
+	SAP Modernisation & Architecture
+	Book SAP Modernisation Workshop
+	CFO
+	SAP TCO & ROI
+	Schedule SAP TCO Review
+	IT Manager
+	SAP Operations
+	Request SAP Operations Workshop
+	Deployment Plan:
+                                                                              * Launch all landing pages in Week 1 of January.
+
+                                                                              * Link all Emails and WhatsApp messages to the appropriate page.
+
+                                                                              * Use the landing page forms to route leads directly into CRM and assign to sales.
+
+Optimisation Cycle:
+                                                                                 * Weekly review of form submissions
+
+                                                                                 * Monthly A/B testing of CTA wording
+
+                                                                                 * Quarterly content refresh
+
+Call Scripts – Execution Plan
+Usage Schedule:
+Call scripts are deployed strategically after each email wave:
+
+
+Email
+	Follow-Up Timing
+	Call Script Stage
+	Email 1
+	+48–72 hours
+	Stage 1
+	Email 2
+	+48 hours
+	Stage 2
+	Email 3
+	+48 hours
+	Stage 3
+	Email 4
+	Final 5 days of the month
+	Stage 4
+	Sales Team Instructions:
+                                                                                    1. Calls must strictly follow persona-aligned scripts.
+
+                                                                                    2. Calls must always reference the persona’s SAP-specific motivations.
+
+                                                                                    3. Every call attempts to convert to a workshop booking, not a full sales conversation.
+
+                                                                                    4. Detailed notes must be logged after each call for reporting.
+6. KPIs and Tracking
+Monthly KPI Targets
+                                                                                       * Email Open Rate: 30–35%
+
+                                                                                       * Click-Through Rate: 12–18%
+
+                                                                                       * SAP Workshops Booked: 12–20 per month
+
+                                                                                       * Opportunities Created: 6–10 per month
+
+                                                                                       * Opportunity Win Probability: 20%+
+
+Quarter KPI Targets
+                                                                                          * 40–60 SAP workshops completed
+
+                                                                                          * 25–30 SAP-qualified opportunities generated
+
+                                                                                          * 4–6 SAP migration projects scoped
+
+                                                                                          * 2–3 SAP PA, HA/DR, or TCO engagements closed
+7. Campaign Governance & Reporting
+Weekly Activities
+                                                                                             * Review WhatsApp responses
+
+                                                                                             * Monitor landing page conversions
+
+                                                                                             * Adjust call scripts based on objections
+
+Monthly Reporting 
+                                                                                                * SAP lead numbers
+
+                                                                                                * Opportunities created
+
+                                                                                                * Workshops delivered
+
+                                                                                                * SAP workload pipeline
+
+                                                                                                * MQL-to-SQL conversion charts
+
+                                                                                                * Examples of customer interactions (emails, call summaries)
