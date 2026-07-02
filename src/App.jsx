@@ -34,6 +34,7 @@ import {
   Wand2,
   X
 } from "lucide-react";
+import { contentAssetTablePlan, initialCallScripts, initialWhatsAppTemplates } from "./campaignContentData.js";
 import { emailTablePlan, initialEmailAssignments, initialEmailTemplates, ownerSenderProfiles } from "./campaignEmailData.js";
 import { benchmarkIdeas, campaigns as generatedCampaigns, generatedAt } from "./generated/campaignData.js";
 import "./styles.css";
@@ -44,6 +45,8 @@ const tabs = [
   { id: "audience", label: "Audience", icon: Users },
   { id: "lead-nurture", label: "Lead Nurture", icon: Phone },
   { id: "emails", label: "Emails", icon: Mail },
+  { id: "whatsapp", label: "WhatsApp", icon: MessageCircle },
+  { id: "call-scripts", label: "Call Scripts", icon: Phone },
   { id: "send-review", label: "Send Review", icon: PlayCircle },
   { id: "playbooks", label: "Playbooks", icon: Filter },
   { id: "setup", label: "Setup", icon: ClipboardList },
@@ -113,6 +116,8 @@ const contactEngagementStorageKey = "cloudwrxs-campaign-contact-engagement-v1";
 const googleSheetSourceStorageKey = "cloudwrxs-campaign-google-sheet-sources-v1";
 const integrationSettingsStorageKey = "cloudwrxs-campaign-integration-settings-v1";
 const playbookStorageKey = "cloudwrxs-campaign-playbooks-v1";
+const whatsappTemplateStorageKey = "cloudwrxs-campaign-whatsapp-templates-v1";
+const callScriptStorageKey = "cloudwrxs-campaign-call-scripts-v1";
 const authStorageKey = "cloudwrxs-campaign-auth-v1";
 const campaignApiUrl = import.meta.env.VITE_CAMPAIGN_API_URL || "";
 const cognitoDomain = import.meta.env.VITE_COGNITO_DOMAIN || "";
@@ -865,11 +870,14 @@ function App() {
   const [googleSheetSources, setGoogleSheetSources] = useState(() => loadStoredItems(googleSheetSourceStorageKey, initialGoogleSheetSources));
   const [integrationSettings, setIntegrationSettings] = useState(() => loadStoredItems(integrationSettingsStorageKey, initialIntegrationSettings));
   const [playbooks, setPlaybooks] = useState(() => loadStoredItems(playbookStorageKey, initialPlaybooks));
+  const [whatsappTemplates, setWhatsappTemplates] = useState(() => loadStoredItems(whatsappTemplateStorageKey, initialWhatsAppTemplates));
+  const [callScripts, setCallScripts] = useState(() => loadStoredItems(callScriptStorageKey, initialCallScripts));
   const [unsubscribers, setUnsubscribers] = useState([]);
   const [emailEvents, setEmailEvents] = useState([]);
   const [deletedAudienceListIds, setDeletedAudienceListIds] = useState([]);
   const [deletedAudienceContacts, setDeletedAudienceContacts] = useState([]);
   const [deletedPlaybookIds, setDeletedPlaybookIds] = useState([]);
+  const [deletedContentAssetIds, setDeletedContentAssetIds] = useState([]);
   const [selectedEmailId, setSelectedEmailId] = useState(() => initialEmailTemplates[0]?.emailId);
   const [selectedAudienceListId, setSelectedAudienceListId] = useState(() => initialAudienceLists[0]?.listId);
   const [remoteStateReady, setRemoteStateReady] = useState(!campaignApiUrl);
@@ -936,6 +944,12 @@ function App() {
         if (Array.isArray(state.googleSheetSources) && state.googleSheetSources.length) setGoogleSheetSources(state.googleSheetSources);
         if (Array.isArray(state.integrationSettings) && state.integrationSettings.length) setIntegrationSettings(state.integrationSettings);
         if (Array.isArray(state.playbooks) && state.playbooks.length) setPlaybooks(state.playbooks);
+        if (Array.isArray(state.contentAssets)) {
+          const nextWhatsApp = state.contentAssets.filter((asset) => asset.assetType === "whatsapp");
+          const nextCallScripts = state.contentAssets.filter((asset) => asset.assetType === "call_script");
+          if (nextWhatsApp.length) setWhatsappTemplates(nextWhatsApp);
+          if (nextCallScripts.length) setCallScripts(nextCallScripts);
+        }
         if (Array.isArray(state.unsubscribers)) setUnsubscribers(state.unsubscribers);
         if (Array.isArray(state.emailEvents)) setEmailEvents(state.emailEvents);
         if (Array.isArray(state.campaignSetups) && state.campaignSetups.length) {
@@ -1000,6 +1014,14 @@ function App() {
   useEffect(() => {
     window.localStorage.setItem(playbookStorageKey, JSON.stringify(playbooks));
   }, [playbooks]);
+
+  useEffect(() => {
+    window.localStorage.setItem(whatsappTemplateStorageKey, JSON.stringify(whatsappTemplates));
+  }, [whatsappTemplates]);
+
+  useEffect(() => {
+    window.localStorage.setItem(callScriptStorageKey, JSON.stringify(callScripts));
+  }, [callScripts]);
 
   useEffect(() => {
     if (!remoteStateReady) return;
@@ -1081,9 +1103,11 @@ function App() {
           googleSheetSources,
           integrationSettings,
           playbooks,
+          contentAssets: [...whatsappTemplates, ...callScripts],
           deletedAudienceListIds,
           deletedAudienceContacts,
-          deletedPlaybookIds
+          deletedPlaybookIds,
+          deletedContentAssetIds
         })
       })
         .then((response) => {
@@ -1091,6 +1115,7 @@ function App() {
           if (deletedAudienceListIds.length) setDeletedAudienceListIds([]);
           if (deletedAudienceContacts.length) setDeletedAudienceContacts([]);
           if (deletedPlaybookIds.length) setDeletedPlaybookIds([]);
+          if (deletedContentAssetIds.length) setDeletedContentAssetIds([]);
         })
         .catch((error) => console.error(error));
     }, 700);
@@ -1106,9 +1131,12 @@ function App() {
     googleSheetSources,
     integrationSettings,
     playbooks,
+    whatsappTemplates,
+    callScripts,
     deletedAudienceListIds,
     deletedAudienceContacts,
     deletedPlaybookIds,
+    deletedContentAssetIds,
     remoteStateReady,
     auth?.idToken
   ]);
@@ -1628,6 +1656,22 @@ function App() {
             setTemplates={setEmailTemplates}
             senderProfiles={senderProfiles}
             templates={emailTemplates}
+          />
+        )}
+        {activeTab === "whatsapp" && (
+          <WhatsAppWorkspace
+            campaigns={campaignRecords}
+            templates={whatsappTemplates}
+            setTemplates={setWhatsappTemplates}
+            setDeletedContentAssetIds={setDeletedContentAssetIds}
+          />
+        )}
+        {activeTab === "call-scripts" && (
+          <CallScriptWorkspace
+            campaigns={campaignRecords}
+            scripts={callScripts}
+            setScripts={setCallScripts}
+            setDeletedContentAssetIds={setDeletedContentAssetIds}
           />
         )}
         {activeTab === "send-review" && (
@@ -5874,6 +5918,645 @@ function SendReviewWorkspace({ activeCampaignId, authHeaders, campaignApiUrl, ca
       </section>
     </div>
   );
+}
+
+function WhatsAppWorkspace({ campaigns, templates, setDeletedContentAssetIds, setTemplates }) {
+  const [selectedAssetId, setSelectedAssetId] = useState(() => templates[0]?.assetId || initialWhatsAppTemplates[0]?.assetId);
+  const [campaignFilter, setCampaignFilter] = useState("all");
+  const [testContact, setTestContact] = useState({
+    firstName: "there",
+    phone: "",
+    senderName: "Cloudwrxs"
+  });
+  const selectedTemplate = templates.find((template) => template.assetId === selectedAssetId) || templates[0] || null;
+  const filteredTemplates = templates.filter((template) => {
+    const mappings = template.campaignMappings || [];
+    if (campaignFilter === "all") return true;
+    if (campaignFilter === "unassigned") return mappings.length === 0;
+    return mappings.some((mapping) => mapping.campaignId === campaignFilter);
+  });
+  const renderedMessage = selectedTemplate ? renderManualMessage(selectedTemplate.bodyText, testContact, selectedTemplate.placeholderValues) : "";
+
+  useEffect(() => {
+    if (selectedTemplate?.assetId && selectedTemplate.assetId !== selectedAssetId) setSelectedAssetId(selectedTemplate.assetId);
+  }, [selectedAssetId, selectedTemplate?.assetId]);
+
+  function updateTemplate(field, value) {
+    if (!selectedTemplate) return;
+    setTemplates((current) => current.map((template) =>
+      template.assetId === selectedTemplate.assetId
+        ? { ...template, [field]: value, updatedAt: nowIso() }
+        : template
+    ));
+  }
+
+  function updatePlaceholder(key, value) {
+    if (!selectedTemplate) return;
+    setTemplates((current) => current.map((template) =>
+      template.assetId === selectedTemplate.assetId
+        ? {
+            ...template,
+            placeholderValues: {
+              ...template.placeholderValues,
+              [key]: value
+            },
+            updatedAt: nowIso()
+          }
+        : template
+    ));
+  }
+
+  function createTemplate() {
+    const assetId = `whatsapp_${Date.now()}`;
+    const next = {
+      assetId,
+      assetType: "whatsapp",
+      internalRef: `custom-whatsapp-${templates.length + 1}`,
+      label: "New WhatsApp message",
+      status: "draft",
+      campaignMappings: [],
+      bodyText: "Hi {{FIRST_NAME}}, it is {{SENDER_NAME}} from Cloudwrxs.\n\nWrite the WhatsApp message here.\n\n{{WEBSITE_LINK}}",
+      launchMode: "manual_whatsapp_business",
+      placeholderValues: {
+        WEBSITE_LINK: "https://cloudwrxs.com/?link=whatsapp"
+      },
+      updatedAt: nowIso()
+    };
+    setTemplates((current) => [next, ...current]);
+    setSelectedAssetId(assetId);
+  }
+
+  function cloneTemplate() {
+    if (!selectedTemplate) return;
+    const assetId = `whatsapp_clone_${Date.now()}`;
+    setTemplates((current) => [
+      {
+        ...selectedTemplate,
+        assetId,
+        internalRef: `${selectedTemplate.internalRef}-clone-${templates.length + 1}`,
+        label: `${selectedTemplate.label} copy`,
+        status: "draft",
+        updatedAt: nowIso()
+      },
+      ...current
+    ]);
+    setSelectedAssetId(assetId);
+  }
+
+  function deleteTemplate() {
+    if (!selectedTemplate || templates.length <= 1) return;
+    setDeletedContentAssetIds((current) => Array.from(new Set([...current, selectedTemplate.assetId])));
+    setTemplates((current) => current.filter((template) => template.assetId !== selectedTemplate.assetId));
+    setSelectedAssetId(templates.find((template) => template.assetId !== selectedTemplate.assetId)?.assetId || "");
+  }
+
+  function addMapping(campaignId) {
+    if (!selectedTemplate || !campaignId) return;
+    const campaign = campaigns.find((item) => item.id === campaignId);
+    setTemplates((current) => current.map((template) => {
+      if (template.assetId !== selectedTemplate.assetId) return template;
+      const mappings = template.campaignMappings || [];
+      const stepKey = `WhatsApp${mappings.filter((mapping) => mapping.campaignId === campaignId).length + 1}`;
+      return {
+        ...template,
+        campaignMappings: [
+          ...mappings,
+          {
+            campaignId,
+            stepKey,
+            label: campaign ? `${campaign.shortName} ${stepKey}` : stepKey
+          }
+        ],
+        updatedAt: nowIso()
+      };
+    }));
+  }
+
+  function updateMapping(index, field, value) {
+    if (!selectedTemplate) return;
+    setTemplates((current) => current.map((template) => {
+      if (template.assetId !== selectedTemplate.assetId) return template;
+      const campaignMappings = [...(template.campaignMappings || [])];
+      campaignMappings[index] = { ...campaignMappings[index], [field]: value };
+      return { ...template, campaignMappings, updatedAt: nowIso() };
+    }));
+  }
+
+  function removeMapping(index) {
+    if (!selectedTemplate) return;
+    setTemplates((current) => current.map((template) =>
+      template.assetId === selectedTemplate.assetId
+        ? {
+            ...template,
+            campaignMappings: (template.campaignMappings || []).filter((_, mappingIndex) => mappingIndex !== index),
+            updatedAt: nowIso()
+          }
+        : template
+    ));
+  }
+
+  function copyRenderedMessage() {
+    if (!renderedMessage) return;
+    navigator.clipboard?.writeText(renderedMessage).catch(() => {});
+  }
+
+  function openWhatsApp() {
+    const phone = String(testContact.phone || "").replace(/[^\d]/g, "");
+    const params = new URLSearchParams({ text: renderedMessage });
+    const url = phone ? `https://wa.me/${phone}?${params.toString()}` : `https://wa.me/?${params.toString()}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+
+  return (
+    <ContentAssetWorkspace
+      assetKind="whatsapp"
+      campaignFilter={campaignFilter}
+      campaigns={campaigns}
+      contentAssetTablePlan={contentAssetTablePlan}
+      createAsset={createTemplate}
+      cloneAsset={cloneTemplate}
+      deleteAsset={deleteTemplate}
+      filteredAssets={filteredTemplates}
+      selectedAsset={selectedTemplate}
+      selectedAssetId={selectedAssetId}
+      setCampaignFilter={setCampaignFilter}
+      setSelectedAssetId={setSelectedAssetId}
+      title="WhatsApp messages"
+      subtitle="Reusable WhatsApp Business copy"
+      icon={MessageCircle}
+      addMapping={addMapping}
+      updateMapping={updateMapping}
+      removeMapping={removeMapping}
+      updateAsset={updateTemplate}
+      bodyFields={(
+        <>
+          <label className="body-field">
+            <span>Message body</span>
+            <textarea value={selectedTemplate?.bodyText || ""} onChange={(event) => updateTemplate("bodyText", event.target.value)} />
+          </label>
+          <label>
+            <span>Website link</span>
+            <input value={selectedTemplate?.placeholderValues?.WEBSITE_LINK || ""} onChange={(event) => updatePlaceholder("WEBSITE_LINK", event.target.value)} />
+          </label>
+        </>
+      )}
+      sidePanel={selectedTemplate ? (
+        <section className="panel manual-launch-panel">
+          <div className="section-head">
+            <div>
+              <p className="eyebrow">Manual launch</p>
+              <h2>WhatsApp Business</h2>
+            </div>
+            <MessageCircle size={20} />
+          </div>
+          <div className="manual-test-grid">
+            <label>
+              <span>First name</span>
+              <input value={testContact.firstName} onChange={(event) => setTestContact((current) => ({ ...current, firstName: event.target.value }))} />
+            </label>
+            <label>
+              <span>Phone number</span>
+              <input value={testContact.phone} onChange={(event) => setTestContact((current) => ({ ...current, phone: event.target.value }))} placeholder="+971..." />
+            </label>
+            <label>
+              <span>Sender name</span>
+              <input value={testContact.senderName} onChange={(event) => setTestContact((current) => ({ ...current, senderName: event.target.value }))} />
+            </label>
+          </div>
+          <div className="rendered-message-preview">
+            <strong>Rendered preview</strong>
+            <p>{renderedMessage}</p>
+          </div>
+          <div className="editor-actions">
+            <button className="secondary-button compact" onClick={copyRenderedMessage}>
+              <Copy size={15} />
+              Copy message
+            </button>
+            <button className="primary-button compact" onClick={openWhatsApp}>
+              <MessageCircle size={15} />
+              Launch WhatsApp
+            </button>
+          </div>
+          <p className="asset-helper-note">For now this opens WhatsApp with the message prefilled. As we add WhatsApp Business API approval and opt-in handling, these assets can become automated send templates.</p>
+        </section>
+      ) : null}
+    />
+  );
+}
+
+function CallScriptWorkspace({ campaigns, scripts, setDeletedContentAssetIds, setScripts }) {
+  const [selectedAssetId, setSelectedAssetId] = useState(() => scripts[0]?.assetId || initialCallScripts[0]?.assetId);
+  const [campaignFilter, setCampaignFilter] = useState("all");
+  const selectedScript = scripts.find((script) => script.assetId === selectedAssetId) || scripts[0] || null;
+  const filteredScripts = scripts.filter((script) => {
+    const mappings = script.campaignMappings || [];
+    if (campaignFilter === "all") return true;
+    if (campaignFilter === "unassigned") return mappings.length === 0;
+    return mappings.some((mapping) => mapping.campaignId === campaignFilter);
+  });
+
+  useEffect(() => {
+    if (selectedScript?.assetId && selectedScript.assetId !== selectedAssetId) setSelectedAssetId(selectedScript.assetId);
+  }, [selectedAssetId, selectedScript?.assetId]);
+
+  function updateScript(field, value) {
+    if (!selectedScript) return;
+    setScripts((current) => current.map((script) =>
+      script.assetId === selectedScript.assetId
+        ? { ...script, [field]: value, updatedAt: nowIso() }
+        : script
+    ));
+  }
+
+  function createScript() {
+    const assetId = `callscript_${Date.now()}`;
+    const next = {
+      assetId,
+      assetType: "call_script",
+      internalRef: `custom-call-script-${scripts.length + 1}`,
+      label: "New call script",
+      status: "draft",
+      campaignMappings: [],
+      opening: "Hi {{FIRST_NAME}}, it is {{SENDER_NAME}} from Cloudwrxs.",
+      objective: "Write the call objective here.",
+      talkTrack: "1. Confirm role and context.\n2. Ask discovery questions.\n3. Agree next step.",
+      qualificationQuestions: "",
+      objectionHandling: "",
+      close: "Would it make sense to book a short follow-up?",
+      updatedAt: nowIso()
+    };
+    setScripts((current) => [next, ...current]);
+    setSelectedAssetId(assetId);
+  }
+
+  function cloneScript() {
+    if (!selectedScript) return;
+    const assetId = `callscript_clone_${Date.now()}`;
+    setScripts((current) => [
+      {
+        ...selectedScript,
+        assetId,
+        internalRef: `${selectedScript.internalRef}-clone-${scripts.length + 1}`,
+        label: `${selectedScript.label} copy`,
+        status: "draft",
+        updatedAt: nowIso()
+      },
+      ...current
+    ]);
+    setSelectedAssetId(assetId);
+  }
+
+  function deleteScript() {
+    if (!selectedScript || scripts.length <= 1) return;
+    setDeletedContentAssetIds((current) => Array.from(new Set([...current, selectedScript.assetId])));
+    setScripts((current) => current.filter((script) => script.assetId !== selectedScript.assetId));
+    setSelectedAssetId(scripts.find((script) => script.assetId !== selectedScript.assetId)?.assetId || "");
+  }
+
+  function addMapping(campaignId) {
+    if (!selectedScript || !campaignId) return;
+    const campaign = campaigns.find((item) => item.id === campaignId);
+    setScripts((current) => current.map((script) => {
+      if (script.assetId !== selectedScript.assetId) return script;
+      const mappings = script.campaignMappings || [];
+      const stepKey = `Call${mappings.filter((mapping) => mapping.campaignId === campaignId).length + 1}`;
+      return {
+        ...script,
+        campaignMappings: [
+          ...mappings,
+          {
+            campaignId,
+            stepKey,
+            label: campaign ? `${campaign.shortName} ${stepKey}` : stepKey
+          }
+        ],
+        updatedAt: nowIso()
+      };
+    }));
+  }
+
+  function updateMapping(index, field, value) {
+    if (!selectedScript) return;
+    setScripts((current) => current.map((script) => {
+      if (script.assetId !== selectedScript.assetId) return script;
+      const campaignMappings = [...(script.campaignMappings || [])];
+      campaignMappings[index] = { ...campaignMappings[index], [field]: value };
+      return { ...script, campaignMappings, updatedAt: nowIso() };
+    }));
+  }
+
+  function removeMapping(index) {
+    if (!selectedScript) return;
+    setScripts((current) => current.map((script) =>
+      script.assetId === selectedScript.assetId
+        ? {
+            ...script,
+            campaignMappings: (script.campaignMappings || []).filter((_, mappingIndex) => mappingIndex !== index),
+            updatedAt: nowIso()
+          }
+        : script
+    ));
+  }
+
+  function copyScript() {
+    if (!selectedScript) return;
+    const scriptText = [
+      selectedScript.opening,
+      "",
+      `Objective: ${selectedScript.objective || ""}`,
+      "",
+      selectedScript.talkTrack,
+      "",
+      selectedScript.qualificationQuestions ? `Questions:\n${selectedScript.qualificationQuestions}` : "",
+      selectedScript.objectionHandling ? `Objections:\n${selectedScript.objectionHandling}` : "",
+      selectedScript.close ? `Close:\n${selectedScript.close}` : ""
+    ].filter(Boolean).join("\n");
+    navigator.clipboard?.writeText(scriptText).catch(() => {});
+  }
+
+  return (
+    <ContentAssetWorkspace
+      assetKind="call_script"
+      campaignFilter={campaignFilter}
+      campaigns={campaigns}
+      contentAssetTablePlan={contentAssetTablePlan}
+      createAsset={createScript}
+      cloneAsset={cloneScript}
+      deleteAsset={deleteScript}
+      filteredAssets={filteredScripts}
+      selectedAsset={selectedScript}
+      selectedAssetId={selectedAssetId}
+      setCampaignFilter={setCampaignFilter}
+      setSelectedAssetId={setSelectedAssetId}
+      title="Call scripts"
+      subtitle="Reusable sales talk tracks"
+      icon={Phone}
+      addMapping={addMapping}
+      updateMapping={updateMapping}
+      removeMapping={removeMapping}
+      updateAsset={updateScript}
+      bodyFields={(
+        <>
+          <label className="body-field">
+            <span>Opening</span>
+            <textarea value={selectedScript?.opening || ""} onChange={(event) => updateScript("opening", event.target.value)} />
+          </label>
+          <label className="body-field">
+            <span>Objective</span>
+            <textarea value={selectedScript?.objective || ""} onChange={(event) => updateScript("objective", event.target.value)} />
+          </label>
+          <label className="body-field">
+            <span>Talk track</span>
+            <textarea value={selectedScript?.talkTrack || ""} onChange={(event) => updateScript("talkTrack", event.target.value)} />
+          </label>
+          <label className="body-field">
+            <span>Qualification questions</span>
+            <textarea value={selectedScript?.qualificationQuestions || ""} onChange={(event) => updateScript("qualificationQuestions", event.target.value)} />
+          </label>
+          <label className="body-field">
+            <span>Objection handling</span>
+            <textarea value={selectedScript?.objectionHandling || ""} onChange={(event) => updateScript("objectionHandling", event.target.value)} />
+          </label>
+          <label className="body-field">
+            <span>Close</span>
+            <textarea value={selectedScript?.close || ""} onChange={(event) => updateScript("close", event.target.value)} />
+          </label>
+        </>
+      )}
+      sidePanel={selectedScript ? (
+        <section className="panel manual-launch-panel">
+          <div className="section-head">
+            <div>
+              <p className="eyebrow">Sales enablement</p>
+              <h2>Script preview</h2>
+            </div>
+            <Phone size={20} />
+          </div>
+          <div className="script-preview">
+            <strong>Opening</strong>
+            <p>{selectedScript.opening}</p>
+            <strong>Objective</strong>
+            <p>{selectedScript.objective}</p>
+            <strong>Close</strong>
+            <p>{selectedScript.close}</p>
+          </div>
+          <button className="secondary-button compact" onClick={copyScript}>
+            <Copy size={15} />
+            Copy full script
+          </button>
+          <p className="asset-helper-note">These scripts can be surfaced inside Lead Nurture next to the JustCall controls once we link campaign call steps to script assets.</p>
+        </section>
+      ) : null}
+    />
+  );
+}
+
+function ContentAssetWorkspace({
+  addMapping,
+  assetKind,
+  bodyFields,
+  campaignFilter,
+  campaigns,
+  cloneAsset,
+  contentAssetTablePlan,
+  createAsset,
+  deleteAsset,
+  filteredAssets,
+  icon: Icon,
+  removeMapping,
+  selectedAsset,
+  selectedAssetId,
+  setCampaignFilter,
+  setSelectedAssetId,
+  sidePanel,
+  subtitle,
+  title,
+  updateAsset,
+  updateMapping
+}) {
+  const mappings = selectedAsset?.campaignMappings || [];
+  const unusedCampaigns = campaigns.filter((campaign) => !mappings.some((mapping) => mapping.campaignId === campaign.id));
+  const detectedPlaceholders = placeholderKeys([
+    selectedAsset?.bodyText,
+    selectedAsset?.opening,
+    selectedAsset?.objective,
+    selectedAsset?.talkTrack,
+    selectedAsset?.qualificationQuestions,
+    selectedAsset?.objectionHandling,
+    selectedAsset?.close
+  ].filter(Boolean).join("\n"));
+
+  return (
+    <div className="email-workspace content-asset-workspace">
+      <section className="panel schema-panel">
+        <div className="section-head">
+          <div>
+            <p className="eyebrow">Campaign content assets</p>
+            <h2>{title}</h2>
+          </div>
+          <Icon size={20} />
+        </div>
+        <div className="schema-grid">
+          {contentAssetTablePlan.map((item) => (
+            <div className="schema-card" key={item.table}>
+              <strong>{item.table}</strong>
+              <span>{item.key}</span>
+              <p>{item.purpose}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="panel email-library">
+        <div className="panel-head">
+          <h3>{subtitle}</h3>
+          <button className="icon-button compact" title={`Create ${title}`} onClick={createAsset}>
+            <Plus size={16} />
+          </button>
+        </div>
+        <label className="email-library-filter">
+          <span>Filter by campaign</span>
+          <select value={campaignFilter} onChange={(event) => setCampaignFilter(event.target.value)}>
+            <option value="unassigned">Unassigned</option>
+            <option value="all">All assets</option>
+            {campaigns.map((campaign) => (
+              <option key={campaign.id} value={campaign.id}>{campaign.shortName}</option>
+            ))}
+          </select>
+        </label>
+        <div className="email-list">
+          {filteredAssets.map((asset) => {
+            const usageCount = (asset.campaignMappings || []).length;
+            return (
+              <button
+                className={asset.assetId === selectedAssetId ? "selected" : ""}
+                key={asset.assetId}
+                onClick={() => setSelectedAssetId(asset.assetId)}
+              >
+                <strong>{asset.label}</strong>
+                <span>{asset.internalRef}</span>
+                <small>{asset.status} · mapped to {usageCount} campaign step{usageCount === 1 ? "" : "s"}</small>
+              </button>
+            );
+          })}
+          {!filteredAssets.length && <p className="empty-library-note">No assets match this filter.</p>}
+        </div>
+      </section>
+
+      {selectedAsset ? (
+        <>
+          <section className="panel email-editor content-asset-editor">
+            <div className="section-head">
+              <div>
+                <p className="eyebrow">{assetKind === "whatsapp" ? "WhatsApp template" : "Call script"}</p>
+                <h2>{selectedAsset.label}</h2>
+              </div>
+              <div className="editor-actions">
+                <button className="icon-button compact" title="Clone asset" onClick={cloneAsset}>
+                  <Copy size={16} />
+                </button>
+                <button className="icon-button compact danger" title="Delete asset" onClick={deleteAsset}>
+                  <Trash2 size={16} />
+                </button>
+                <button className="primary-button compact" title="Saved automatically">
+                  <Save size={16} />
+                  Saved
+                </button>
+              </div>
+            </div>
+            <div className="email-form content-asset-form">
+              <label>
+                <span>Internal reference</span>
+                <input value={selectedAsset.internalRef || ""} onChange={(event) => updateAsset("internalRef", event.target.value)} />
+              </label>
+              <label>
+                <span>User label</span>
+                <input value={selectedAsset.label || ""} onChange={(event) => updateAsset("label", event.target.value)} />
+              </label>
+              <label>
+                <span>Status</span>
+                <select value={selectedAsset.status || "draft"} onChange={(event) => updateAsset("status", event.target.value)}>
+                  <option value="draft">draft</option>
+                  <option value="approved">approved</option>
+                  <option value="archived">archived</option>
+                </select>
+              </label>
+              <label>
+                <span>Launch mode</span>
+                <select value={selectedAsset.launchMode || "manual"} onChange={(event) => updateAsset("launchMode", event.target.value)}>
+                  <option value="manual">Manual</option>
+                  <option value="manual_whatsapp_business">Manual WhatsApp Business</option>
+                  <option value="justcall_assisted">JustCall assisted</option>
+                </select>
+              </label>
+              {bodyFields}
+              {!!detectedPlaceholders.length && (
+                <div className="placeholder-row">
+                  {detectedPlaceholders.map((key) => (
+                    <span key={key}>{`{{${key}}}`}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+          {sidePanel}
+          <section className="panel assignment-panel content-assignment-panel">
+            <div className="panel-head">
+              <h3>Campaign mapping</h3>
+              <select className="compact-select" value="" onChange={(event) => addMapping(event.target.value)} disabled={!unusedCampaigns.length}>
+                <option value="">{unusedCampaigns.length ? "Assign to campaign..." : "All campaigns assigned"}</option>
+                {unusedCampaigns.map((campaign) => (
+                  <option key={campaign.id} value={campaign.id}>{campaign.shortName}</option>
+                ))}
+              </select>
+            </div>
+            <div className="asset-mapping-list">
+              {mappings.map((mapping, index) => {
+                const campaign = campaigns.find((item) => item.id === mapping.campaignId);
+                return (
+                  <article className="asset-mapping-row" key={`${mapping.campaignId}-${mapping.stepKey}-${index}`}>
+                    <strong>{campaign?.shortName || mapping.campaignId}</strong>
+                    <label>
+                      <span>Step key</span>
+                      <input value={mapping.stepKey || ""} onChange={(event) => updateMapping(index, "stepKey", event.target.value)} />
+                    </label>
+                    <label>
+                      <span>Task label</span>
+                      <input value={mapping.label || ""} onChange={(event) => updateMapping(index, "label", event.target.value)} />
+                    </label>
+                    <button className="icon-button compact danger" title="Remove mapping" onClick={() => removeMapping(index)}>
+                      <Trash2 size={14} />
+                    </button>
+                  </article>
+                );
+              })}
+              {!mappings.length && <p className="empty-library-note">This asset is not mapped to a campaign step yet.</p>}
+            </div>
+          </section>
+        </>
+      ) : (
+        <section className="panel email-empty-state">
+          <p className="eyebrow">Campaign content asset</p>
+          <h2>No assets match this filter</h2>
+          <p>Create a reusable asset, then map it to campaign tasks.</p>
+          <button className="primary-button" onClick={createAsset}>
+            <Plus size={15} />
+            Add asset
+          </button>
+        </section>
+      )}
+    </div>
+  );
+}
+
+function renderManualMessage(text = "", contact = {}, placeholderValues = {}) {
+  const values = {
+    FIRST_NAME: contact.firstName || "there",
+    SENDER_NAME: contact.senderName || "Cloudwrxs",
+    WEBSITE_LINK: placeholderValues.WEBSITE_LINK || "",
+    CALENDAR_LINK: placeholderValues.CALENDAR_LINK || ""
+  };
+  return String(text || "").replace(/{{\s*([A-Z0-9_]+)\s*}}/g, (_, key) => values[key] ?? "");
 }
 
 function EmailWorkspace({

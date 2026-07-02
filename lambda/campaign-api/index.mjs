@@ -30,6 +30,7 @@ const tables = {
   googleSheetSources: process.env.CAMPAIGN_GOOGLE_SHEET_SOURCES_TABLE || `CampaignGoogleSheetSources-${environment}`,
   integrationSettings: process.env.CAMPAIGN_INTEGRATION_SETTINGS_TABLE || `CampaignIntegrationSettings-${environment}`,
   playbooks: process.env.CAMPAIGN_PLAYBOOKS_TABLE || `CampaignPlaybooks-${environment}`,
+  contentAssets: process.env.CAMPAIGN_CONTENT_ASSETS_TABLE || `CampaignContentAssets-${environment}`,
   unsubscribers: process.env.UNSUBSCRIBERS_TABLE || "Unsubscribers",
   emailEvents: process.env.EMAIL_EVENTS_TABLE || "EmailEvents"
 };
@@ -173,7 +174,7 @@ export async function handler(event) {
 }
 
 async function getState() {
-  const [campaignSetups, campaignActivities, templates, assignments, senderProfiles, audienceLists, contactEngagement, googleSheetSources, integrationSettings, playbooks, unsubscribers, emailEvents] = await Promise.all([
+  const [campaignSetups, campaignActivities, templates, assignments, senderProfiles, audienceLists, contactEngagement, googleSheetSources, integrationSettings, playbooks, contentAssets, unsubscribers, emailEvents] = await Promise.all([
     scanAll(tables.campaigns),
     scanAll(tables.activities),
     scanAll(tables.emails),
@@ -184,6 +185,7 @@ async function getState() {
     scanAll(tables.googleSheetSources),
     scanAll(tables.integrationSettings),
     scanAll(tables.playbooks),
+    scanOptional(tables.contentAssets),
     scanLimit(tables.unsubscribers, 750),
     scanLimit(tables.emailEvents, 1500)
   ]);
@@ -206,6 +208,7 @@ async function getState() {
     googleSheetSources: googleSheetSources.sort((a, b) => String(b.lastUsedAt || b.updatedAt || "").localeCompare(String(a.lastUsedAt || a.updatedAt || ""))),
     integrationSettings,
     playbooks: playbooks.sort((a, b) => String(b.updatedAt || "").localeCompare(String(a.updatedAt || ""))),
+    contentAssets: contentAssets.sort((a, b) => String(b.updatedAt || "").localeCompare(String(a.updatedAt || ""))),
     unsubscribers,
     emailEvents
   };
@@ -223,9 +226,11 @@ async function saveState(body) {
   const googleSheetSources = Array.isArray(body.googleSheetSources) ? body.googleSheetSources : [];
   const integrationSettings = Array.isArray(body.integrationSettings) ? body.integrationSettings : [];
   const playbooks = Array.isArray(body.playbooks) ? body.playbooks : [];
+  const contentAssets = Array.isArray(body.contentAssets) ? body.contentAssets : [];
   const deletedAudienceListIds = Array.isArray(body.deletedAudienceListIds) ? body.deletedAudienceListIds : [];
   const deletedAudienceContacts = Array.isArray(body.deletedAudienceContacts) ? body.deletedAudienceContacts : [];
   const deletedPlaybookIds = Array.isArray(body.deletedPlaybookIds) ? body.deletedPlaybookIds : [];
+  const deletedContentAssetIds = Array.isArray(body.deletedContentAssetIds) ? body.deletedContentAssetIds : [];
 
   for (const campaign of campaignSetups) {
     const campaignId = campaign.campaignId || campaign.id;
@@ -313,6 +318,22 @@ async function saveState(body) {
     });
   }
 
+  for (const asset of contentAssets) {
+    if (!asset.assetId) continue;
+    await put(tables.contentAssets, {
+      ...asset,
+      updatedAt: now
+    });
+  }
+
+  for (const assetId of deletedContentAssetIds) {
+    if (!assetId) continue;
+    await dynamo.send(new DeleteItemCommand({
+      TableName: tables.contentAssets,
+      Key: toDynamoItem({ assetId })
+    }));
+  }
+
   for (const playbookId of deletedPlaybookIds) {
     if (!playbookId) continue;
     await dynamo.send(new DeleteItemCommand({
@@ -341,6 +362,15 @@ async function scanAll(TableName) {
     ExclusiveStartKey = result.LastEvaluatedKey;
   } while (ExclusiveStartKey);
   return items;
+}
+
+async function scanOptional(TableName) {
+  try {
+    return await scanAll(TableName);
+  } catch (error) {
+    if (error.name === "ResourceNotFoundException") return [];
+    throw error;
+  }
 }
 
 async function scanLimit(TableName, limit = 500) {
