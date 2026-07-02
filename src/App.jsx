@@ -724,8 +724,10 @@ function computedCampaignWorkflowStatus(campaign = {}, schedule = {}) {
   const events = campaign.events || [];
   if (!events.length) return campaign.status || "active";
   const allComplete = events.every((event) => schedule[eventKey(campaign, event)]?.status === "complete");
+  const allQueued = events.every((event) => schedule[eventKey(campaign, event)]?.status === "queued");
   if (allComplete) return "complete";
-  if (String(campaign.status || "").toLowerCase() === "complete") return "active";
+  if (allQueued) return "queued";
+  if (["complete", "queued"].includes(String(campaign.status || "").toLowerCase())) return "active";
   return campaign.status || "active";
 }
 
@@ -1284,6 +1286,22 @@ function App() {
   }
 
   function updateCampaign(campaignId, field, value) {
+    if (field === "status" && ["queued", "complete"].includes(value)) {
+      const targetCampaign = campaignRecords.find((campaign) => campaign.id === campaignId);
+      if (targetCampaign) {
+        setSchedule((current) => {
+          const next = { ...current };
+          (targetCampaign.events || []).forEach((event) => {
+            const key = eventKey(targetCampaign, event);
+            next[key] = {
+              ...(current[key] || { month: event.month, weekIndex: 0, dayIndex: 0 }),
+              status: value
+            };
+          });
+          return next;
+        });
+      }
+    }
     setCampaignRecords((current) =>
       current.map((campaign) =>
         campaign.id === campaignId
@@ -2439,6 +2457,7 @@ function CampaignEditor({
         <label>
           <span>Status</span>
           <select value={campaign.status || "active"} onChange={(event) => updateCampaign(campaign.id, "status", event.target.value)}>
+            <option value="queued">Queued</option>
             <option value="active">Active</option>
             <option value="draft">Draft</option>
             <option value="paused">Paused</option>
