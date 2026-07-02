@@ -44,13 +44,12 @@ button { cursor: pointer; }
 .cloudcamp-logo {
   width: 48px;
   height: 48px;
-  border: 1px solid rgba(0, 224, 185, 0.42);
-  border-radius: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
   background:
-    radial-gradient(circle at 71% 27%, rgba(255, 111, 32, 0.95) 0 6px, transparent 7px),
-    linear-gradient(145deg, #00e0b9 0%, #9ee6d0 100%);
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.23), inset 0 1px 0 rgba(255, 255, 255, 0.34);
-  color: var(--cw-ink);
+    radial-gradient(circle at 76% 24%, var(--cw-orange) 0 5px, transparent 6px),
+    linear-gradient(145deg, #132322 0%, #0d1717 100%);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   display: grid;
   flex: 0 0 auto;
   overflow: hidden;
@@ -60,30 +59,63 @@ button { cursor: pointer; }
 .cloudcamp-logo::before {
   content: "";
   position: absolute;
-  inset: 9px 10px 13px 9px;
-  border: 3px solid rgba(13, 30, 30, 0.9);
-  border-right-color: transparent;
-  border-radius: 50%;
+  left: 10px;
+  right: 10px;
+  bottom: 12px;
+  height: 3px;
+  background: var(--cw-orange);
+  border-radius: 99px;
 }
-.cloudcamp-logo-main {
-  font-size: 21px;
-  font-weight: 900;
-  line-height: 1;
-  transform: translate(-1px, 1px);
-  z-index: 1;
+.cloudcamp-logo-cloud {
+  width: 28px;
+  height: 17px;
+  border: 3px solid #fff;
+  border-top: 0;
+  border-radius: 0 0 15px 15px;
+  margin-top: 5px;
+  position: relative;
+}
+.cloudcamp-logo-cloud::before,
+.cloudcamp-logo-cloud::after {
+  content: "";
+  position: absolute;
+  border: 3px solid #fff;
+  border-bottom: 0;
+  background: transparent;
+}
+.cloudcamp-logo-cloud::before {
+  width: 13px;
+  height: 13px;
+  left: -3px;
+  top: -11px;
+  border-radius: 14px 14px 0 0;
+}
+.cloudcamp-logo-cloud::after {
+  width: 18px;
+  height: 18px;
+  right: -3px;
+  top: -16px;
+  border-radius: 18px 18px 0 0;
 }
 .cloudcamp-logo-path {
   position: absolute;
-  right: 9px;
-  bottom: 8px;
-  width: 17px;
-  border-top: 3px dotted rgba(13, 30, 30, 0.92);
-  transform: rotate(-28deg);
+  right: 11px;
+  bottom: 17px;
+  width: 16px;
+  border-top: 2px dotted var(--cw-green);
+  transform: rotate(-24deg);
 }
 .brand-copy { min-width: 0; }
 .brand strong, .brand span { display: block; }
 .brand strong { color: #fff; font-size: 19px; letter-spacing: 0; }
 .brand span, .sync-card span { color: #c0c8cf; font-size: 12px; margin-top: 3px; line-height: 1.35; }
+.brand-wordmark {
+  display: block;
+  height: auto;
+  margin-top: 8px;
+  opacity: 0.86;
+  width: 86px;
+}
 
 .nav { display: grid; gap: 8px; }
 .nav button {

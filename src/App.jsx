@@ -1518,6 +1518,7 @@ function App() {
           <div className="brand-copy">
             <strong>CloudCamp</strong>
             <span>Campaign automation</span>
+            <img className="brand-wordmark" src="https://cloudwrxs.com/wp-content/themes/cloudwrxs/assets/images/logo-white.svg" alt="Cloudwrxs" />
           </div>
         </div>
         <nav className="nav">
@@ -1739,7 +1740,7 @@ function App() {
 function CloudCampLogo({ className = "" }) {
   return (
     <div className={`cloudcamp-logo ${className}`.trim()} aria-label="CloudCamp logo" role="img">
-      <span className="cloudcamp-logo-main">C</span>
+      <span className="cloudcamp-logo-cloud" />
       <span className="cloudcamp-logo-path" />
     </div>
   );
