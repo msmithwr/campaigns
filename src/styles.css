@@ -2273,6 +2273,23 @@ select { min-height: 40px; }
 }
 .assignment-card > div strong, .assignment-card > div span { display: block; }
 .assignment-card > div span { color: var(--cw-muted); font-size: 12px; margin-top: 2px; }
+.whatsapp-mapping-card {
+  grid-template-columns: minmax(180px, 0.72fr) minmax(240px, 0.92fr) minmax(300px, 1.05fr) minmax(300px, 0.95fr);
+}
+.whatsapp-mapping-card > .assignment-targeting-grid {
+  grid-column: 1 / span 2;
+}
+.whatsapp-mapping-card > .sender-roster {
+  grid-column: 3;
+  grid-row: 2 / span 3;
+}
+.whatsapp-mapping-card > .resolved-owner-card {
+  grid-column: 4;
+  grid-row: 2 / span 2;
+}
+.whatsapp-mapping-card > .toggle-row {
+  grid-column: 4;
+}
 .assignment-targeting-grid {
   border: 1px solid color-mix(in srgb, var(--cw-green) 38%, #fff);
   background: color-mix(in srgb, var(--cw-green) 9%, #fff);
@@ -3098,6 +3115,13 @@ select { min-height: 40px; }
   .email-workspace { grid-template-columns: 1fr; }
   .email-editor-assignment-shell { grid-template-columns: 1fr; }
   .assignment-card { grid-template-columns: 1fr; }
+  .whatsapp-mapping-card > .assignment-targeting-grid,
+  .whatsapp-mapping-card > .sender-roster,
+  .whatsapp-mapping-card > .resolved-owner-card,
+  .whatsapp-mapping-card > .toggle-row {
+    grid-column: auto;
+    grid-row: auto;
+  }
   .send-review-workspace { grid-template-columns: 1fr; }
   .send-review-list-panel { position: static; }
   .send-review-summary, .send-review-meta-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

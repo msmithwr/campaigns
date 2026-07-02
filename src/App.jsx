@@ -1762,7 +1762,11 @@ function App() {
         )}
         {activeTab === "whatsapp" && (
           <WhatsAppWorkspace
+            audienceLists={audienceLists}
+            authHeaders={authHeaders}
+            campaignApiUrl={campaignApiUrl}
             campaigns={campaignRecords}
+            senderProfiles={senderProfiles}
             templates={whatsappTemplates}
             setTemplates={setWhatsappTemplates}
             setDeletedContentAssetIds={setDeletedContentAssetIds}
@@ -6033,7 +6037,7 @@ function SendReviewWorkspace({ activeCampaignId, authHeaders, campaignApiUrl, ca
   );
 }
 
-function WhatsAppWorkspace({ campaigns, templates, setDeletedContentAssetIds, setTemplates }) {
+function WhatsAppWorkspace({ audienceLists, authHeaders, campaignApiUrl, campaigns, senderProfiles, templates, setDeletedContentAssetIds, setTemplates }) {
   const [selectedAssetId, setSelectedAssetId] = useState(() => templates[0]?.assetId || initialWhatsAppTemplates[0]?.assetId);
   const [campaignFilter, setCampaignFilter] = useState("all");
   const [testContact, setTestContact] = useState({
@@ -6048,6 +6052,8 @@ function WhatsAppWorkspace({ campaigns, templates, setDeletedContentAssetIds, se
     if (campaignFilter === "unassigned") return mappings.length === 0;
     return mappings.some((mapping) => mapping.campaignId === campaignFilter);
   });
+  const ownerProfiles = senderProfiles.filter((profile) => profile.active !== false);
+  const reusableAudienceLists = audienceLists.filter((list) => list.sourceListId);
   const renderedMessage = selectedTemplate ? renderManualMessage(selectedTemplate.bodyText, testContact, selectedTemplate.placeholderValues) : "";
 
   useEffect(() => {
@@ -6126,18 +6132,27 @@ function WhatsAppWorkspace({ campaigns, templates, setDeletedContentAssetIds, se
   function addMapping(campaignId) {
     if (!selectedTemplate || !campaignId) return;
     const campaign = campaigns.find((item) => item.id === campaignId);
+    const mappingsForCampaign = selectedTemplate.campaignMappings?.filter((mapping) => mapping.campaignId === campaignId) || [];
+    const stepKey = `WhatsApp${mappingsForCampaign.length + 1}`;
+    const defaultAudienceListId = reusableAudienceLists.find((list) => (list.associatedCampaignIds || []).includes(campaignId))?.listId || "";
+    const defaultOwnerId = ownerProfiles[0]?.ownerId || "amaan";
     setTemplates((current) => current.map((template) => {
       if (template.assetId !== selectedTemplate.assetId) return template;
       const mappings = template.campaignMappings || [];
-      const stepKey = `WhatsApp${mappings.filter((mapping) => mapping.campaignId === campaignId).length + 1}`;
       return {
         ...template,
         campaignMappings: [
           ...mappings,
           {
+            audienceListId: defaultAudienceListId,
             campaignId,
             stepKey,
-            label: campaign ? `${campaign.shortName} ${stepKey}` : stepKey
+            label: campaign ? `${campaign.shortName} ${stepKey}` : stepKey,
+            owner: defaultOwnerId,
+            ownerIds: [defaultOwnerId],
+            personaFilter: "ALL",
+            senderAllocationMode: "equal",
+            senderLocked: false
           }
         ],
         updatedAt: nowIso()
@@ -6151,6 +6166,16 @@ function WhatsAppWorkspace({ campaigns, templates, setDeletedContentAssetIds, se
       if (template.assetId !== selectedTemplate.assetId) return template;
       const campaignMappings = [...(template.campaignMappings || [])];
       campaignMappings[index] = { ...campaignMappings[index], [field]: value };
+      return { ...template, campaignMappings, updatedAt: nowIso() };
+    }));
+  }
+
+  function updateMappingFields(index, patch) {
+    if (!selectedTemplate) return;
+    setTemplates((current) => current.map((template) => {
+      if (template.assetId !== selectedTemplate.assetId) return template;
+      const campaignMappings = [...(template.campaignMappings || [])];
+      campaignMappings[index] = { ...campaignMappings[index], ...patch };
       return { ...template, campaignMappings, updatedAt: nowIso() };
     }));
   }
@@ -6183,7 +6208,10 @@ function WhatsAppWorkspace({ campaigns, templates, setDeletedContentAssetIds, se
   return (
     <ContentAssetWorkspace
       assetKind="whatsapp"
+      audienceLists={audienceLists}
+      authHeaders={authHeaders}
       campaignFilter={campaignFilter}
+      campaignApiUrl={campaignApiUrl}
       campaigns={campaigns}
       contentAssetTablePlan={contentAssetTablePlan}
       createAsset={createTemplate}
@@ -6199,7 +6227,9 @@ function WhatsAppWorkspace({ campaigns, templates, setDeletedContentAssetIds, se
       icon={MessageCircle}
       addMapping={addMapping}
       updateMapping={updateMapping}
+      updateMappingFields={updateMappingFields}
       removeMapping={removeMapping}
+      senderProfiles={senderProfiles}
       updateAsset={updateTemplate}
       bodyFields={(
         <>
@@ -6467,8 +6497,11 @@ function CallScriptWorkspace({ campaigns, scripts, setDeletedContentAssetIds, se
 function ContentAssetWorkspace({
   addMapping,
   assetKind,
+  audienceLists = [],
+  authHeaders = {},
   bodyFields,
   campaignFilter,
+  campaignApiUrl = "",
   campaigns,
   cloneAsset,
   contentAssetTablePlan,
@@ -6485,10 +6518,16 @@ function ContentAssetWorkspace({
   subtitle,
   title,
   updateAsset,
-  updateMapping
+  updateMapping,
+  updateMappingFields,
+  senderProfiles = []
 }) {
+  const [personaOptionsByAudience, setPersonaOptionsByAudience] = useState({});
   const mappings = selectedAsset?.campaignMappings || [];
   const unusedCampaigns = campaigns.filter((campaign) => !mappings.some((mapping) => mapping.campaignId === campaign.id));
+  const ownerProfiles = senderProfiles.filter((profile) => profile.active !== false);
+  const ownerProfileMap = Object.fromEntries(ownerProfiles.map((profile) => [profile.ownerId, profile]));
+  const reusableAudienceLists = audienceLists.filter((list) => list.sourceListId);
   const detectedPlaceholders = placeholderKeys([
     selectedAsset?.bodyText,
     selectedAsset?.opening,
@@ -6498,6 +6537,89 @@ function ContentAssetWorkspace({
     selectedAsset?.objectionHandling,
     selectedAsset?.close
   ].filter(Boolean).join("\n"));
+
+  function updateMappingPatch(index, patch) {
+    if (updateMappingFields) {
+      updateMappingFields(index, patch);
+      return;
+    }
+    Object.entries(patch).forEach(([field, value]) => updateMapping(index, field, value));
+  }
+
+  function campaignAssignedAudienceLists(campaignId) {
+    return reusableAudienceLists.filter((list) => (list.associatedCampaignIds || []).includes(campaignId));
+  }
+
+  function selectedAudienceListIdForMapping(mapping) {
+    const assignedLists = campaignAssignedAudienceLists(mapping.campaignId);
+    if (mapping.audienceListId && assignedLists.some((list) => list.listId === mapping.audienceListId)) return mapping.audienceListId;
+    return assignedLists[0]?.listId || "";
+  }
+
+  function mappingOwnerIds(mapping) {
+    const ids = Array.isArray(mapping.ownerIds) ? mapping.ownerIds : [mapping.owner || ownerProfiles[0]?.ownerId || "amaan"];
+    return Array.from(new Set(ids.filter(Boolean)));
+  }
+
+  function senderSplitLabel(senderCount) {
+    if (!senderCount) return "0%";
+    const split = 100 / senderCount;
+    return Number.isInteger(split) ? `${split}%` : `${split.toFixed(1)}%`;
+  }
+
+  function updateMappingOwners(index, ownerIds) {
+    const nextOwnerIds = Array.from(new Set(ownerIds.filter(Boolean)));
+    updateMappingPatch(index, {
+      owner: nextOwnerIds[0] || "",
+      ownerIds: nextOwnerIds,
+      senderAllocationMode: "equal"
+    });
+  }
+
+  function addMappingOwner(index, mapping, ownerId) {
+    if (!ownerId || mapping.senderLocked) return;
+    updateMappingOwners(index, [...mappingOwnerIds(mapping), ownerId]);
+  }
+
+  function replaceMappingOwner(index, mapping, slotIndex, ownerId) {
+    if (!ownerId) return;
+    const next = mappingOwnerIds(mapping);
+    next[slotIndex] = ownerId;
+    updateMappingOwners(index, next);
+  }
+
+  function removeMappingOwner(index, mapping, ownerId) {
+    if (mapping.senderLocked) return;
+    updateMappingOwners(index, mappingOwnerIds(mapping).filter((id) => id !== ownerId));
+  }
+
+  async function loadPersonaOptionsForAudience(audienceListId) {
+    if (!campaignApiUrl || !audienceListId || personaOptionsByAudience[audienceListId]) return;
+    setPersonaOptionsByAudience((current) => ({
+      ...current,
+      [audienceListId]: { loading: true, none: 0, options: [], total: 0 }
+    }));
+    try {
+      const params = new URLSearchParams({ facet: "persona", listId: audienceListId });
+      const response = await fetch(`${campaignApiUrl}/audience-contacts?${params.toString()}`, { headers: authHeaders });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || `Persona lookup failed: ${response.status}`);
+      setPersonaOptionsByAudience((current) => ({
+        ...current,
+        [audienceListId]: {
+          loading: false,
+          none: result.none || 0,
+          options: result.options || [],
+          total: result.total || 0
+        }
+      }));
+    } catch (error) {
+      setPersonaOptionsByAudience((current) => ({
+        ...current,
+        [audienceListId]: { error: error.message, loading: false, none: 0, options: [], total: 0 }
+      }));
+    }
+  }
 
   return (
     <div className="email-workspace content-asset-workspace">
@@ -6626,6 +6748,119 @@ function ContentAssetWorkspace({
             <div className="asset-mapping-list">
               {mappings.map((mapping, index) => {
                 const campaign = campaigns.find((item) => item.id === mapping.campaignId);
+                if (assetKind === "whatsapp") {
+                  const assignedAudienceLists = campaignAssignedAudienceLists(mapping.campaignId);
+                  const selectedAudienceListId = selectedAudienceListIdForMapping(mapping);
+                  const personaFacet = personaOptionsByAudience[selectedAudienceListId] || { none: 0, options: [], total: 0 };
+                  const selectedPersonaFilter = normalizePersonaFilter(mapping.personaFilter || mapping.persona || "ALL");
+                  const senderIds = mappingOwnerIds(mapping);
+                  const splitLabel = senderSplitLabel(senderIds.length);
+                  const availableOwnerProfiles = ownerProfiles.filter((profile) => !senderIds.includes(profile.ownerId));
+                  return (
+                    <article className="assignment-card whatsapp-mapping-card" key={`${mapping.campaignId}-${mapping.stepKey}-${index}`}>
+                      <div className="assignment-card-heading">
+                        <div>
+                          <strong>{campaign?.shortName || mapping.campaignId}</strong>
+                          <span>{mapping.stepKey || "WhatsApp"} · {personaFilterLabel(selectedPersonaFilter)} · {senderIds.length} sender{senderIds.length === 1 ? "" : "s"} · equal split</span>
+                        </div>
+                        <button className="icon-button compact danger" title="Remove mapping" onClick={() => removeMapping(index)}>
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <label>
+                        <span>Step key</span>
+                        <input value={mapping.stepKey || ""} onChange={(event) => updateMapping(index, "stepKey", event.target.value)} />
+                      </label>
+                      <label>
+                        <span>Task label</span>
+                        <input value={mapping.label || ""} onChange={(event) => updateMapping(index, "label", event.target.value)} />
+                      </label>
+                      <div className="assignment-targeting-grid">
+                        <label className="assignment-targeting-control">
+                          <span>Campaign audience</span>
+                          <select
+                            value={selectedAudienceListId}
+                            onFocus={() => loadPersonaOptionsForAudience(selectedAudienceListId)}
+                            onChange={(event) => {
+                              updateMappingPatch(index, { audienceListId: event.target.value, personaFilter: "ALL" });
+                              loadPersonaOptionsForAudience(event.target.value);
+                            }}
+                            disabled={!assignedAudienceLists.length}
+                          >
+                            {!assignedAudienceLists.length && <option value="">No audience assigned to {campaign?.shortName || "this campaign"}</option>}
+                            {assignedAudienceLists.map((list) => (
+                              <option key={list.listId} value={list.listId}>{list.name}</option>
+                            ))}
+                          </select>
+                        </label>
+                        <small className="assignment-targeting-help">
+                          {assignedAudienceLists.length
+                            ? `Showing ${assignedAudienceLists.length} audience${assignedAudienceLists.length === 1 ? "" : "s"} assigned to ${campaign?.shortName || "this campaign"}.`
+                            : `Assign a reusable audience to ${campaign?.shortName || "this campaign"} on the Audience page.`}
+                        </small>
+                        <label className="assignment-targeting-control">
+                          <span>Persona</span>
+                          <select
+                            value={selectedPersonaFilter}
+                            onFocus={() => loadPersonaOptionsForAudience(selectedAudienceListId)}
+                            onChange={(event) => updateMapping(index, "personaFilter", event.target.value)}
+                            disabled={!selectedAudienceListId}
+                          >
+                            <option value="ALL">ALL{personaFacet.total ? ` (${personaFacet.total.toLocaleString()})` : ""}</option>
+                            <option value="__NONE__">UNSET{personaFacet.none ? ` (${personaFacet.none.toLocaleString()})` : ""}</option>
+                            {personaFacet.options.map((option) => (
+                              <option key={option.value} value={option.value}>{option.value}{option.count ? ` (${option.count.toLocaleString()})` : ""}</option>
+                            ))}
+                          </select>
+                        </label>
+                        <small className="assignment-targeting-help">{personaFacet.loading ? "Loading personas..." : personaFacet.error || "Defaults to ALL if no persona is selected."}</small>
+                      </div>
+                      <div className="sender-roster">
+                        <div>
+                          <span>WhatsApp senders</span>
+                          <small>{mapping.senderLocked ? "Locked after first send. Replace only." : `Contacts will be split evenly, ${splitLabel} each.`}</small>
+                        </div>
+                        {senderIds.map((ownerId, slotIndex) => {
+                          const sender = ownerProfileMap[ownerId] || ownerProfiles[0];
+                          const replacementOptions = ownerProfiles.filter((profile) => profile.ownerId === ownerId || !senderIds.includes(profile.ownerId));
+                          return (
+                            <div className="sender-slot" key={`${mapping.campaignId}-${mapping.stepKey}-${ownerId}-${slotIndex}`}>
+                              <select value={ownerId} onChange={(event) => replaceMappingOwner(index, mapping, slotIndex, event.target.value)}>
+                                {replacementOptions.map((profile) => (
+                                  <option key={profile.ownerId} value={profile.ownerId}>{profile.name}</option>
+                                ))}
+                              </select>
+                              <span>{splitLabel}</span>
+                              <button className="icon-button compact danger" title={mapping.senderLocked ? "Sender roster is locked; replace this sender instead" : "Remove sender"} onClick={() => removeMappingOwner(index, mapping, ownerId)} disabled={mapping.senderLocked}>
+                                <Trash2 size={13} />
+                              </button>
+                              <small>{sender?.email || "No sender email"}</small>
+                            </div>
+                          );
+                        })}
+                        {!senderIds.length && <p className="sender-empty-note">No sender assigned. Add at least one sender before sending.</p>}
+                        <div className="sender-add-row">
+                          <select value="" onChange={(event) => addMappingOwner(index, mapping, event.target.value)} disabled={mapping.senderLocked || !availableOwnerProfiles.length}>
+                            <option value="">{mapping.senderLocked ? "Sender list locked" : "Add sender..."}</option>
+                            {availableOwnerProfiles.map((profile) => (
+                              <option key={profile.ownerId} value={profile.ownerId}>{profile.name}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                      <div className="resolved-owner-card">
+                        <span>Routing rule</span>
+                        <strong>{mapping.senderLocked ? "Sender split locked" : "Equal sender split pending first send"}</strong>
+                        <small>{senderIds.map((id) => ownerProfileMap[id]?.name || id).join(" / ")}</small>
+                        <em>WhatsApp launches should use the assigned employee for each contact.</em>
+                      </div>
+                      <label className="toggle-row">
+                        <input type="checkbox" checked={Boolean(mapping.senderLocked)} onChange={(event) => updateMapping(index, "senderLocked", event.target.checked)} />
+                        <span>First WhatsApp send recorded - lock sender roster</span>
+                      </label>
+                    </article>
+                  );
+                }
                 return (
                   <article className="asset-mapping-row" key={`${mapping.campaignId}-${mapping.stepKey}-${index}`}>
                     <strong>{campaign?.shortName || mapping.campaignId}</strong>
