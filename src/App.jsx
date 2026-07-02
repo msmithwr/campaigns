@@ -2945,6 +2945,7 @@ function AudienceWorkspace({
   const [audienceMatchCount, setAudienceMatchCount] = useState(null);
   const [audienceMatchStatus, setAudienceMatchStatus] = useState("");
   const [audienceCountRefreshKey, setAudienceCountRefreshKey] = useState(0);
+  const [audienceFieldFacets, setAudienceFieldFacets] = useState({});
   const [deleteSourceDraft, setDeleteSourceDraft] = useState(null);
   const [deleteSourceConfirmText, setDeleteSourceConfirmText] = useState("");
   const [deleteSourceBusy, setDeleteSourceBusy] = useState(false);
@@ -3026,6 +3027,13 @@ function AudienceWorkspace({
       cancelled = true;
     };
   }, [campaignApiUrl, selectedSource?.sourceType, selectedSource?.hubspotImportMode, selectedSource?.listId, authHeaders.Authorization]);
+
+  useEffect(() => {
+    if (!selectedListSource?.listId) return;
+    (selectedList?.filters || [])
+      .filter((filter) => filter.field && filter.field !== "audienceExclusion")
+      .forEach((filter) => loadAudienceFieldFacet(filter.field));
+  }, [selectedListSource?.listId, selectedList?.listId, JSON.stringify((selectedList?.filters || []).map((filter) => filter.field)), authHeaders.Authorization]);
 
   useEffect(() => {
     if (!campaignApiUrl || !selectedListSource?.listId) return;
@@ -3125,6 +3133,42 @@ function AudienceWorkspace({
       setContactLoadStatus(`Showing ${contacts.length.toLocaleString()} contacts on this page.`);
     } catch (error) {
       setContactLoadStatus(error.message);
+    }
+  }
+
+  async function loadAudienceFieldFacet(field) {
+    if (!campaignApiUrl || !selectedListSource?.listId || !field || field === "audienceExclusion") return;
+    const key = `${selectedListSource.listId}:${field}`;
+    const current = audienceFieldFacets[key];
+    if (current?.loading || current?.loaded) return;
+    setAudienceFieldFacets((state) => ({
+      ...state,
+      [key]: { loading: true, loaded: false, options: [] }
+    }));
+    try {
+      const params = new URLSearchParams({
+        facet: "field",
+        field,
+        listId: selectedListSource.listId
+      });
+      const response = await fetch(`${campaignApiUrl}/audience-contacts?${params.toString()}`, { headers: authHeaders });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || `Audience facet failed: ${response.status}`);
+      setAudienceFieldFacets((state) => ({
+        ...state,
+        [key]: {
+          error: "",
+          loaded: true,
+          loading: false,
+          options: result.options || [],
+          total: result.total || 0
+        }
+      }));
+    } catch (error) {
+      setAudienceFieldFacets((state) => ({
+        ...state,
+        [key]: { error: error.message, loaded: false, loading: false, options: [] }
+      }));
     }
   }
 
@@ -4452,12 +4496,22 @@ function AudienceWorkspace({
                   const isAudienceExclusionFilter = filter.field === "audienceExclusion";
                   const selectedValues = filterValueList(filter);
                   const availableAudienceListPicks = campaignAudienceLists.filter((list) => list.listId !== selectedList.listId && !selectedValues.includes(list.listId));
+                  const facetKey = selectedListSource?.listId ? `${selectedListSource.listId}:${filter.field}` : "";
+                  const fieldFacet = facetKey ? audienceFieldFacets[facetKey] : null;
+                  const fieldFacetValues = (fieldFacet?.options || []).map((option) => option.value);
+                  const sourceQuickPickValues = fieldFacetValues.length ? fieldFacetValues : quickPickValues(sourceContacts, filter.field);
                   const availableQuickPicks = isAudienceExclusionFilter
                     ? availableAudienceListPicks.map((list) => list.listId)
-                    : quickPickValues(sourceContacts, filter.field).filter((value) => !selectedValues.includes(value));
+                    : sourceQuickPickValues.filter((value) => !selectedValues.includes(value));
                   return (
                     <div className="filter-row" key={`${filter.field}-${index}`}>
-                      <select value={filter.field} onChange={(event) => updateFilter(index, "field", event.target.value)}>
+                      <select
+                        value={filter.field}
+                        onChange={(event) => {
+                          updateFilter(index, "field", event.target.value);
+                          loadAudienceFieldFacet(event.target.value);
+                        }}
+                      >
                         {audienceFilterOptions.map((field) => (
                           <option key={field.key} value={field.key}>{field.label}</option>
                         ))}
@@ -4485,8 +4539,14 @@ function AudienceWorkspace({
                             ))}
                             {!selectedValues.length && <span className="empty-chip-hint">{isAudienceExclusionFilter ? "Select saved audiences to exclude" : "Select one or more values"}</span>}
                           </div>
-                          <select value="" onChange={(event) => addFilterValue(index, event.target.value)} disabled={!availableQuickPicks.length}>
-                            <option value="">{availableQuickPicks.length ? (isAudienceExclusionFilter ? "Add saved audience..." : "Add suggested value...") : "No more suggestions"}</option>
+                          <select value="" onFocus={() => loadAudienceFieldFacet(filter.field)} onChange={(event) => addFilterValue(index, event.target.value)} disabled={!availableQuickPicks.length && !fieldFacet?.loading}>
+                            <option value="">
+                              {fieldFacet?.loading
+                                ? "Loading all suggestions..."
+                                : availableQuickPicks.length
+                                  ? (isAudienceExclusionFilter ? "Add saved audience..." : "Add suggested value...")
+                                  : "No more suggestions"}
+                            </option>
                             {availableQuickPicks.map((value) => (
                               <option key={value} value={value}>{isAudienceExclusionFilter ? audienceListLabel(campaignAudienceLists, value) : value}</option>
                             ))}
@@ -4494,6 +4554,7 @@ function AudienceWorkspace({
                           {!isAudienceExclusionFilter && (
                             <input
                               list={`quick-picks-${index}-${filter.field}`}
+                              onFocus={() => loadAudienceFieldFacet(filter.field)}
                               onKeyDown={(event) => {
                                 if (event.key === "Enter") {
                                   event.preventDefault();
@@ -4510,7 +4571,7 @@ function AudienceWorkspace({
                           )}
                         </div>
                       ) : (
-                        <input list={`quick-picks-${index}-${filter.field}`} value={filter.value} onChange={(event) => updateFilter(index, "value", event.target.value)} placeholder="Value" />
+                        <input list={`quick-picks-${index}-${filter.field}`} value={filter.value} onFocus={() => loadAudienceFieldFacet(filter.field)} onChange={(event) => updateFilter(index, "value", event.target.value)} placeholder="Value" />
                       )}
                       <datalist id={`quick-picks-${index}-${filter.field}`}>
                         {availableQuickPicks.map((value) => (

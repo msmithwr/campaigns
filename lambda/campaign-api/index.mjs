@@ -12,6 +12,7 @@ const environment = process.env.ENVIRONMENT_NAME || "dev";
 const sheetMappingModelId = process.env.BEDROCK_SCHEMA_MODEL_ID || "global.anthropic.claude-haiku-4-5-20251001-v1:0";
 const sesConfigurationSetName = process.env.SES_CONFIGURATION_SET_NAME || "tracking";
 const bulkUpdatableContactFields = new Set(["country", "technology", "persona", "jobTitle", "lifecycleStage", "owner"]);
+const audienceFacetFields = new Set(["country", "technology", "persona", "jobTitle", "lifecycleStage", "owner", "company", "emailDomain", "emailStatus"]);
 const canonicalEmailContactListId = "canonical-email-contacts";
 
 const tables = {
@@ -399,7 +400,7 @@ async function countMembershipsForList(listId) {
   return total;
 }
 
-async function getAudienceContacts({ audienceListId, countOnly, excludedContactIds, facet = "", filters, frozenContactIds, frozenOnly, listId, limit = "1000", nextToken }) {
+async function getAudienceContacts({ audienceListId, countOnly, excludedContactIds, facet = "", field, filters, frozenContactIds, frozenOnly, listId, limit = "1000", nextToken }) {
   if (audienceListId) {
     const audienceList = await getAudienceList(audienceListId);
     if (!audienceList) throw new Error("Audience list not found");
@@ -411,6 +412,7 @@ async function getAudienceContacts({ audienceListId, countOnly, excludedContactI
   }
   if (!listId) throw new Error("listId is required");
   if (facet === "persona") return audiencePersonaFacet({ listId: audienceListId || listId });
+  if (facet === "field") return audienceFieldFacet({ field, listId });
   if (String(countOnly) === "true") {
     return countFilteredAudienceContacts({ excludedContactIds, filters, frozenContactIds, frozenOnly, listId });
   }
@@ -509,6 +511,32 @@ async function audiencePersonaFacet({ listId }) {
     facet: "persona",
     listId,
     none,
+    options: Object.entries(counts)
+      .map(([value, count]) => ({ count, value }))
+      .sort((a, b) => a.value.localeCompare(b.value)),
+    total: contacts.length
+  };
+}
+
+async function audienceFieldFacet({ field, listId }) {
+  if (!audienceFacetFields.has(field)) throw new Error("Unsupported audience facet field");
+  const compliance = field === "emailStatus" ? await loadComplianceIndex() : {};
+  const contacts = await loadAudienceContactsForList(listId);
+  const counts = {};
+  contacts.forEach((contact) => {
+    const raw = audienceFilterActualValue(contact, field, compliance);
+    String(raw || "")
+      .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean)
+      .forEach((value) => {
+        counts[value] = (counts[value] || 0) + 1;
+      });
+  });
+  return {
+    facet: "field",
+    field,
+    listId,
     options: Object.entries(counts)
       .map(([value, count]) => ({ count, value }))
       .sort((a, b) => a.value.localeCompare(b.value)),
