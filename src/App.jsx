@@ -720,6 +720,15 @@ function campaignCompletion(campaigns = [], schedule = {}) {
   );
 }
 
+function computedCampaignWorkflowStatus(campaign = {}, schedule = {}) {
+  const events = campaign.events || [];
+  if (!events.length) return campaign.status || "active";
+  const allComplete = events.every((event) => schedule[eventKey(campaign, event)]?.status === "complete");
+  if (allComplete) return "complete";
+  if (String(campaign.status || "").toLowerCase() === "complete") return "active";
+  return campaign.status || "active";
+}
+
 function campaignSetupsForState(sourceCampaigns, schedule) {
   return sourceCampaigns.map(({ events, ...campaign }) => {
     const campaignId = campaignIdOf(campaign);
@@ -1047,6 +1056,22 @@ function App() {
   useEffect(() => {
     window.localStorage.setItem(callScriptStorageKey, JSON.stringify(callScripts));
   }, [callScripts]);
+
+  useEffect(() => {
+    setCampaignRecords((current) => {
+      let changed = false;
+      const next = current.map((campaign) => {
+        const nextStatus = computedCampaignWorkflowStatus(campaign, schedule);
+        if ((campaign.status || "active") === nextStatus) return campaign;
+        changed = true;
+        return {
+          ...campaign,
+          status: nextStatus
+        };
+      });
+      return changed ? next : current;
+    });
+  }, [schedule]);
 
   useEffect(() => {
     if (!remoteStateReady) return;
