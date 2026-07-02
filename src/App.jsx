@@ -1514,10 +1514,10 @@ function App() {
     <div className="app-shell">
       <aside className="sidebar">
         <div className="brand">
-          <img className="brand-logo" src="https://cloudwrxs.com/wp-content/themes/cloudwrxs/assets/images/logo-white.svg" alt="Cloudwrxs" />
-          <div>
-            <strong>Campaign Command</strong>
-            <span>MDF operations</span>
+          <CloudCampLogo />
+          <div className="brand-copy">
+            <strong>CloudCamp</strong>
+            <span>Campaign automation</span>
           </div>
         </div>
         <nav className="nav">
@@ -1736,14 +1736,23 @@ function App() {
   );
 }
 
+function CloudCampLogo({ className = "" }) {
+  return (
+    <div className={`cloudcamp-logo ${className}`.trim()} aria-label="CloudCamp logo" role="img">
+      <span className="cloudcamp-logo-main">C</span>
+      <span className="cloudcamp-logo-path" />
+    </div>
+  );
+}
+
 function AuthGate({ onSignIn }) {
   return (
     <main className="auth-gate">
       <section className="auth-panel">
-        <div className="brand-mark">C</div>
+        <CloudCampLogo className="auth-cloudcamp-logo" />
         <img className="auth-logo" src="https://cloudwrxs.com/wp-content/themes/cloudwrxs/assets/images/logo-white.svg" alt="Cloudwrxs" />
         <p className="eyebrow">Cloudwrxs restricted access</p>
-        <h1>Campaign Command</h1>
+        <h1>CloudCamp</h1>
         <p>Sign in with your Cloudwrxs Google Workspace account to manage campaigns, emails, sender profiles, and results.</p>
         <button className="primary-button auth-button" onClick={onSignIn}>
           <PlugZap size={17} />
@@ -4044,7 +4053,7 @@ function AudienceWorkspace({
 
   async function exportSelectedAudienceToHubSpot() {
     if (!campaignApiUrl || !selectedList) return;
-    const defaultName = selectedList.hubspotListName || selectedList.name || "Campaign Command audience";
+    const defaultName = selectedList.hubspotListName || selectedList.name || "CloudCamp audience";
     const hubspotListName = window.prompt("HubSpot segment name", defaultName);
     if (!hubspotListName) return;
     setHubspotExportBusy(true);
@@ -5138,7 +5147,7 @@ function LeadNurtureWorkspace({
   function launchSelectedWebDialer() {
     if (!selectedRow?.contact?.phone || !selectedRow?.step) return;
     const metadata = {
-      source: "Campaign Command",
+      source: "CloudCamp",
       marker: "LNCC",
       campaignId: selectedCampaign.id,
       campaignName: selectedCampaign.shortName || selectedCampaign.name,
@@ -7601,7 +7610,7 @@ function Integrations({ authHeaders, campaignApiUrl, integrationSettings, setInt
             <div className="help-panel">
               <strong>HubSpot Service Key setup</strong>
               <span>1. In HubSpot, go to Development, then Keys, then Service keys. In some portals this is under Settings, Integrations, Service Keys.</span>
-              <span>2. Create a Service Key for Campaign Command. This is HubSpot's recommended path for single-account REST API access instead of legacy private apps.</span>
+              <span>2. Create a Service Key for CloudCamp. This is HubSpot's recommended path for single-account REST API access instead of legacy private apps.</span>
               <span>3. Grant scopes for CRM contacts, companies, properties, associations, and lists/segments. Add write scopes for tasks, notes, and HubSpot segment export.</span>
               <span>4. Copy the Service Key once and paste it below. The key is stored in AWS Secrets Manager, not in browser storage.</span>
               <span>5. Use Test connection to confirm the portal and discover available contact properties.</span>
