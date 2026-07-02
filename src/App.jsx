@@ -6858,23 +6858,23 @@ function ContentAssetWorkspace({
                         </button>
                       </div>
                       <label>
-                        <span>Label</span>
-                        <select value={selectedComponentId} onChange={(event) => handleWhatsappComponentSelect(index, mapping, event.target.value)}>
-                          {!selectedComponentId && <option value="">Select campaign component...</option>}
-                          {whatsappComponents.map((component) => (
-                            <option key={component.id} value={component.id}>{component.label || "No label"}</option>
-                          ))}
-                          <option value="__new__">New WhatsApp component...</option>
-                        </select>
-                      </label>
-                      <label>
-                        <span>Task label</span>
+                        <span>Task title</span>
                         <select value={selectedComponentId} onChange={(event) => handleWhatsappComponentSelect(index, mapping, event.target.value)}>
                           {!selectedComponentId && <option value="">Select campaign component title...</option>}
+                          <option value="__new__">New WhatsApp component...</option>
                           {whatsappComponents.map((component) => (
                             <option key={component.id} value={component.id}>{component.title || component.label || "Untitled WhatsApp component"}</option>
                           ))}
+                        </select>
+                      </label>
+                      <label>
+                        <span>Label</span>
+                        <select value={selectedComponentId} onChange={(event) => handleWhatsappComponentSelect(index, mapping, event.target.value)}>
+                          {!selectedComponentId && <option value="">Select campaign component...</option>}
                           <option value="__new__">New WhatsApp component...</option>
+                          {whatsappComponents.map((component) => (
+                            <option key={component.id} value={component.id}>{component.label || "No label"}</option>
+                          ))}
                         </select>
                       </label>
                       <div className="assignment-targeting-grid">
