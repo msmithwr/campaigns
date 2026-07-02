@@ -2279,6 +2279,9 @@ select { min-height: 40px; }
 .whatsapp-mapping-card > .assignment-targeting-grid {
   grid-column: 1 / span 2;
 }
+.whatsapp-mapping-card > .component-create-panel {
+  grid-column: 1 / span 2;
+}
 .whatsapp-mapping-card > .sender-roster {
   grid-column: 3;
   grid-row: 2 / span 3;
@@ -2299,6 +2302,37 @@ select { min-height: 40px; }
   grid-template-columns: minmax(150px, 0.92fr) minmax(120px, 0.78fr);
   gap: 10px 14px;
   align-items: start;
+}
+.component-readonly-input {
+  background: #f7faf9;
+  color: var(--cw-muted);
+}
+.component-create-panel {
+  border: 1px solid color-mix(in srgb, var(--cw-orange) 45%, #fff);
+  background: color-mix(in srgb, var(--cw-orange) 8%, #fff);
+  border-radius: 8px;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.component-create-panel label {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+}
+.component-create-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.field-error {
+  color: #a84236;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.25;
 }
 .assignment-targeting-control {
   margin: 0;
@@ -3116,6 +3150,7 @@ select { min-height: 40px; }
   .email-editor-assignment-shell { grid-template-columns: 1fr; }
   .assignment-card { grid-template-columns: 1fr; }
   .whatsapp-mapping-card > .assignment-targeting-grid,
+  .whatsapp-mapping-card > .component-create-panel,
   .whatsapp-mapping-card > .sender-roster,
   .whatsapp-mapping-card > .resolved-owner-card,
   .whatsapp-mapping-card > .toggle-row {

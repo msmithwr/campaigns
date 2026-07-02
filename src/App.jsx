@@ -6566,6 +6566,7 @@ function ContentAssetWorkspace({
   senderProfiles = []
 }) {
   const [personaOptionsByAudience, setPersonaOptionsByAudience] = useState({});
+  const [whatsappComponentDrafts, setWhatsappComponentDrafts] = useState({});
   const mappings = selectedAsset?.campaignMappings || [];
   const unusedCampaigns = campaigns.filter((campaign) => !mappings.some((mapping) => mapping.campaignId === campaign.id));
   const ownerProfiles = senderProfiles.filter((profile) => profile.active !== false);
@@ -6677,6 +6678,69 @@ function ContentAssetWorkspace({
       || null;
   }
 
+  function whatsappComponentDraftKey(index, mapping) {
+    return `${selectedAsset?.assetId || "asset"}:${mapping.campaignId}:${index}`;
+  }
+
+  function nextWhatsappComponentLabel(campaignId) {
+    const components = whatsappComponentsForCampaign(campaignId);
+    let nextIndex = components.length + 1;
+    let candidate = `WhatsApp${nextIndex}`;
+    const usedLabels = new Set(components.map((event) => String(event.label || "").trim().toLowerCase()).filter(Boolean));
+    while (usedLabels.has(candidate.toLowerCase())) {
+      nextIndex += 1;
+      candidate = `WhatsApp${nextIndex}`;
+    }
+    return candidate;
+  }
+
+  function startNewWhatsappComponentDraft(index, mapping) {
+    const key = whatsappComponentDraftKey(index, mapping);
+    setWhatsappComponentDrafts((current) => ({
+      ...current,
+      [key]: {
+        label: nextWhatsappComponentLabel(mapping.campaignId),
+        title: ""
+      }
+    }));
+  }
+
+  function clearNewWhatsappComponentDraft(index, mapping) {
+    const key = whatsappComponentDraftKey(index, mapping);
+    setWhatsappComponentDrafts((current) => {
+      const next = { ...current };
+      delete next[key];
+      return next;
+    });
+  }
+
+  function updateNewWhatsappComponentDraft(index, mapping, field, value) {
+    const key = whatsappComponentDraftKey(index, mapping);
+    setWhatsappComponentDrafts((current) => ({
+      ...current,
+      [key]: {
+        ...(current[key] || { label: nextWhatsappComponentLabel(mapping.campaignId), title: "" }),
+        [field]: value
+      }
+    }));
+  }
+
+  function validateWhatsappComponentDraft(mapping, draft) {
+    const normalizedTitle = String(draft?.title || "").trim().toLowerCase();
+    const normalizedLabel = String(draft?.label || "").trim().toLowerCase();
+    const components = whatsappComponentsForCampaign(mapping.campaignId);
+    const errors = {};
+    if (!normalizedTitle) errors.title = "Task title is required.";
+    if (!normalizedLabel) errors.label = "Label is required.";
+    if (normalizedTitle && components.some((event) => String(event.title || "").trim().toLowerCase() === normalizedTitle)) {
+      errors.title = "That task title is already used in this campaign.";
+    }
+    if (normalizedLabel && components.some((event) => String(event.label || "").trim().toLowerCase() === normalizedLabel)) {
+      errors.label = "That label is already used in this campaign.";
+    }
+    return errors;
+  }
+
   function updateMappingFromComponent(index, component) {
     if (!component) return;
     updateMappingPatch(index, {
@@ -6686,24 +6750,29 @@ function ContentAssetWorkspace({
     });
   }
 
-  function createWhatsappComponentForMapping(index, mapping) {
+  function createWhatsappComponentForMapping(index, mapping, draft) {
     const campaign = campaigns.find((item) => item.id === mapping.campaignId);
     if (!campaign || !createCampaignComponent) return;
-    const componentCount = whatsappComponentsForCampaign(mapping.campaignId).length;
+    const errors = validateWhatsappComponentDraft(mapping, draft);
+    if (Object.keys(errors).length) return;
     const component = createCampaignComponent(mapping.campaignId, {
       type: "whatsapp",
-      label: mapping.stepKey || `WhatsApp${componentCount + 1}`,
-      title: mapping.label || selectedAsset?.label || `WhatsApp ${componentCount + 1}: ${campaign.shortName}`,
+      label: String(draft.label || "").trim(),
+      title: String(draft.title || "").trim(),
       section: "Activities"
     });
-    if (component) updateMappingFromComponent(index, component);
+    if (component) {
+      updateMappingFromComponent(index, component);
+      clearNewWhatsappComponentDraft(index, mapping);
+    }
   }
 
   function handleWhatsappComponentSelect(index, mapping, componentId) {
     if (componentId === "__new__") {
-      createWhatsappComponentForMapping(index, mapping);
+      startNewWhatsappComponentDraft(index, mapping);
       return;
     }
+    clearNewWhatsappComponentDraft(index, mapping);
     const component = whatsappComponentsForCampaign(mapping.campaignId).find((event) => event.id === componentId);
     updateMappingFromComponent(index, component);
   }
@@ -6846,6 +6915,9 @@ function ContentAssetWorkspace({
                   const whatsappComponents = whatsappComponentsForCampaign(mapping.campaignId);
                   const selectedComponent = selectedWhatsappComponent(mapping);
                   const selectedComponentId = selectedComponent?.id || "";
+                  const newComponentDraft = whatsappComponentDrafts[whatsappComponentDraftKey(index, mapping)];
+                  const newComponentErrors = newComponentDraft ? validateWhatsappComponentDraft(mapping, newComponentDraft) : {};
+                  const canCreateComponent = newComponentDraft && !Object.keys(newComponentErrors).length;
                   return (
                     <article className="assignment-card whatsapp-mapping-card" key={`${mapping.campaignId}-${mapping.stepKey}-${index}`}>
                       <div className="assignment-card-heading">
@@ -6859,9 +6931,9 @@ function ContentAssetWorkspace({
                       </div>
                       <label>
                         <span>Task title</span>
-                        <select value={selectedComponentId} onChange={(event) => handleWhatsappComponentSelect(index, mapping, event.target.value)}>
-                          {!selectedComponentId && <option value="">Select campaign component title...</option>}
+                        <select value={newComponentDraft ? "__new__" : selectedComponentId} onChange={(event) => handleWhatsappComponentSelect(index, mapping, event.target.value)}>
                           <option value="__new__">New WhatsApp component...</option>
+                          {!selectedComponentId && <option value="" disabled hidden>Select campaign component title...</option>}
                           {whatsappComponents.map((component) => (
                             <option key={component.id} value={component.id}>{component.title || component.label || "Untitled WhatsApp component"}</option>
                           ))}
@@ -6869,14 +6941,31 @@ function ContentAssetWorkspace({
                       </label>
                       <label>
                         <span>Label</span>
-                        <select value={selectedComponentId} onChange={(event) => handleWhatsappComponentSelect(index, mapping, event.target.value)}>
-                          {!selectedComponentId && <option value="">Select campaign component...</option>}
-                          <option value="__new__">New WhatsApp component...</option>
-                          {whatsappComponents.map((component) => (
-                            <option key={component.id} value={component.id}>{component.label || "No label"}</option>
-                          ))}
-                        </select>
+                        <input className="component-readonly-input" value={newComponentDraft ? "Set below for the new component" : (selectedComponent?.label || mapping.stepKey || "")} readOnly />
                       </label>
+                      {newComponentDraft && (
+                        <div className="component-create-panel">
+                          <label>
+                            <span>New task title</span>
+                            <input value={newComponentDraft.title || ""} onChange={(event) => updateNewWhatsappComponentDraft(index, mapping, "title", event.target.value)} />
+                            {newComponentErrors.title && <small className="field-error">{newComponentErrors.title}</small>}
+                          </label>
+                          <label>
+                            <span>New label</span>
+                            <input value={newComponentDraft.label || ""} onChange={(event) => updateNewWhatsappComponentDraft(index, mapping, "label", event.target.value)} />
+                            {newComponentErrors.label && <small className="field-error">{newComponentErrors.label}</small>}
+                          </label>
+                          <div className="component-create-actions">
+                            <button className="primary-button compact" onClick={() => createWhatsappComponentForMapping(index, mapping, newComponentDraft)} disabled={!canCreateComponent}>
+                              <Plus size={14} />
+                              Create component
+                            </button>
+                            <button className="secondary-button compact" onClick={() => clearNewWhatsappComponentDraft(index, mapping)}>
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      )}
                       <div className="assignment-targeting-grid">
                         <label className="assignment-targeting-control">
                           <span>Campaign audience</span>
