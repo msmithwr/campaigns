@@ -204,7 +204,7 @@ main { padding: 24px; overflow: hidden; }
   font-weight: 700;
 }
 
-.topbar-actions { gap: 8px; }
+.topbar-actions { gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .icon-button, .primary-button, .secondary-button {
   border: 1px solid var(--cw-border);
   background: var(--cw-panel);
@@ -236,6 +236,39 @@ main { padding: 24px; overflow: hidden; }
   font-weight: 700;
   min-width: 128px;
   appearance: none;
+}
+.campaign-status-filter {
+  border: 1px solid var(--cw-border);
+  background: var(--cw-panel);
+  border-radius: 8px;
+  min-height: 38px;
+  padding: 5px 7px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.campaign-status-filter label {
+  border-radius: 7px;
+  color: var(--cw-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 28px;
+  padding: 0 6px;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.campaign-status-filter label:has(input:checked) {
+  background: color-mix(in srgb, var(--cw-green) 16%, #fff);
+  color: var(--cw-ink);
+}
+.campaign-status-filter input {
+  width: 13px;
+  height: 13px;
+  margin: 0;
+  accent-color: var(--cw-green);
 }
 
 .page-grid {

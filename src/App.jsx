@@ -102,6 +102,11 @@ const statusDisplay = {
   complete: "Complete",
   paused: "Paused"
 };
+const campaignStatusFilters = [
+  { id: "planned", label: "Planned" },
+  { id: "active", label: "Active" },
+  { id: "complete", label: "Complete" }
+];
 
 const monthOrder = Array.from({ length: 12 }, (_, index) => new Date(2026, index, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" }));
 const monthStart = Object.fromEntries(monthOrder.map((month, index) => [month, `2026-${String(index + 1).padStart(2, "0")}-01T00:00:00`]));
@@ -680,6 +685,40 @@ function scheduleFromActivities(sourceCampaigns, campaignActivities, fallbackSch
   return next;
 }
 
+function campaignDashboardStatus(campaign = {}) {
+  const status = String(campaign.status || "active").toLowerCase();
+  if (status === "complete") return "complete";
+  if (["planned", "draft", "queued"].includes(status)) return "planned";
+  return "active";
+}
+
+function campaignTotals(campaigns = []) {
+  return campaigns.reduce(
+    (acc, campaign) => {
+      acc.touchpoints += campaign.metrics?.plannedTouchpoints || 0;
+      acc.contacts += campaign.metrics?.plannedContacts || 0;
+      acc.meetings += campaign.metrics?.meetings || 0;
+      acc.pipeline += campaign.metrics?.pipeline || 0;
+      return acc;
+    },
+    { touchpoints: 0, contacts: 0, meetings: 0, pipeline: 0 }
+  );
+}
+
+function campaignCompletion(campaigns = [], schedule = {}) {
+  const campaignIds = new Set(campaigns.map((campaign) => campaign.id));
+  return Object.entries(schedule).reduce(
+    (acc, [key, item]) => {
+      const campaignId = key.split(":")[0];
+      if (!campaignIds.has(campaignId)) return acc;
+      acc.total += 1;
+      acc[item.status] = (acc[item.status] || 0) + 1;
+      return acc;
+    },
+    { total: 0, complete: 0, active: 0, queued: 0, wip: 0, paused: 0 }
+  );
+}
+
 function campaignSetupsForState(sourceCampaigns, schedule) {
   return sourceCampaigns.map(({ events, ...campaign }) => {
     const campaignId = campaignIdOf(campaign);
@@ -856,6 +895,7 @@ function App() {
   const [campaignRecords, setCampaignRecords] = useState(() => generatedCampaigns);
   const [activeCampaignId, setActiveCampaignId] = useState(generatedCampaigns[0]?.id);
   const [visible, setVisible] = useState(() => new Set(generatedCampaigns.map((campaign) => campaign.id)));
+  const [dashboardStatusFilter, setDashboardStatusFilter] = useState(() => new Set(campaignStatusFilters.map((status) => status.id)));
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(defaultMonthIndex);
   const [schedule, setSchedule] = useState(() => loadStoredSchedule());
@@ -886,33 +926,17 @@ function App() {
     schedule: buildInitialSchedule(generatedCampaigns)
   });
   const activeCampaign = campaignRecords.find((campaign) => campaign.id === activeCampaignId) || campaignRecords[0];
-  const visibleCampaigns = campaignRecords.filter((campaign) => visible.has(campaign.id));
+  const dashboardCampaigns = useMemo(
+    () => campaignRecords.filter((campaign) => dashboardStatusFilter.has(campaignDashboardStatus(campaign))),
+    [campaignRecords, dashboardStatusFilter]
+  );
+  const visibleCampaigns = dashboardCampaigns.filter((campaign) => visible.has(campaign.id));
   const selectedMonth = monthOrder[selectedMonthIndex];
   const authHeaders = auth?.idToken ? { Authorization: `Bearer ${auth.idToken}` } : {};
 
-  const totals = useMemo(() => {
-    return campaignRecords.reduce(
-      (acc, campaign) => {
-        acc.touchpoints += campaign.metrics.plannedTouchpoints;
-        acc.contacts += campaign.metrics.plannedContacts;
-        acc.meetings += campaign.metrics.meetings;
-        acc.pipeline += campaign.metrics.pipeline;
-        return acc;
-      },
-      { touchpoints: 0, contacts: 0, meetings: 0, pipeline: 0 }
-    );
-  }, [campaignRecords]);
+  const totals = useMemo(() => campaignTotals(dashboardCampaigns), [dashboardCampaigns]);
 
-  const completion = useMemo(() => {
-    return Object.values(schedule).reduce(
-      (acc, item) => {
-        acc.total += 1;
-        acc[item.status] = (acc[item.status] || 0) + 1;
-        return acc;
-      },
-      { total: 0, complete: 0, active: 0, queued: 0, wip: 0, paused: 0 }
-    );
-  }, [schedule]);
+  const completion = useMemo(() => campaignCompletion(dashboardCampaigns, schedule), [dashboardCampaigns, schedule]);
 
   useEffect(() => {
     window.localStorage.setItem(scheduleStorageKey, JSON.stringify(schedule));
@@ -1152,6 +1176,18 @@ function App() {
 
   function moveMonth(direction) {
     setSelectedMonthIndex((index) => Math.min(monthOrder.length - 1, Math.max(0, index + direction)));
+  }
+
+  function toggleDashboardStatusFilter(statusId, checked) {
+    setDashboardStatusFilter((current) => {
+      const next = new Set(current);
+      if (statusId === "all") {
+        return checked ? new Set(campaignStatusFilters.map((status) => status.id)) : new Set();
+      }
+      if (checked) next.add(statusId);
+      else next.delete(statusId);
+      return next;
+    });
   }
 
   function moveEvent(key, position) {
@@ -1597,6 +1633,28 @@ function App() {
                 </option>
               ))}
             </select>
+            {activeTab === "dashboard" && (
+              <div className="campaign-status-filter" aria-label="Filter campaigns by status">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={dashboardStatusFilter.size === campaignStatusFilters.length}
+                    onChange={(event) => toggleDashboardStatusFilter("all", event.target.checked)}
+                  />
+                  <span>All</span>
+                </label>
+                {campaignStatusFilters.map((status) => (
+                  <label key={status.id}>
+                    <input
+                      type="checkbox"
+                      checked={dashboardStatusFilter.has(status.id)}
+                      onChange={(event) => toggleDashboardStatusFilter(status.id, event.target.checked)}
+                    />
+                    <span>{status.label}</span>
+                  </label>
+                ))}
+              </div>
+            )}
             <button className="icon-button" title="Next month" onClick={() => moveMonth(1)} disabled={selectedMonthIndex === monthOrder.length - 1}>
               <ChevronRight size={18} />
             </button>
@@ -1607,7 +1665,7 @@ function App() {
           <Dashboard
             activeCampaign={activeCampaign}
             completion={completion}
-            campaigns={campaignRecords}
+            campaigns={dashboardCampaigns}
             month={selectedMonth}
             moveEvent={moveEvent}
             schedule={schedule}
