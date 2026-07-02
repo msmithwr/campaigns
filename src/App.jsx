@@ -1487,6 +1487,44 @@ function App() {
     flashActivityRows([eventKey(campaign, newEvent)]);
   }
 
+  function createCampaignComponent(campaignId, overrides = {}) {
+    const campaign = campaignRecords.find((item) => item.id === campaignId);
+    if (!campaign) return null;
+    const type = overrides.type || "task";
+    const typeCount = campaign.events.filter((event) => event.type === type).length;
+    const plannedDate = overrides.plannedDate ? inputValueToDate(overrides.plannedDate) : addDays(getCampaignEndDate(campaign, schedule), 1);
+    const nextPosition = positionFromDate(plannedDate) || positionFromDate(getCampaignStartDate(campaign, schedule)) || { month: selectedMonth, weekIndex: 0, dayIndex: 0 };
+    const newEvent = {
+      id: overrides.id || `activity-${Date.now()}`,
+      month: nextPosition.month,
+      week: `Week ${nextPosition.weekIndex + 1}`,
+      section: overrides.section || "Activities",
+      type,
+      label: overrides.label || `${channelMeta[type]?.label || "Task"}${typeCount + 1}`,
+      title: overrides.title || `New ${channelMeta[type]?.label || "campaign"} activity`
+    };
+
+    setCampaignRecords((current) =>
+      current.map((item) =>
+        item.id === campaignId
+          ? {
+              ...item,
+              events: [...item.events, newEvent]
+            }
+          : item
+      )
+    );
+    setSchedule((current) => ({
+      ...current,
+      [eventKey(campaign, newEvent)]: {
+        ...nextPosition,
+        status: "queued"
+      }
+    }));
+    flashActivityRows([eventKey(campaign, newEvent)]);
+    return newEvent;
+  }
+
   function flashActivityRows(keys, effect = "confirm") {
     const uniqueKeys = Array.from(new Set(keys.filter(Boolean)));
     if (!uniqueKeys.length) return;
@@ -1766,6 +1804,7 @@ function App() {
             authHeaders={authHeaders}
             campaignApiUrl={campaignApiUrl}
             campaigns={campaignRecords}
+            createCampaignComponent={createCampaignComponent}
             senderProfiles={senderProfiles}
             templates={whatsappTemplates}
             setTemplates={setWhatsappTemplates}
@@ -6037,7 +6076,7 @@ function SendReviewWorkspace({ activeCampaignId, authHeaders, campaignApiUrl, ca
   );
 }
 
-function WhatsAppWorkspace({ audienceLists, authHeaders, campaignApiUrl, campaigns, senderProfiles, templates, setDeletedContentAssetIds, setTemplates }) {
+function WhatsAppWorkspace({ audienceLists, authHeaders, campaignApiUrl, campaigns, createCampaignComponent, senderProfiles, templates, setDeletedContentAssetIds, setTemplates }) {
   const [selectedAssetId, setSelectedAssetId] = useState(() => templates[0]?.assetId || initialWhatsAppTemplates[0]?.assetId);
   const [campaignFilter, setCampaignFilter] = useState("all");
   const [testContact, setTestContact] = useState({
@@ -6133,7 +6172,8 @@ function WhatsAppWorkspace({ audienceLists, authHeaders, campaignApiUrl, campaig
     if (!selectedTemplate || !campaignId) return;
     const campaign = campaigns.find((item) => item.id === campaignId);
     const mappingsForCampaign = selectedTemplate.campaignMappings?.filter((mapping) => mapping.campaignId === campaignId) || [];
-    const stepKey = `WhatsApp${mappingsForCampaign.length + 1}`;
+    const campaignComponent = campaign?.events?.find((event) => event.type === "whatsapp" && !mappingsForCampaign.some((mapping) => mapping.componentActivityId === event.id || mapping.stepKey === event.label)) || null;
+    const stepKey = campaignComponent?.label || `WhatsApp${mappingsForCampaign.length + 1}`;
     const defaultAudienceListId = reusableAudienceLists.find((list) => (list.associatedCampaignIds || []).includes(campaignId))?.listId || "";
     const defaultOwnerId = ownerProfiles[0]?.ownerId || "amaan";
     setTemplates((current) => current.map((template) => {
@@ -6146,8 +6186,9 @@ function WhatsAppWorkspace({ audienceLists, authHeaders, campaignApiUrl, campaig
           {
             audienceListId: defaultAudienceListId,
             campaignId,
+            componentActivityId: campaignComponent?.id || "",
             stepKey,
-            label: campaign ? `${campaign.shortName} ${stepKey}` : stepKey,
+            label: campaignComponent?.title || (campaign ? `${campaign.shortName} ${stepKey}` : stepKey),
             owner: defaultOwnerId,
             ownerIds: [defaultOwnerId],
             personaFilter: "ALL",
@@ -6229,6 +6270,7 @@ function WhatsAppWorkspace({ audienceLists, authHeaders, campaignApiUrl, campaig
       updateMapping={updateMapping}
       updateMappingFields={updateMappingFields}
       removeMapping={removeMapping}
+      createCampaignComponent={createCampaignComponent}
       senderProfiles={senderProfiles}
       updateAsset={updateTemplate}
       bodyFields={(
@@ -6505,6 +6547,7 @@ function ContentAssetWorkspace({
   campaigns,
   cloneAsset,
   contentAssetTablePlan,
+  createCampaignComponent,
   createAsset,
   deleteAsset,
   filteredAssets,
@@ -6619,6 +6662,50 @@ function ContentAssetWorkspace({
         [audienceListId]: { error: error.message, loading: false, none: 0, options: [], total: 0 }
       }));
     }
+  }
+
+  function whatsappComponentsForCampaign(campaignId) {
+    const campaign = campaigns.find((item) => item.id === campaignId);
+    return (campaign?.events || []).filter((event) => event.type === "whatsapp");
+  }
+
+  function selectedWhatsappComponent(mapping) {
+    const components = whatsappComponentsForCampaign(mapping.campaignId);
+    return components.find((event) => event.id === mapping.componentActivityId)
+      || components.find((event) => event.label && event.label === mapping.stepKey)
+      || components.find((event) => event.title && event.title === mapping.label)
+      || null;
+  }
+
+  function updateMappingFromComponent(index, component) {
+    if (!component) return;
+    updateMappingPatch(index, {
+      componentActivityId: component.id,
+      stepKey: component.label || "",
+      label: component.title || component.label || ""
+    });
+  }
+
+  function createWhatsappComponentForMapping(index, mapping) {
+    const campaign = campaigns.find((item) => item.id === mapping.campaignId);
+    if (!campaign || !createCampaignComponent) return;
+    const componentCount = whatsappComponentsForCampaign(mapping.campaignId).length;
+    const component = createCampaignComponent(mapping.campaignId, {
+      type: "whatsapp",
+      label: mapping.stepKey || `WhatsApp${componentCount + 1}`,
+      title: mapping.label || selectedAsset?.label || `WhatsApp ${componentCount + 1}: ${campaign.shortName}`,
+      section: "Activities"
+    });
+    if (component) updateMappingFromComponent(index, component);
+  }
+
+  function handleWhatsappComponentSelect(index, mapping, componentId) {
+    if (componentId === "__new__") {
+      createWhatsappComponentForMapping(index, mapping);
+      return;
+    }
+    const component = whatsappComponentsForCampaign(mapping.campaignId).find((event) => event.id === componentId);
+    updateMappingFromComponent(index, component);
   }
 
   return (
@@ -6756,6 +6843,9 @@ function ContentAssetWorkspace({
                   const senderIds = mappingOwnerIds(mapping);
                   const splitLabel = senderSplitLabel(senderIds.length);
                   const availableOwnerProfiles = ownerProfiles.filter((profile) => !senderIds.includes(profile.ownerId));
+                  const whatsappComponents = whatsappComponentsForCampaign(mapping.campaignId);
+                  const selectedComponent = selectedWhatsappComponent(mapping);
+                  const selectedComponentId = selectedComponent?.id || "";
                   return (
                     <article className="assignment-card whatsapp-mapping-card" key={`${mapping.campaignId}-${mapping.stepKey}-${index}`}>
                       <div className="assignment-card-heading">
@@ -6768,12 +6858,24 @@ function ContentAssetWorkspace({
                         </button>
                       </div>
                       <label>
-                        <span>Step key</span>
-                        <input value={mapping.stepKey || ""} onChange={(event) => updateMapping(index, "stepKey", event.target.value)} />
+                        <span>Label</span>
+                        <select value={selectedComponentId} onChange={(event) => handleWhatsappComponentSelect(index, mapping, event.target.value)}>
+                          {!selectedComponentId && <option value="">Select campaign component...</option>}
+                          {whatsappComponents.map((component) => (
+                            <option key={component.id} value={component.id}>{component.label || "No label"}</option>
+                          ))}
+                          <option value="__new__">New WhatsApp component...</option>
+                        </select>
                       </label>
                       <label>
                         <span>Task label</span>
-                        <input value={mapping.label || ""} onChange={(event) => updateMapping(index, "label", event.target.value)} />
+                        <select value={selectedComponentId} onChange={(event) => handleWhatsappComponentSelect(index, mapping, event.target.value)}>
+                          {!selectedComponentId && <option value="">Select campaign component title...</option>}
+                          {whatsappComponents.map((component) => (
+                            <option key={component.id} value={component.id}>{component.title || component.label || "Untitled WhatsApp component"}</option>
+                          ))}
+                          <option value="__new__">New WhatsApp component...</option>
+                        </select>
                       </label>
                       <div className="assignment-targeting-grid">
                         <label className="assignment-targeting-control">
