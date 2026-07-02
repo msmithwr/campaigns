@@ -685,10 +685,11 @@ function scheduleFromActivities(sourceCampaigns, campaignActivities, fallbackSch
   return next;
 }
 
-function campaignDashboardStatus(campaign = {}) {
+function campaignDashboardStatus(campaign = {}, schedule = {}) {
   const status = String(campaign.status || "active").toLowerCase();
   if (status === "complete") return "complete";
-  if (["planned", "draft", "queued"].includes(status)) return "planned";
+  const startDate = getCampaignStartDate(campaign, schedule);
+  if (startDate && dayDiff(new Date(), startDate) > 0) return "planned";
   return "active";
 }
 
@@ -927,8 +928,8 @@ function App() {
   });
   const activeCampaign = campaignRecords.find((campaign) => campaign.id === activeCampaignId) || campaignRecords[0];
   const dashboardCampaigns = useMemo(
-    () => campaignRecords.filter((campaign) => dashboardStatusFilter.has(campaignDashboardStatus(campaign))),
-    [campaignRecords, dashboardStatusFilter]
+    () => campaignRecords.filter((campaign) => dashboardStatusFilter.has(campaignDashboardStatus(campaign, schedule))),
+    [campaignRecords, dashboardStatusFilter, schedule]
   );
   const visibleCampaigns = dashboardCampaigns.filter((campaign) => visible.has(campaign.id));
   const selectedMonth = monthOrder[selectedMonthIndex];
@@ -1633,7 +1634,7 @@ function App() {
                 </option>
               ))}
             </select>
-            {activeTab === "dashboard" && (
+            {["dashboard", "campaigns"].includes(activeTab) && (
               <div className="campaign-status-filter" aria-label="Filter campaigns by status">
                 <label>
                   <input
@@ -1680,7 +1681,7 @@ function App() {
         )}
         {activeTab === "campaigns" && (
           <Campaigns
-            campaigns={campaignRecords}
+            campaigns={dashboardCampaigns}
             activeCampaignId={activeCampaignId}
             addCampaignEvent={addCampaignEvent}
             activityFeedback={activityFeedback}
@@ -2273,6 +2274,16 @@ function Campaigns({
   updateEventStatus
 }) {
   const selectedCampaign = campaigns.find((campaign) => campaign.id === activeCampaignId) || campaigns[0];
+
+  if (!campaigns.length) {
+    return (
+      <section className="panel email-empty-state">
+        <p className="eyebrow">Campaign filter</p>
+        <h2>No campaigns match this status filter</h2>
+        <p>Select another status combination from the top bar to bring campaigns back into view.</p>
+      </section>
+    );
+  }
 
   return (
     <div className="campaign-editor-layout">
