@@ -1214,6 +1214,40 @@ function App() {
     });
   }
 
+  async function saveSenderProfilesNow(nextSenderProfiles = senderProfiles) {
+    setSenderProfiles(nextSenderProfiles);
+    if (!campaignApiUrl) return { ok: true, savedAt: nowIso(), storage: "local" };
+    if (authEnabled && !auth?.idToken) throw new Error("Sign in again before saving users.");
+
+    const response = await fetch(`${campaignApiUrl}/state`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        ...authHeaders
+      },
+      body: JSON.stringify({
+        campaignSetups: campaignSetupsForState(campaignRecords, schedule),
+        campaignActivities: campaignActivitiesForState(campaignRecords, schedule),
+        templates: emailTemplates,
+        assignments: emailAssignments,
+        senderProfiles: nextSenderProfiles,
+        audienceLists,
+        contactEngagement,
+        googleSheetSources,
+        integrationSettings,
+        playbooks,
+        contentAssets: [...whatsappTemplates, ...callScripts],
+        deletedAudienceListIds,
+        deletedAudienceContacts,
+        deletedPlaybookIds,
+        deletedContentAssetIds
+      })
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.message || `User profile save failed: ${response.status}`);
+    return result;
+  }
+
   function moveMonth(direction) {
     setSelectedMonthIndex((index) => Math.min(monthOrder.length - 1, Math.max(0, index + direction)));
   }
@@ -1923,7 +1957,7 @@ function App() {
             setActiveCampaignId={setActiveCampaignId}
           />
         )}
-        {activeTab === "settings" && <SettingsPanel activeCampaign={activeCampaign} authHeaders={authHeaders} campaignApiUrl={campaignApiUrl} senderProfiles={senderProfiles} setSenderProfiles={setSenderProfiles} />}
+        {activeTab === "settings" && <SettingsPanel activeCampaign={activeCampaign} authHeaders={authHeaders} campaignApiUrl={campaignApiUrl} onSaveSenderProfiles={saveSenderProfilesNow} senderProfiles={senderProfiles} setSenderProfiles={setSenderProfiles} />}
       </main>
 
       {selectedEvent && (
@@ -9441,9 +9475,10 @@ function Evaluation({ activeCampaignId, authHeaders, benchmarkIdeas, campaignApi
   );
 }
 
-function SettingsPanel({ activeCampaign, authHeaders, campaignApiUrl, senderProfiles, setSenderProfiles }) {
+function SettingsPanel({ activeCampaign, authHeaders, campaignApiUrl, onSaveSenderProfiles, senderProfiles, setSenderProfiles }) {
   const [whatsappUserTokens, setWhatsappUserTokens] = useState({});
   const [whatsappUserStatus, setWhatsappUserStatus] = useState({});
+  const [senderProfileSaveStatus, setSenderProfileSaveStatus] = useState("");
 
   function addSenderProfile() {
     const nextNumber = senderProfiles.length + 1;
@@ -9486,6 +9521,16 @@ function SettingsPanel({ activeCampaign, authHeaders, campaignApiUrl, senderProf
 
   function setWhatsappProfileStatus(ownerId, message) {
     setWhatsappUserStatus((current) => ({ ...current, [ownerId]: message }));
+  }
+
+  async function saveSenderProfiles() {
+    setSenderProfileSaveStatus("Saving user profiles...");
+    try {
+      const result = await onSaveSenderProfiles(senderProfiles);
+      setSenderProfileSaveStatus(result?.savedAt ? `User profiles saved at ${new Date(result.savedAt).toLocaleTimeString()}.` : "User profiles saved.");
+    } catch (error) {
+      setSenderProfileSaveStatus(error.message);
+    }
   }
 
   async function saveUserWhatsappSecret(profile) {
@@ -9573,11 +9618,18 @@ function SettingsPanel({ activeCampaign, authHeaders, campaignApiUrl, senderProf
             <p className="eyebrow">Sender configuration</p>
             <h2>Users and calendar links</h2>
           </div>
-          <button className="primary-button compact" onClick={addSenderProfile}>
-            <Plus size={15} />
-            Add user
-          </button>
+          <div className="editor-actions">
+            <button className="secondary-button compact" onClick={saveSenderProfiles}>
+              <Save size={15} />
+              Save user profiles
+            </button>
+            <button className="primary-button compact" onClick={addSenderProfile}>
+              <Plus size={15} />
+              Add user
+            </button>
+          </div>
         </div>
+        {senderProfileSaveStatus && <p className="save-status">{senderProfileSaveStatus}</p>}
         <div className="user-config-list">
           {senderProfiles.map((profile) => (
             <article className="user-config-card" key={profile.ownerId}>
