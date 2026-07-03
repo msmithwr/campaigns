@@ -127,6 +127,15 @@ export async function handler(event) {
       return response(200, await saveWhatsAppSecret(body));
     }
 
+    if (path === "/whatsapp/webhook" && method === "GET") {
+      return await verifyWhatsAppWebhook(event.queryStringParameters || {});
+    }
+
+    if (path === "/whatsapp/webhook" && method === "POST") {
+      const body = JSON.parse(event.body || "{}");
+      return response(200, await receiveWhatsAppWebhook(body));
+    }
+
     if (path === "/whatsapp/test" && method === "POST") {
       const body = JSON.parse(event.body || "{}");
       return response(200, await testWhatsAppConnection(body));
@@ -2356,6 +2365,7 @@ async function saveWhatsAppSecret({
   accountLabel = "Cloudwrxs WhatsApp Business",
   apiVersion = "v23.0",
   persistSetting = true,
+  webhookVerifyToken = "",
   secretName
 }) {
   if (!secretName || !String(secretName).startsWith("cloudwrxs-campaign-")) {
@@ -2376,12 +2386,16 @@ async function saveWhatsAppSecret({
     await secrets.send(new PutSecretValueCommand({ SecretId: secretName, SecretString: JSON.stringify({ accessToken: token }) }));
   }
 
+  const settings = await scanAll(tables.integrationSettings);
+  const current = settings.find((setting) => setting.settingKey === "whatsapp") || {};
   const setting = {
+    ...current,
     settingKey: "whatsapp",
     secretName,
     accountLabel,
     apiVersion: normalizedApiVersion,
     mode: "cloud_api",
+    webhookVerifyToken: String(webhookVerifyToken || current.webhookVerifyToken || "").trim(),
     lastTestedAt: "",
     lastTestStatus: "saved",
     updatedAt: new Date().toISOString()
@@ -2471,6 +2485,38 @@ async function sendWhatsAppTestMessage({
     templateAssetId,
     whatsappContactId: result.contacts?.[0]?.wa_id || ""
   };
+}
+
+async function verifyWhatsAppWebhook(params = {}) {
+  const mode = String(params["hub.mode"] || params.hub_mode || "").trim();
+  const incomingToken = String(params["hub.verify_token"] || params.hub_verify_token || "").trim();
+  const challenge = String(params["hub.challenge"] || params.hub_challenge || "");
+  const expectedToken = await getConfiguredWhatsAppWebhookVerifyToken();
+
+  if (mode === "subscribe" && expectedToken && incomingToken === expectedToken) {
+    return plainResponse(200, challenge);
+  }
+
+  console.warn("WhatsApp webhook verification failed", {
+    mode,
+    hasIncomingToken: Boolean(incomingToken),
+    hasExpectedToken: Boolean(expectedToken)
+  });
+  return plainResponse(403, "Forbidden");
+}
+
+async function receiveWhatsAppWebhook(body = {}) {
+  console.log("WhatsApp webhook event", JSON.stringify(body));
+  return {
+    ok: true,
+    receivedAt: new Date().toISOString()
+  };
+}
+
+async function getConfiguredWhatsAppWebhookVerifyToken() {
+  const settings = await scanAll(tables.integrationSettings);
+  const whatsapp = settings.find((setting) => setting.settingKey === "whatsapp") || {};
+  return String(whatsapp.webhookVerifyToken || process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN || "").trim();
 }
 
 async function getConfiguredWhatsAppCredentials(secretName) {
@@ -4093,6 +4139,17 @@ function response(statusCode, body) {
     statusCode,
     headers: corsHeaders,
     body: statusCode === 204 ? "" : JSON.stringify(body)
+  };
+}
+
+function plainResponse(statusCode, body) {
+  return {
+    statusCode,
+    headers: {
+      ...corsHeaders,
+      "Content-Type": "text/plain"
+    },
+    body: String(body || "")
   };
 }
 

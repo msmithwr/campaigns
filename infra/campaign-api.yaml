@@ -344,6 +344,49 @@ Resources:
       AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
       AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
 
+  WhatsAppSecretRoutePost:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "POST /whatsapp/secret"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  WhatsAppTestRoutePost:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "POST /whatsapp/test"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  WhatsAppSendTestRoutePost:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "POST /whatsapp/send-test"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: !If [EnableJwtAuth, JWT, NONE]
+      AuthorizerId: !If [EnableJwtAuth, !Ref CampaignJwtAuthorizer, !Ref "AWS::NoValue"]
+
+  WhatsAppWebhookRouteGet:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "GET /whatsapp/webhook"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: NONE
+
+  WhatsAppWebhookRoutePost:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref CampaignHttpApi
+      RouteKey: "POST /whatsapp/webhook"
+      Target: !Sub "integrations/${CampaignApiIntegration}"
+      AuthorizationType: NONE
+
   AudienceContactsRouteGet:
     Type: AWS::ApiGatewayV2::Route
     Properties:

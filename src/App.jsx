@@ -243,6 +243,7 @@ const initialIntegrationSettings = [
     accountLabel: "Cloudwrxs WhatsApp Business",
     apiVersion: "v23.0",
     mode: "cloud_api",
+    webhookVerifyToken: "",
     lastTestedAt: "",
     lastTestStatus: "",
     updatedAt: "2026-06-01T00:00:00.000Z"
@@ -8553,6 +8554,7 @@ function Integrations({ authHeaders, campaignApiUrl, integrationSettings, setInt
   const justcall = integrationSettings.find((setting) => setting.settingKey === "justcall") || justcallDefault;
   const whatsappDefault = initialIntegrationSettings.find((setting) => setting.settingKey === "whatsapp");
   const whatsapp = integrationSettings.find((setting) => setting.settingKey === "whatsapp") || whatsappDefault;
+  const whatsappWebhookUrl = campaignApiUrl ? `${campaignApiUrl.replace(/\/$/, "")}/whatsapp/webhook` : "";
   const integrations = [
     ["Markdown", "Current source of campaign structure, content, calendars, scripts", "Active locally"],
     ["HubSpot", "Contacts, lists, tasks, lifecycle stages, notes, deals, campaign attribution", hubspot.secretName ? "Configured" : "Needs setup"],
@@ -8714,6 +8716,7 @@ function Integrations({ authHeaders, campaignApiUrl, integrationSettings, setInt
           accessToken: whatsappAccessToken,
           accountLabel: whatsapp.accountLabel,
           apiVersion: whatsapp.apiVersion || "v23.0",
+          webhookVerifyToken: whatsapp.webhookVerifyToken || "",
           secretName
         })
       });
@@ -8722,6 +8725,7 @@ function Integrations({ authHeaders, campaignApiUrl, integrationSettings, setInt
       updateWhatsappSetting("secretName", result.secretName);
       updateWhatsappSetting("accountLabel", result.accountLabel || whatsapp.accountLabel || "Cloudwrxs WhatsApp Business");
       updateWhatsappSetting("apiVersion", result.apiVersion || whatsapp.apiVersion || "v23.0");
+      updateWhatsappSetting("webhookVerifyToken", result.webhookVerifyToken || whatsapp.webhookVerifyToken || "");
       updateWhatsappSetting("lastTestedAt", "");
       updateWhatsappSetting("lastTestStatus", "saved");
       setWhatsappAccessToken("");
@@ -9163,6 +9167,18 @@ function Integrations({ authHeaders, campaignApiUrl, integrationSettings, setInt
             />
           </label>
           <label>
+            <span>Webhook callback URL</span>
+            <input value={whatsappWebhookUrl || "Deploy API URL first"} readOnly />
+          </label>
+          <label>
+            <span>Webhook verify token</span>
+            <input
+              value={whatsapp.webhookVerifyToken || ""}
+              onChange={(event) => updateWhatsappSetting("webhookVerifyToken", event.target.value)}
+              placeholder="Paste this same value into Meta"
+            />
+          </label>
+          <label>
             <span>Mode</span>
             <input value="Meta Cloud API text send test" readOnly />
           </label>
@@ -9182,7 +9198,9 @@ function Integrations({ authHeaders, campaignApiUrl, integrationSettings, setInt
               <span>3. Create a system user access token with whatsapp_business_messaging. Add whatsapp_business_management if we later read templates and phone numbers.</span>
               <span>4. Paste the token below. The token is stored in AWS Secrets Manager, not browser storage.</span>
               <span>5. For each Cloudwrxs sender, add the WhatsApp phone number ID under Settings, Users and calendar links.</span>
-              <span>6. For testing, the recipient must be allowed by the Meta test setup or inside an open 24-hour WhatsApp service window. Otherwise we will need approved template sends.</span>
+              <span>6. In Meta webhooks, use the callback URL shown above and the exact webhook verify token entered here.</span>
+              <span>7. Subscribe the webhook to WhatsApp messages so we can capture replies and delivery status in the next build step.</span>
+              <span>8. For testing, the recipient must be allowed by the Meta test setup or inside an open 24-hour WhatsApp service window. Otherwise we will need approved template sends.</span>
             </div>
           )}
           <label>
