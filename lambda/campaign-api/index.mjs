@@ -122,6 +122,21 @@ export async function handler(event) {
       return response(200, await testJustCallConnection(body));
     }
 
+    if (path === "/whatsapp/secret" && method === "POST") {
+      const body = JSON.parse(event.body || "{}");
+      return response(200, await saveWhatsAppSecret(body));
+    }
+
+    if (path === "/whatsapp/test" && method === "POST") {
+      const body = JSON.parse(event.body || "{}");
+      return response(200, await testWhatsAppConnection(body));
+    }
+
+    if (path === "/whatsapp/send-test" && method === "POST") {
+      const body = JSON.parse(event.body || "{}");
+      return response(200, await sendWhatsAppTestMessage(body));
+    }
+
     if (path === "/audience-contacts" && method === "GET") {
       return response(200, await getAudienceContacts(event.queryStringParameters || {}));
     }
@@ -2334,6 +2349,155 @@ async function getConfiguredJustCallCredentials(secretName) {
   const apiSecret = String(parsed.apiSecret || parsed.secret || "").trim();
   if (!apiKey || !apiSecret) throw new Error("JustCall secret must contain apiKey and apiSecret");
   return { apiKey, apiSecret };
+}
+
+async function saveWhatsAppSecret({
+  accessToken,
+  accountLabel = "Cloudwrxs WhatsApp Business",
+  apiVersion = "v23.0",
+  secretName
+}) {
+  if (!secretName || !String(secretName).startsWith("cloudwrxs-campaign-")) {
+    throw new Error("Secret name must start with cloudwrxs-campaign-");
+  }
+  const token = String(accessToken || "").trim();
+  if (!token) throw new Error("Paste a valid Meta WhatsApp access token");
+  const normalizedApiVersion = normalizeMetaApiVersion(apiVersion);
+
+  try {
+    await secrets.send(new CreateSecretCommand({
+      Name: secretName,
+      SecretString: JSON.stringify({ accessToken: token }),
+      Description: "Cloudwrxs Campaign Command WhatsApp Cloud API token"
+    }));
+  } catch (error) {
+    if (error.name !== "ResourceExistsException") throw error;
+    await secrets.send(new PutSecretValueCommand({ SecretId: secretName, SecretString: JSON.stringify({ accessToken: token }) }));
+  }
+
+  const setting = {
+    settingKey: "whatsapp",
+    secretName,
+    accountLabel,
+    apiVersion: normalizedApiVersion,
+    mode: "cloud_api",
+    lastTestedAt: "",
+    lastTestStatus: "saved",
+    updatedAt: new Date().toISOString()
+  };
+  await put(tables.integrationSettings, setting);
+
+  return {
+    ok: true,
+    ...setting
+  };
+}
+
+async function testWhatsAppConnection({ apiVersion = "v23.0", secretName }) {
+  const credentials = await getConfiguredWhatsAppCredentials(secretName);
+  const normalizedApiVersion = normalizeMetaApiVersion(apiVersion || credentials.apiVersion);
+  const testedAt = new Date().toISOString();
+  const result = await fetchJson(`https://graph.facebook.com/${normalizedApiVersion}/me`, {
+    headers: {
+      Authorization: `Bearer ${credentials.accessToken}`
+    }
+  });
+  const settings = await scanAll(tables.integrationSettings);
+  const current = settings.find((setting) => setting.settingKey === "whatsapp") || {};
+  const setting = {
+    ...current,
+    settingKey: "whatsapp",
+    secretName: secretName || current.secretName,
+    accountLabel: current.accountLabel || result.name || "Cloudwrxs WhatsApp Business",
+    apiVersion: normalizedApiVersion,
+    mode: current.mode || "cloud_api",
+    lastTestedAt: testedAt,
+    lastTestStatus: "ok",
+    updatedAt: testedAt
+  };
+  await put(tables.integrationSettings, setting);
+
+  return {
+    ok: true,
+    ...setting,
+    metaId: result.id || "",
+    tokenType: result.name ? "Meta" : "Meta Graph"
+  };
+}
+
+async function sendWhatsAppTestMessage({
+  apiVersion = "v23.0",
+  bodyText = "",
+  phoneNumberId,
+  recipientPhone,
+  secretName,
+  senderOwnerId = "",
+  templateAssetId = ""
+}) {
+  const credentials = await getConfiguredWhatsAppCredentials(secretName);
+  const normalizedApiVersion = normalizeMetaApiVersion(apiVersion || credentials.apiVersion);
+  const normalizedPhoneNumberId = String(phoneNumberId || "").trim();
+  const to = normalizeWhatsAppPhone(recipientPhone);
+  const text = String(bodyText || "").trim();
+  if (!normalizedPhoneNumberId) throw new Error("WhatsApp phone number ID is required");
+  if (!to) throw new Error("Recipient phone number is required");
+  if (!text) throw new Error("Message body is required");
+
+  const result = await fetchJson(`https://graph.facebook.com/${normalizedApiVersion}/${encodeURIComponent(normalizedPhoneNumberId)}/messages`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${credentials.accessToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to,
+      type: "text",
+      text: {
+        body: text,
+        preview_url: true
+      }
+    })
+  });
+
+  return {
+    ok: true,
+    acceptedAt: new Date().toISOString(),
+    messageId: result.messages?.[0]?.id || "",
+    recipientPhone: to,
+    senderOwnerId,
+    templateAssetId,
+    whatsappContactId: result.contacts?.[0]?.wa_id || ""
+  };
+}
+
+async function getConfiguredWhatsAppCredentials(secretName) {
+  const settings = await scanAll(tables.integrationSettings);
+  const whatsapp = settings.find((setting) => setting.settingKey === "whatsapp") || {};
+  const configuredSecretName = secretName || whatsapp.secretName || process.env.WHATSAPP_API_SECRET_NAME;
+  if (!configuredSecretName) throw new Error("WhatsApp API secret name is not configured");
+  const result = await secrets.send(new GetSecretValueCommand({ SecretId: configuredSecretName }));
+  const raw = result.SecretString || Buffer.from(result.SecretBinary || "", "base64").toString("utf8");
+  try {
+    const parsed = JSON.parse(raw || "{}");
+    const accessToken = String(parsed.accessToken || parsed.token || "").trim();
+    if (!accessToken) throw new Error("WhatsApp secret must contain accessToken");
+    return { accessToken, apiVersion: normalizeMetaApiVersion(whatsapp.apiVersion || parsed.apiVersion || "v23.0") };
+  } catch (error) {
+    const accessToken = String(raw || "").trim();
+    if (!accessToken || error.message === "WhatsApp secret must contain accessToken") throw error;
+    return { accessToken, apiVersion: normalizeMetaApiVersion(whatsapp.apiVersion || "v23.0") };
+  }
+}
+
+function normalizeMetaApiVersion(value = "v23.0") {
+  const raw = String(value || "v23.0").trim();
+  return raw.startsWith("v") ? raw : `v${raw}`;
+}
+
+function normalizeWhatsAppPhone(value = "") {
+  return String(value || "").replace(/[^\d]/g, "");
 }
 
 async function getConfiguredHubSpotToken(secretName) {

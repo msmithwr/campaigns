@@ -1223,6 +1223,10 @@ select { min-height: 40px; }
   border-color: color-mix(in srgb, var(--cw-orange) 52%, #fff);
   background: color-mix(in srgb, var(--cw-orange) 11%, #fff);
 }
+.source-pill.whatsapp {
+  border-color: color-mix(in srgb, var(--cw-green) 52%, #fff);
+  background: color-mix(in srgb, var(--cw-green) 11%, #fff);
+}
 .source-pill.configured {
   border-color: color-mix(in srgb, var(--cw-green) 54%, #fff);
   background: color-mix(in srgb, var(--cw-green) 13%, #fff);
@@ -2366,6 +2370,24 @@ select { min-height: 40px; }
   color: var(--cw-ink);
   font-size: 12px;
   font-weight: 800;
+}
+.sender-whatsapp-summary {
+  border: 1px solid color-mix(in srgb, var(--cw-green) 34%, #fff);
+  background: color-mix(in srgb, var(--cw-green) 8%, #fff);
+  border-radius: 8px;
+  padding: 10px;
+  display: grid;
+  gap: 4px;
+}
+.sender-whatsapp-summary strong,
+.sender-whatsapp-summary span {
+  display: block;
+  min-width: 0;
+}
+.sender-whatsapp-summary span {
+  color: var(--cw-muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
 }
 .rendered-message-preview,
 .script-preview {

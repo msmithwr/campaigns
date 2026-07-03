@@ -25,6 +25,7 @@ import {
   Plus,
   RotateCcw,
   Save,
+  Send,
   Settings,
   Sparkles,
   Target,
@@ -232,6 +233,16 @@ const initialIntegrationSettings = [
     burstLimit: 30,
     webhookMode: "planned",
     userMappingMode: "email",
+    lastTestedAt: "",
+    lastTestStatus: "",
+    updatedAt: "2026-06-01T00:00:00.000Z"
+  },
+  {
+    settingKey: "whatsapp",
+    secretName: "",
+    accountLabel: "Cloudwrxs WhatsApp Business",
+    apiVersion: "v23.0",
+    mode: "cloud_api",
     lastTestedAt: "",
     lastTestStatus: "",
     updatedAt: "2026-06-01T00:00:00.000Z"
@@ -1805,6 +1816,7 @@ function App() {
             campaignApiUrl={campaignApiUrl}
             campaigns={campaignRecords}
             createCampaignComponent={createCampaignComponent}
+            integrationSettings={integrationSettings}
             senderProfiles={senderProfiles}
             templates={whatsappTemplates}
             setTemplates={setWhatsappTemplates}
@@ -6076,13 +6088,14 @@ function SendReviewWorkspace({ activeCampaignId, authHeaders, campaignApiUrl, ca
   );
 }
 
-function WhatsAppWorkspace({ audienceLists, authHeaders, campaignApiUrl, campaigns, createCampaignComponent, senderProfiles, templates, setDeletedContentAssetIds, setTemplates }) {
+function WhatsAppWorkspace({ audienceLists, authHeaders, campaignApiUrl, campaigns, createCampaignComponent, integrationSettings = [], senderProfiles, templates, setDeletedContentAssetIds, setTemplates }) {
   const [selectedAssetId, setSelectedAssetId] = useState(() => templates[0]?.assetId || initialWhatsAppTemplates[0]?.assetId);
   const [campaignFilter, setCampaignFilter] = useState("all");
+  const [manualSendStatus, setManualSendStatus] = useState("");
   const [testContact, setTestContact] = useState({
     firstName: "there",
     phone: "",
-    senderName: "Cloudwrxs"
+    senderOwnerId: ""
   });
   const selectedTemplate = templates.find((template) => template.assetId === selectedAssetId) || templates[0] || null;
   const filteredTemplates = templates.filter((template) => {
@@ -6093,11 +6106,20 @@ function WhatsAppWorkspace({ audienceLists, authHeaders, campaignApiUrl, campaig
   });
   const ownerProfiles = senderProfiles.filter((profile) => profile.active !== false);
   const reusableAudienceLists = audienceLists.filter((list) => list.sourceListId);
-  const renderedMessage = selectedTemplate ? renderManualMessage(selectedTemplate.bodyText, testContact, selectedTemplate.placeholderValues) : "";
+  const whatsappSetting = integrationSettings.find((setting) => setting.settingKey === "whatsapp") || initialIntegrationSettings.find((setting) => setting.settingKey === "whatsapp") || {};
+  const selectedSender = ownerProfiles.find((profile) => profile.ownerId === testContact.senderOwnerId) || ownerProfiles[0] || null;
+  const selectedSenderFirstName = String(selectedSender?.name || "Cloudwrxs").trim().split(/\s+/)[0] || "Cloudwrxs";
+  const renderedMessage = selectedTemplate ? renderManualMessage(selectedTemplate.bodyText, { ...testContact, senderName: selectedSenderFirstName }, selectedTemplate.placeholderValues) : "";
 
   useEffect(() => {
     if (selectedTemplate?.assetId && selectedTemplate.assetId !== selectedAssetId) setSelectedAssetId(selectedTemplate.assetId);
   }, [selectedAssetId, selectedTemplate?.assetId]);
+
+  useEffect(() => {
+    if (!testContact.senderOwnerId && ownerProfiles[0]?.ownerId) {
+      setTestContact((current) => ({ ...current, senderOwnerId: ownerProfiles[0].ownerId }));
+    }
+  }, [ownerProfiles, testContact.senderOwnerId]);
 
   function updateTemplate(field, value) {
     if (!selectedTemplate) return;
@@ -6246,6 +6268,34 @@ function WhatsAppWorkspace({ audienceLists, authHeaders, campaignApiUrl, campaig
     window.open(url, "_blank", "noopener,noreferrer");
   }
 
+  async function sendWhatsAppApiTest() {
+    setManualSendStatus("Sending WhatsApp test message...");
+    try {
+      if (!selectedSender?.whatsappPhoneNumberId) throw new Error("Selected user needs a WhatsApp phone number ID in Settings.");
+      const response = await fetch(`${campaignApiUrl}/whatsapp/send-test`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...authHeaders
+        },
+        body: JSON.stringify({
+          apiVersion: whatsappSetting.apiVersion,
+          bodyText: renderedMessage,
+          phoneNumberId: selectedSender.whatsappPhoneNumberId,
+          recipientPhone: testContact.phone,
+          secretName: whatsappSetting.secretName,
+          senderOwnerId: selectedSender.ownerId,
+          templateAssetId: selectedTemplate?.assetId || ""
+        })
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || `WhatsApp send failed: ${response.status}`);
+      setManualSendStatus(`WhatsApp API accepted message ${result.messageId || ""}`.trim());
+    } catch (error) {
+      setManualSendStatus(error.message);
+    }
+  }
+
   return (
     <ContentAssetWorkspace
       assetKind="whatsapp"
@@ -6304,9 +6354,18 @@ function WhatsAppWorkspace({ audienceLists, authHeaders, campaignApiUrl, campaig
               <input value={testContact.phone} onChange={(event) => setTestContact((current) => ({ ...current, phone: event.target.value }))} placeholder="+971..." />
             </label>
             <label>
-              <span>Sender name</span>
-              <input value={testContact.senderName} onChange={(event) => setTestContact((current) => ({ ...current, senderName: event.target.value }))} />
+              <span>Send as user</span>
+              <select value={testContact.senderOwnerId || selectedSender?.ownerId || ""} onChange={(event) => setTestContact((current) => ({ ...current, senderOwnerId: event.target.value }))}>
+                {ownerProfiles.map((profile) => (
+                  <option key={profile.ownerId} value={profile.ownerId}>{profile.name}</option>
+                ))}
+              </select>
             </label>
+          </div>
+          <div className="sender-whatsapp-summary">
+            <strong>{selectedSender?.name || "No user selected"}</strong>
+            <span>{selectedSender?.whatsappPhoneNumberId ? `WhatsApp phone number ID ${selectedSender.whatsappPhoneNumberId}` : "No WhatsApp phone number ID configured for this user."}</span>
+            <span>{whatsappSetting.secretName ? `Secret: ${whatsappSetting.secretName}` : "WhatsApp API secret is not configured yet."}</span>
           </div>
           <div className="rendered-message-preview">
             <strong>Rendered preview</strong>
@@ -6321,8 +6380,13 @@ function WhatsAppWorkspace({ audienceLists, authHeaders, campaignApiUrl, campaig
               <MessageCircle size={15} />
               Launch WhatsApp
             </button>
+            <button className="primary-button compact" onClick={sendWhatsAppApiTest} disabled={!campaignApiUrl || !whatsappSetting.secretName || !selectedSender?.whatsappPhoneNumberId || !testContact.phone.trim() || !renderedMessage.trim()}>
+              <Send size={15} />
+              Send via API
+            </button>
           </div>
-          <p className="asset-helper-note">For now this opens WhatsApp with the message prefilled. As we add WhatsApp Business API approval and opt-in handling, these assets can become automated send templates.</p>
+          {manualSendStatus && <p className="save-status">{manualSendStatus}</p>}
+          <p className="asset-helper-note">API sends use Meta WhatsApp Cloud API text messages. For contacts outside an open 24-hour service window, Meta may require an approved template message instead.</p>
         </section>
       ) : null}
     />
@@ -8478,17 +8542,22 @@ function Integrations({ authHeaders, campaignApiUrl, integrationSettings, setInt
   const [justcallApiSecret, setJustcallApiSecret] = useState("");
   const [justcallStatus, setJustcallStatus] = useState("");
   const [showJustcallHelp, setShowJustcallHelp] = useState(false);
+  const [whatsappAccessToken, setWhatsappAccessToken] = useState("");
+  const [whatsappStatus, setWhatsappStatus] = useState("");
+  const [showWhatsappHelp, setShowWhatsappHelp] = useState(false);
   const googleSheets = integrationSettings.find((setting) => setting.settingKey === "googleSheets") || initialIntegrationSettings[0];
   const hubspotDefault = initialIntegrationSettings.find((setting) => setting.settingKey === "hubspot");
   const hubspot = integrationSettings.find((setting) => setting.settingKey === "hubspot") || hubspotDefault;
   const justcallDefault = initialIntegrationSettings.find((setting) => setting.settingKey === "justcall");
   const justcall = integrationSettings.find((setting) => setting.settingKey === "justcall") || justcallDefault;
+  const whatsappDefault = initialIntegrationSettings.find((setting) => setting.settingKey === "whatsapp");
+  const whatsapp = integrationSettings.find((setting) => setting.settingKey === "whatsapp") || whatsappDefault;
   const integrations = [
     ["Markdown", "Current source of campaign structure, content, calendars, scripts", "Active locally"],
     ["HubSpot", "Contacts, lists, tasks, lifecycle stages, notes, deals, campaign attribution", hubspot.secretName ? "Configured" : "Needs setup"],
     ["JustCall", "Embedded calling, call logs, recordings, AI call intelligence, sales follow-up tasks", justcall.secretName ? "Configured" : "Needs setup"],
     ["Amazon SNS / SES", "Email send orchestration, delivery events, bounces, complaints, engagement ingestion", "AWS phase"],
-    ["WhatsApp Business", "Template approval, sender profiles per campaign, replies, opt-outs, handoff", "AWS phase"],
+    ["WhatsApp Business", "Template approval, sender profiles per campaign, replies, opt-outs, handoff", whatsapp.secretName ? "Configured" : "Needs setup"],
     ["LinkedIn", "Post generation, approvals, publishing queue, engagement reporting", "OAuth phase"]
   ];
 
@@ -8527,6 +8596,21 @@ function Integrations({ authHeaders, campaignApiUrl, integrationSettings, setInt
       const existing = current.some((setting) => setting.settingKey === "justcall") ? current : [...current, justcallDefault];
       return existing.map((setting) =>
         setting.settingKey === "justcall"
+          ? {
+              ...setting,
+              [field]: value,
+              updatedAt: nowIso()
+            }
+          : setting
+      );
+    });
+  }
+
+  function updateWhatsappSetting(field, value) {
+    setIntegrationSettings((current) => {
+      const existing = current.some((setting) => setting.settingKey === "whatsapp") ? current : [...current, whatsappDefault];
+      return existing.map((setting) =>
+        setting.settingKey === "whatsapp"
           ? {
               ...setting,
               [field]: value,
@@ -8612,6 +8696,63 @@ function Integrations({ authHeaders, campaignApiUrl, integrationSettings, setInt
       setJustcallStatus("JustCall credentials saved in AWS Secrets Manager.");
     } catch (error) {
       setJustcallStatus(error.message);
+    }
+  }
+
+  async function saveWhatsappSecret() {
+    setWhatsappStatus("Creating or updating WhatsApp API secret...");
+    try {
+      const secretName = whatsapp.secretName || "cloudwrxs-campaign-whatsapp";
+      const response = await fetch(`${campaignApiUrl}/whatsapp/secret`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...authHeaders
+        },
+        body: JSON.stringify({
+          accessToken: whatsappAccessToken,
+          accountLabel: whatsapp.accountLabel,
+          apiVersion: whatsapp.apiVersion || "v23.0",
+          secretName
+        })
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || `WhatsApp secret save failed: ${response.status}`);
+      updateWhatsappSetting("secretName", result.secretName);
+      updateWhatsappSetting("accountLabel", result.accountLabel || whatsapp.accountLabel || "Cloudwrxs WhatsApp Business");
+      updateWhatsappSetting("apiVersion", result.apiVersion || whatsapp.apiVersion || "v23.0");
+      updateWhatsappSetting("lastTestedAt", "");
+      updateWhatsappSetting("lastTestStatus", "saved");
+      setWhatsappAccessToken("");
+      setWhatsappStatus("WhatsApp access token saved in AWS Secrets Manager.");
+    } catch (error) {
+      setWhatsappStatus(error.message);
+    }
+  }
+
+  async function testWhatsappConnection() {
+    setWhatsappStatus("Testing WhatsApp access token...");
+    try {
+      const response = await fetch(`${campaignApiUrl}/whatsapp/test`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...authHeaders
+        },
+        body: JSON.stringify({
+          apiVersion: whatsapp.apiVersion || "v23.0",
+          secretName: whatsapp.secretName
+        })
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || `WhatsApp test failed: ${response.status}`);
+      updateWhatsappSetting("lastTestedAt", result.testedAt || nowIso());
+      updateWhatsappSetting("lastTestStatus", "ok");
+      updateWhatsappSetting("accountLabel", result.accountLabel || whatsapp.accountLabel || "Cloudwrxs WhatsApp Business");
+      setWhatsappStatus(`Connection OK. ${result.tokenType || "Token"} token accepted.`);
+    } catch (error) {
+      updateWhatsappSetting("lastTestStatus", "failed");
+      setWhatsappStatus(error.message);
     }
   }
 
@@ -8987,6 +9128,88 @@ function Integrations({ authHeaders, campaignApiUrl, integrationSettings, setInt
           <span>{justcall.lastTestedAt ? `Last tested ${new Date(justcall.lastTestedAt).toLocaleString()}` : "Save credentials now; then we can wire Lead Nurture calls, webhooks, recordings, and AI sentiment."}</span>
         </div>
       </section>
+      <section className="panel wide-panel integration-config-panel">
+        <div className="section-head">
+          <div>
+            <p className="eyebrow">WhatsApp Business Cloud API</p>
+            <h2>Meta access token and sender setup</h2>
+          </div>
+          <span className={`source-pill whatsapp ${whatsapp.lastTestStatus === "ok" ? "configured" : ""}`}>{whatsapp.lastTestStatus === "ok" ? "Connected" : whatsapp.secretName ? "Token saved" : "Needs setup"}</span>
+        </div>
+        <div className="integration-config-grid">
+          <label>
+            <span>AWS Secrets Manager secret name</span>
+            <input
+              value={whatsapp.secretName || ""}
+              onChange={(event) => updateWhatsappSetting("secretName", event.target.value)}
+              placeholder="cloudwrxs-campaign-whatsapp"
+            />
+          </label>
+          <label>
+            <span>Account label</span>
+            <input
+              value={whatsapp.accountLabel || ""}
+              onChange={(event) => updateWhatsappSetting("accountLabel", event.target.value)}
+              placeholder="Cloudwrxs WhatsApp Business"
+            />
+          </label>
+          <label>
+            <span>Graph API version</span>
+            <input
+              value={whatsapp.apiVersion || "v23.0"}
+              onChange={(event) => updateWhatsappSetting("apiVersion", event.target.value)}
+              placeholder="v23.0"
+            />
+          </label>
+          <label>
+            <span>Mode</span>
+            <input value="Meta Cloud API text send test" readOnly />
+          </label>
+        </div>
+        <div className="secret-json-panel">
+          <div className="panel-head">
+            <h3>Create or update WhatsApp API secret</h3>
+            <button className="secondary-button compact" onClick={() => setShowWhatsappHelp((current) => !current)}>
+              Help
+            </button>
+          </div>
+          {showWhatsappHelp && (
+            <div className="help-panel">
+              <strong>WhatsApp Cloud API setup</strong>
+              <span>1. In Meta for Developers, create or open the app connected to the Cloudwrxs WhatsApp Business Account.</span>
+              <span>2. Add the WhatsApp product and find the WhatsApp API setup page.</span>
+              <span>3. Create a system user access token with whatsapp_business_messaging. Add whatsapp_business_management if we later read templates and phone numbers.</span>
+              <span>4. Paste the token below. The token is stored in AWS Secrets Manager, not browser storage.</span>
+              <span>5. For each Cloudwrxs sender, add the WhatsApp phone number ID under Settings, Users and calendar links.</span>
+              <span>6. For testing, the recipient must be allowed by the Meta test setup or inside an open 24-hour WhatsApp service window. Otherwise we will need approved template sends.</span>
+            </div>
+          )}
+          <label>
+            <span>Paste Meta WhatsApp access token</span>
+            <input
+              type="password"
+              value={whatsappAccessToken}
+              onChange={(event) => setWhatsappAccessToken(event.target.value)}
+              placeholder="EAAB..."
+            />
+          </label>
+          <div className="editor-actions">
+            <button className="primary-button" onClick={saveWhatsappSecret} disabled={!campaignApiUrl || !whatsappAccessToken.trim()}>
+              <Save size={15} />
+              Create / update WhatsApp secret
+            </button>
+            <button className="secondary-button" onClick={testWhatsappConnection} disabled={!campaignApiUrl || !whatsapp.secretName}>
+              <PlugZap size={15} />
+              Test connection
+            </button>
+          </div>
+          {whatsappStatus && <p className="save-status">{whatsappStatus}</p>}
+        </div>
+        <div className="hubspot-property-summary">
+          <strong>{whatsapp.secretName ? "Token storage configured" : "Token storage needed"}</strong>
+          <span>{whatsapp.lastTestedAt ? `Last tested ${new Date(whatsapp.lastTestedAt).toLocaleString()}` : "After saving the token, set each user's WhatsApp phone number ID in Settings before testing sends."}</span>
+        </div>
+      </section>
     </div>
   );
 }
@@ -9211,6 +9434,8 @@ function SettingsPanel({ activeCampaign, senderProfiles, setSenderProfiles }) {
         title: "Sales Owner",
         email: "",
         hubspotOwnerId: "",
+        whatsappDisplayPhone: "",
+        whatsappPhoneNumberId: "",
         calendarLink: "",
         active: true
       }
@@ -9303,6 +9528,14 @@ function SettingsPanel({ activeCampaign, senderProfiles, setSenderProfiles }) {
                 <label>
                   <span>HubSpot owner ID</span>
                   <input value={profile.hubspotOwnerId || ""} onChange={(event) => updateSenderProfile(profile.ownerId, "hubspotOwnerId", event.target.value)} placeholder="Optional numeric owner ID" />
+                </label>
+                <label>
+                  <span>WhatsApp phone number ID</span>
+                  <input value={profile.whatsappPhoneNumberId || ""} onChange={(event) => updateSenderProfile(profile.ownerId, "whatsappPhoneNumberId", event.target.value)} placeholder="Meta phone_number_id" />
+                </label>
+                <label>
+                  <span>WhatsApp display number</span>
+                  <input value={profile.whatsappDisplayPhone || ""} onChange={(event) => updateSenderProfile(profile.ownerId, "whatsappDisplayPhone", event.target.value)} placeholder="+971..." />
                 </label>
                 <label className="wide-field">
                   <span>Calendar link</span>
