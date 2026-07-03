@@ -2355,6 +2355,7 @@ async function saveWhatsAppSecret({
   accessToken,
   accountLabel = "Cloudwrxs WhatsApp Business",
   apiVersion = "v23.0",
+  persistSetting = true,
   secretName
 }) {
   if (!secretName || !String(secretName).startsWith("cloudwrxs-campaign-")) {
@@ -2385,7 +2386,7 @@ async function saveWhatsAppSecret({
     lastTestStatus: "saved",
     updatedAt: new Date().toISOString()
   };
-  await put(tables.integrationSettings, setting);
+  if (persistSetting !== false) await put(tables.integrationSettings, setting);
 
   return {
     ok: true,
@@ -2393,7 +2394,7 @@ async function saveWhatsAppSecret({
   };
 }
 
-async function testWhatsAppConnection({ apiVersion = "v23.0", secretName }) {
+async function testWhatsAppConnection({ apiVersion = "v23.0", persistSetting = true, secretName }) {
   const credentials = await getConfiguredWhatsAppCredentials(secretName);
   const normalizedApiVersion = normalizeMetaApiVersion(apiVersion || credentials.apiVersion);
   const testedAt = new Date().toISOString();
@@ -2415,7 +2416,7 @@ async function testWhatsAppConnection({ apiVersion = "v23.0", secretName }) {
     lastTestStatus: "ok",
     updatedAt: testedAt
   };
-  await put(tables.integrationSettings, setting);
+  if (persistSetting !== false) await put(tables.integrationSettings, setting);
 
   return {
     ok: true,

@@ -1922,7 +1922,7 @@ function App() {
             setActiveCampaignId={setActiveCampaignId}
           />
         )}
-        {activeTab === "settings" && <SettingsPanel activeCampaign={activeCampaign} senderProfiles={senderProfiles} setSenderProfiles={setSenderProfiles} />}
+        {activeTab === "settings" && <SettingsPanel activeCampaign={activeCampaign} authHeaders={authHeaders} campaignApiUrl={campaignApiUrl} senderProfiles={senderProfiles} setSenderProfiles={setSenderProfiles} />}
       </main>
 
       {selectedEvent && (
@@ -6272,6 +6272,7 @@ function WhatsAppWorkspace({ audienceLists, authHeaders, campaignApiUrl, campaig
     setManualSendStatus("Sending WhatsApp test message...");
     try {
       if (!selectedSender?.whatsappPhoneNumberId) throw new Error("Selected user needs a WhatsApp phone number ID in Settings.");
+      const senderSecretName = selectedSender.whatsappSecretName || whatsappSetting.secretName;
       const response = await fetch(`${campaignApiUrl}/whatsapp/send-test`, {
         method: "POST",
         headers: {
@@ -6283,7 +6284,7 @@ function WhatsAppWorkspace({ audienceLists, authHeaders, campaignApiUrl, campaig
           bodyText: renderedMessage,
           phoneNumberId: selectedSender.whatsappPhoneNumberId,
           recipientPhone: testContact.phone,
-          secretName: whatsappSetting.secretName,
+          secretName: senderSecretName,
           senderOwnerId: selectedSender.ownerId,
           templateAssetId: selectedTemplate?.assetId || ""
         })
@@ -6365,7 +6366,7 @@ function WhatsAppWorkspace({ audienceLists, authHeaders, campaignApiUrl, campaig
           <div className="sender-whatsapp-summary">
             <strong>{selectedSender?.name || "No user selected"}</strong>
             <span>{selectedSender?.whatsappPhoneNumberId ? `WhatsApp phone number ID ${selectedSender.whatsappPhoneNumberId}` : "No WhatsApp phone number ID configured for this user."}</span>
-            <span>{whatsappSetting.secretName ? `Secret: ${whatsappSetting.secretName}` : "WhatsApp API secret is not configured yet."}</span>
+            <span>{selectedSender?.whatsappSecretName ? `User secret: ${selectedSender.whatsappSecretName}` : whatsappSetting.secretName ? `Default secret: ${whatsappSetting.secretName}` : "WhatsApp API secret is not configured yet."}</span>
           </div>
           <div className="rendered-message-preview">
             <strong>Rendered preview</strong>
@@ -6380,7 +6381,7 @@ function WhatsAppWorkspace({ audienceLists, authHeaders, campaignApiUrl, campaig
               <MessageCircle size={15} />
               Launch WhatsApp
             </button>
-            <button className="primary-button compact" onClick={sendWhatsAppApiTest} disabled={!campaignApiUrl || !whatsappSetting.secretName || !selectedSender?.whatsappPhoneNumberId || !testContact.phone.trim() || !renderedMessage.trim()}>
+            <button className="primary-button compact" onClick={sendWhatsAppApiTest} disabled={!campaignApiUrl || !(selectedSender?.whatsappSecretName || whatsappSetting.secretName) || !selectedSender?.whatsappPhoneNumberId || !testContact.phone.trim() || !renderedMessage.trim()}>
               <Send size={15} />
               Send via API
             </button>
@@ -9422,7 +9423,10 @@ function Evaluation({ activeCampaignId, authHeaders, benchmarkIdeas, campaignApi
   );
 }
 
-function SettingsPanel({ activeCampaign, senderProfiles, setSenderProfiles }) {
+function SettingsPanel({ activeCampaign, authHeaders, campaignApiUrl, senderProfiles, setSenderProfiles }) {
+  const [whatsappUserTokens, setWhatsappUserTokens] = useState({});
+  const [whatsappUserStatus, setWhatsappUserStatus] = useState({});
+
   function addSenderProfile() {
     const nextNumber = senderProfiles.length + 1;
     const ownerId = `user-${Date.now()}`;
@@ -9436,6 +9440,9 @@ function SettingsPanel({ activeCampaign, senderProfiles, setSenderProfiles }) {
         hubspotOwnerId: "",
         whatsappDisplayPhone: "",
         whatsappPhoneNumberId: "",
+        whatsappSecretName: "",
+        whatsappAccountLabel: "",
+        whatsappApiVersion: "v23.0",
         calendarLink: "",
         active: true
       }
@@ -9453,6 +9460,68 @@ function SettingsPanel({ activeCampaign, senderProfiles, setSenderProfiles }) {
           : profile
       )
     );
+  }
+
+  function updateWhatsappUserToken(ownerId, value) {
+    setWhatsappUserTokens((current) => ({ ...current, [ownerId]: value }));
+  }
+
+  function setWhatsappProfileStatus(ownerId, message) {
+    setWhatsappUserStatus((current) => ({ ...current, [ownerId]: message }));
+  }
+
+  async function saveUserWhatsappSecret(profile) {
+    const token = whatsappUserTokens[profile.ownerId] || "";
+    setWhatsappProfileStatus(profile.ownerId, "Saving WhatsApp token...");
+    try {
+      const secretName = profile.whatsappSecretName || `cloudwrxs-campaign-whatsapp-${slugify(profile.ownerId || profile.name || "user")}`;
+      const response = await fetch(`${campaignApiUrl}/whatsapp/secret`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...authHeaders
+        },
+        body: JSON.stringify({
+          accessToken: token,
+          accountLabel: profile.whatsappAccountLabel || profile.name || "WhatsApp sender",
+          apiVersion: profile.whatsappApiVersion || "v23.0",
+          persistSetting: false,
+          secretName
+        })
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || `WhatsApp secret save failed: ${response.status}`);
+      updateSenderProfile(profile.ownerId, "whatsappSecretName", result.secretName);
+      updateSenderProfile(profile.ownerId, "whatsappAccountLabel", result.accountLabel || profile.whatsappAccountLabel || profile.name || "");
+      updateSenderProfile(profile.ownerId, "whatsappApiVersion", result.apiVersion || profile.whatsappApiVersion || "v23.0");
+      updateWhatsappUserToken(profile.ownerId, "");
+      setWhatsappProfileStatus(profile.ownerId, "WhatsApp token saved for this user.");
+    } catch (error) {
+      setWhatsappProfileStatus(profile.ownerId, error.message);
+    }
+  }
+
+  async function testUserWhatsappSecret(profile) {
+    setWhatsappProfileStatus(profile.ownerId, "Testing WhatsApp token...");
+    try {
+      const response = await fetch(`${campaignApiUrl}/whatsapp/test`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...authHeaders
+        },
+        body: JSON.stringify({
+          apiVersion: profile.whatsappApiVersion || "v23.0",
+          persistSetting: false,
+          secretName: profile.whatsappSecretName
+        })
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || `WhatsApp test failed: ${response.status}`);
+      setWhatsappProfileStatus(profile.ownerId, `Connection OK${result.metaId ? ` (${result.metaId})` : ""}.`);
+    } catch (error) {
+      setWhatsappProfileStatus(profile.ownerId, error.message);
+    }
   }
 
   return (
@@ -9537,6 +9606,33 @@ function SettingsPanel({ activeCampaign, senderProfiles, setSenderProfiles }) {
                   <span>WhatsApp display number</span>
                   <input value={profile.whatsappDisplayPhone || ""} onChange={(event) => updateSenderProfile(profile.ownerId, "whatsappDisplayPhone", event.target.value)} placeholder="+971..." />
                 </label>
+                <label>
+                  <span>WhatsApp account label</span>
+                  <input value={profile.whatsappAccountLabel || ""} onChange={(event) => updateSenderProfile(profile.ownerId, "whatsappAccountLabel", event.target.value)} placeholder="Amaan WhatsApp Business" />
+                </label>
+                <label>
+                  <span>WhatsApp Graph API version</span>
+                  <input value={profile.whatsappApiVersion || "v23.0"} onChange={(event) => updateSenderProfile(profile.ownerId, "whatsappApiVersion", event.target.value)} placeholder="v23.0" />
+                </label>
+                <label className="wide-field">
+                  <span>WhatsApp token secret name</span>
+                  <input value={profile.whatsappSecretName || ""} onChange={(event) => updateSenderProfile(profile.ownerId, "whatsappSecretName", event.target.value)} placeholder={`cloudwrxs-campaign-whatsapp-${slugify(profile.ownerId || profile.name || "user")}`} />
+                </label>
+                <label className="wide-field">
+                  <span>Paste WhatsApp access token for this user</span>
+                  <input type="password" value={whatsappUserTokens[profile.ownerId] || ""} onChange={(event) => updateWhatsappUserToken(profile.ownerId, event.target.value)} placeholder="Optional user-specific Meta token" />
+                </label>
+                <div className="wide-field user-secret-actions">
+                  <button className="secondary-button compact" onClick={() => saveUserWhatsappSecret(profile)} disabled={!campaignApiUrl || !String(whatsappUserTokens[profile.ownerId] || "").trim()}>
+                    <Save size={14} />
+                    Save WhatsApp token
+                  </button>
+                  <button className="secondary-button compact" onClick={() => testUserWhatsappSecret(profile)} disabled={!campaignApiUrl || !profile.whatsappSecretName}>
+                    <PlugZap size={14} />
+                    Test WhatsApp token
+                  </button>
+                  {whatsappUserStatus[profile.ownerId] && <span>{whatsappUserStatus[profile.ownerId]}</span>}
+                </div>
                 <label className="wide-field">
                   <span>Calendar link</span>
                   <input value={profile.calendarLink} onChange={(event) => updateSenderProfile(profile.ownerId, "calendarLink", event.target.value)} />

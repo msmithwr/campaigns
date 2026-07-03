@@ -890,6 +890,17 @@ select { min-height: 40px; }
   font-size: 12px;
   font-weight: 800;
 }
+.user-secret-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.user-secret-actions span {
+  color: var(--cw-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
 .wide-field { grid-column: 1 / -1; }
 
 .email-workspace {
