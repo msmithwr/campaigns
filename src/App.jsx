@@ -3230,7 +3230,7 @@ function AudienceWorkspace({
     campaignAudienceLists.find((list) => list.listId === selectedAudienceListId)?.listId || campaignAudienceLists[0]?.listId || ""
   );
   const selectedSource = audienceSources.find((list) => list.listId === selectedSourceId) || audienceSources[0];
-  const selectedList = campaignAudienceLists.find((list) => list.listId === selectedCampaignAudienceId) || campaignAudienceLists[0];
+  const selectedList = selectedCampaignAudienceId ? campaignAudienceLists.find((list) => list.listId === selectedCampaignAudienceId) || null : null;
   const selectedListSource = audienceSources.find((list) => list.listId === selectedList?.sourceListId) || selectedSource;
   const sourceContacts = audienceContacts.filter((contact) => contact.listId === selectedListSource?.listId);
   const compliance = buildComplianceIndex(unsubscribers, emailEvents);
@@ -3261,7 +3261,7 @@ function AudienceWorkspace({
       if (selectedCampaignAudienceId) setSelectedCampaignAudienceId("");
       return;
     }
-    if (!campaignAudienceLists.some((list) => list.listId === selectedCampaignAudienceId)) {
+    if (selectedCampaignAudienceId && !campaignAudienceLists.some((list) => list.listId === selectedCampaignAudienceId)) {
       setSelectedCampaignAudienceId(campaignAudienceLists[0].listId);
     }
   }, [selectedCampaignAudienceId, campaignAudienceLists.map((list) => list.listId).join("|")]);
@@ -3614,6 +3614,8 @@ function AudienceWorkspace({
     };
     setAudienceLists((current) => [list, ...current]);
     setSelectedSourceId(listId);
+    setSelectedCampaignAudienceId("");
+    setSelectedAudienceListId(listId);
   }
 
   function createGoogleSheetSource() {
@@ -3670,8 +3672,21 @@ function AudienceWorkspace({
       )
     );
     setSelectedSourceId(listId);
+    setSelectedCampaignAudienceId("");
     setSelectedAudienceListId(listId);
     setShowSheetPicker(false);
+  }
+
+  function selectAudienceSource(list) {
+    setSelectedSourceId(list.listId);
+    const derivedAudience = campaignAudienceLists.find((item) => item.sourceListId === list.listId);
+    if (derivedAudience) {
+      setSelectedCampaignAudienceId(derivedAudience.listId);
+      setSelectedAudienceListId(derivedAudience.listId);
+      return;
+    }
+    setSelectedCampaignAudienceId("");
+    setSelectedAudienceListId(list.listId);
   }
 
   function updateSource(field, value) {
@@ -4358,9 +4373,7 @@ function AudienceWorkspace({
             <article className={`audience-list-card ${list.listId === selectedSource?.listId ? "selected" : ""}`} key={list.listId}>
               <button
                 className="audience-list-main"
-                onClick={() => {
-                  setSelectedSourceId(list.listId);
-                }}
+                onClick={() => selectAudienceSource(list)}
               >
                 <strong>{list.name}</strong>
                 <span>{list.sourceType === "hubspot" ? (list.hubspotImportMode === "contacts" ? "HubSpot contacts" : list.hubspotImportMode === "company_segment" ? "HubSpot company segment" : "HubSpot contact segment") : "Google Sheet list"}</span>
