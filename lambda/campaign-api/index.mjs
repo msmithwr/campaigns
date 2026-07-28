@@ -3749,12 +3749,41 @@ async function fetchGoogleSheetRows({ range, sheetId, tabName, token }) {
   const safeTabName = String(tabName).replace(/'/g, "''");
   const encodedRange = encodeURIComponent(`'${safeTabName}'!${range}`);
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(sheetId)}/values/${encodedRange}?majorDimension=ROWS`;
-  const result = await fetchJson(url, {
+  let result;
+  try {
+    result = await fetchJson(url, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  } catch (error) {
+    const resolvedTabName = await resolveGoogleSheetTabName({ error, sheetId, tabName, token });
+    if (!resolvedTabName || resolvedTabName === tabName) throw error;
+    const resolvedSafeTabName = String(resolvedTabName).replace(/'/g, "''");
+    const resolvedRange = encodeURIComponent(`'${resolvedSafeTabName}'!${range}`);
+    result = await fetchJson(`https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(sheetId)}/values/${resolvedRange}?majorDimension=ROWS`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
+  return result.values || [];
+}
+
+async function resolveGoogleSheetTabName({ error, sheetId, tabName, token }) {
+  if (!String(error?.message || "").includes("Unable to parse range")) return null;
+  const metadata = await fetchJson(`https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(sheetId)}?fields=sheets.properties.title`, {
     headers: {
       Authorization: `Bearer ${token}`
     }
   });
-  return result.values || [];
+  const requestedName = normalizeGoogleSheetTabName(tabName);
+  const sheets = metadata.sheets || [];
+  return sheets.find((sheet) => normalizeGoogleSheetTabName(sheet.properties?.title) === requestedName)?.properties?.title || null;
+}
+
+function normalizeGoogleSheetTabName(value) {
+  return String(value || "").trim().replace(/\s+/g, " ").toLowerCase();
 }
 
 function rowRange(range = "A:Z", startRow = 1, endRow = startRow) {
