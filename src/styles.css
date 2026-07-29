@@ -169,6 +169,14 @@ button { cursor: pointer; }
 }
 .auth-panel h1, .auth-panel p { margin: 0; }
 .auth-panel p:not(.eyebrow) { color: #d7dde1; line-height: 1.5; }
+.auth-panel .auth-notice {
+  color: #172026;
+  background: #fff1e8;
+  border: 1px solid var(--cw-orange);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-weight: 700;
+}
 .auth-cloudcamp-logo {
   width: 58px;
   height: 58px;

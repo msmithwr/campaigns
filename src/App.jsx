@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   BarChart3,
@@ -863,7 +863,9 @@ function decodeJwtPayload(token) {
 function readStoredAuth() {
   try {
     const auth = JSON.parse(window.localStorage.getItem(authStorageKey) || "null");
-    return auth?.idToken && auth.expiresAt > Date.now() ? auth : null;
+    if (auth?.idToken && auth.expiresAt > Date.now()) return auth;
+    window.localStorage.removeItem(authStorageKey);
+    return null;
   } catch {
     return null;
   }
@@ -915,6 +917,7 @@ function signOutOfCognito() {
 
 function App() {
   const [auth, setAuth] = useState(() => completeHostedUiLogin() || readStoredAuth());
+  const [authNotice, setAuthNotice] = useState("");
   const [activeTab, setActiveTab] = useState("dashboard");
   const [campaignRecords, setCampaignRecords] = useState(() => generatedCampaigns);
   const [activeCampaignId, setActiveCampaignId] = useState(generatedCampaigns[0]?.id);
@@ -957,6 +960,25 @@ function App() {
   const visibleCampaigns = dashboardCampaigns.filter((campaign) => visible.has(campaign.id));
   const selectedMonth = monthOrder[selectedMonthIndex];
   const authHeaders = auth?.idToken ? { Authorization: `Bearer ${auth.idToken}` } : {};
+  const expireAuthSession = useCallback((message = "Your CloudCamp sign-in expired. Please sign in again.") => {
+    window.localStorage.removeItem(authStorageKey);
+    setAuth(null);
+    setAuthNotice(message);
+  }, []);
+  const apiFetch = useCallback(async (url, options = {}) => {
+    const headers = {
+      ...(options.headers || {}),
+      ...(auth?.idToken ? { Authorization: `Bearer ${auth.idToken}` } : {})
+    };
+    const response = await fetch(url, {
+      ...options,
+      headers
+    });
+    if (authEnabled && (response.status === 401 || response.status === 403)) {
+      expireAuthSession("Your CloudCamp session has expired. Please sign in again, then retry the action.");
+    }
+    return response;
+  }, [auth?.idToken, expireAuthSession]);
 
   const totals = useMemo(() => campaignTotals(dashboardCampaigns), [dashboardCampaigns]);
 
@@ -965,6 +987,15 @@ function App() {
   useEffect(() => {
     window.localStorage.setItem(scheduleStorageKey, JSON.stringify(schedule));
   }, [schedule]);
+
+  useEffect(() => {
+    if (!auth?.expiresAt) return undefined;
+    const delay = Math.max(0, auth.expiresAt - Date.now() - 30000);
+    const timeoutId = window.setTimeout(() => {
+      expireAuthSession("Your CloudCamp session has expired. Please sign in again.");
+    }, delay);
+    return () => window.clearTimeout(timeoutId);
+  }, [auth?.expiresAt, expireAuthSession]);
 
   useEffect(() => {
     if (!campaignApiUrl || (authEnabled && !auth?.idToken)) return;
@@ -1699,7 +1730,7 @@ function App() {
   }
 
   if (authEnabled && !auth) {
-    return <AuthGate onSignIn={signInWithGoogle} />;
+    return <AuthGate authNotice={authNotice} onSignIn={signInWithGoogle} />;
   }
 
   return (
@@ -1832,6 +1863,7 @@ function App() {
             activeCampaignId={activeCampaignId}
             assignments={emailAssignments}
             audienceLists={audienceLists}
+            apiFetch={apiFetch}
             authHeaders={authHeaders}
             campaignApiUrl={campaignApiUrl}
             campaigns={campaignRecords}
@@ -1869,6 +1901,7 @@ function App() {
         {activeTab === "send-review" && (
           <SendReviewWorkspace
             activeCampaignId={activeCampaignId}
+            apiFetch={apiFetch}
             authHeaders={authHeaders}
             campaignApiUrl={campaignApiUrl}
             campaigns={campaignRecords}
@@ -1982,7 +2015,7 @@ function CloudCampLogo({ className = "" }) {
   );
 }
 
-function AuthGate({ onSignIn }) {
+function AuthGate({ authNotice = "", onSignIn }) {
   return (
     <main className="auth-gate">
       <section className="auth-panel">
@@ -1990,6 +2023,7 @@ function AuthGate({ onSignIn }) {
         <img className="auth-logo" src="https://cloudwrxs.com/wp-content/themes/cloudwrxs/assets/images/logo-white.svg" alt="Cloudwrxs" />
         <p className="eyebrow">Cloudwrxs restricted access</p>
         <h1>CloudCamp</h1>
+        {authNotice && <p className="auth-notice">{authNotice}</p>}
         <p>Sign in with your Cloudwrxs Google Workspace account to manage campaigns, emails, sender profiles, and results.</p>
         <button className="primary-button auth-button" onClick={onSignIn}>
           <PlugZap size={17} />
@@ -5729,7 +5763,7 @@ function LeadNurtureWorkspace({
   );
 }
 
-function SendReviewWorkspace({ activeCampaignId, authHeaders, campaignApiUrl, campaigns, setActiveCampaignId }) {
+function SendReviewWorkspace({ activeCampaignId, apiFetch = fetch, authHeaders, campaignApiUrl, campaigns, setActiveCampaignId }) {
   const [campaignFilter, setCampaignFilter] = useState(activeCampaignId || "all");
   const [sendRuns, setSendRuns] = useState([]);
   const [selectedRunId, setSelectedRunId] = useState("");
@@ -5768,7 +5802,7 @@ function SendReviewWorkspace({ activeCampaignId, authHeaders, campaignApiUrl, ca
     try {
       const params = new URLSearchParams({ limit: "75" });
       if (campaignFilter && campaignFilter !== "all") params.set("campaignId", campaignFilter);
-      const response = await fetch(`${campaignApiUrl}/send-runs?${params.toString()}`, { headers: authHeaders });
+      const response = await apiFetch(`${campaignApiUrl}/send-runs?${params.toString()}`, { headers: authHeaders });
       const result = await response.json();
       if (!response.ok) throw new Error(result.message || `Review run load failed: ${response.status}`);
       const runs = result.sendRuns || [];
@@ -5786,7 +5820,7 @@ function SendReviewWorkspace({ activeCampaignId, authHeaders, campaignApiUrl, ca
     setDetailLoading(true);
     try {
       const params = new URLSearchParams({ sendRunId, limit: "1000" });
-      const response = await fetch(`${campaignApiUrl}/send-runs?${params.toString()}`, { headers: authHeaders });
+      const response = await apiFetch(`${campaignApiUrl}/send-runs?${params.toString()}`, { headers: authHeaders });
       const result = await response.json();
       if (!response.ok) throw new Error(result.message || `Review detail load failed: ${response.status}`);
       setSelectedDetails({ sendRun: result.sendRun, sendRecords: result.sendRecords || [] });
@@ -5867,7 +5901,7 @@ function SendReviewWorkspace({ activeCampaignId, authHeaders, campaignApiUrl, ca
     setReviewActionLoading(action);
     setError("");
     try {
-      const response = await fetch(`${campaignApiUrl}/send-runs`, {
+      const response = await apiFetch(`${campaignApiUrl}/send-runs`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -5904,7 +5938,7 @@ function SendReviewWorkspace({ activeCampaignId, authHeaders, campaignApiUrl, ca
     setReviewActionLoading("reschedule");
     setError("");
     try {
-      const response = await fetch(`${campaignApiUrl}/send-runs`, {
+      const response = await apiFetch(`${campaignApiUrl}/send-runs`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -5936,7 +5970,7 @@ function SendReviewWorkspace({ activeCampaignId, authHeaders, campaignApiUrl, ca
     setReviewActionLoading("send");
     setError("");
     try {
-      const response = await fetch(`${campaignApiUrl}/send-runs`, {
+      const response = await apiFetch(`${campaignApiUrl}/send-runs`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -7215,6 +7249,7 @@ function EmailWorkspace({
   activeCampaignId,
   assignments,
   audienceLists,
+  apiFetch = fetch,
   authHeaders,
   campaignApiUrl,
   campaigns,
@@ -7296,7 +7331,7 @@ function EmailWorkspace({
     if (!campaignApiUrl) return;
     let cancelled = false;
     const params = activeCampaignId ? `?campaignId=${encodeURIComponent(activeCampaignId)}&limit=25` : "?limit=25";
-    fetch(`${campaignApiUrl}/send-runs${params}`, { headers: authHeaders })
+    apiFetch(`${campaignApiUrl}/send-runs${params}`, { headers: authHeaders })
       .then((response) => {
         if (!response.ok) throw new Error(`Send run load failed: ${response.status}`);
         return response.json();
@@ -7310,7 +7345,7 @@ function EmailWorkspace({
     return () => {
       cancelled = true;
     };
-  }, [activeCampaignId, authHeaders?.Authorization, campaignApiUrl]);
+  }, [activeCampaignId, apiFetch, authHeaders?.Authorization, campaignApiUrl]);
 
   function updateTemplate(field, value) {
     if (!selectedTemplate) return;
@@ -7481,7 +7516,7 @@ function EmailWorkspace({
     }));
     try {
       const params = new URLSearchParams({ facet: "persona", listId: audienceListId });
-      const response = await fetch(`${campaignApiUrl}/audience-contacts?${params.toString()}`, { headers: authHeaders });
+      const response = await apiFetch(`${campaignApiUrl}/audience-contacts?${params.toString()}`, { headers: authHeaders });
       const result = await response.json();
       if (!response.ok) throw new Error(result.message || `Persona lookup failed: ${response.status}`);
       setPersonaOptionsByAudience((current) => ({
@@ -7548,7 +7583,7 @@ function EmailWorkspace({
       [assignmentKey(assignment)]: { type: "loading", message: "Creating review run..." }
     }));
     try {
-      const response = await fetch(`${campaignApiUrl}/send-runs`, {
+      const response = await apiFetch(`${campaignApiUrl}/send-runs`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
