@@ -2168,6 +2168,7 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
   const [expandedStackKey, setExpandedStackKey] = useState("");
   const monthHoverTimerRef = useRef(null);
   const monthDropHoverRef = useRef("");
+  const monthDropLockedRef = useRef(false);
   const flowKey = draggingKey || focusedKey;
   const flowCampaignId = flowKey?.split(":")[0];
   const flowCampaign = campaigns.find((campaign) => campaign.id === flowCampaignId);
@@ -2198,26 +2199,42 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
   const clearMonthDropHover = useCallback(() => {
     clearMonthHoverTimer();
     monthDropHoverRef.current = "";
+    monthDropLockedRef.current = false;
     setMonthDropHover("");
   }, [clearMonthHoverTimer]);
   const activateMonthDropTarget = useCallback(
     (label, index) => {
+      if (monthDropLockedRef.current) return;
       if (monthDropHoverRef.current === label) return;
       clearMonthHoverTimer();
       monthDropHoverRef.current = label;
       setMonthDropHover(label);
       if (label !== month) {
         monthHoverTimerRef.current = window.setTimeout(() => {
+          monthDropLockedRef.current = true;
           setSelectedMonthIndex(index);
         }, 420);
       }
     },
     [clearMonthHoverTimer, month, setSelectedMonthIndex]
   );
+  const handleMonthRailDragLeave = useCallback(
+    (event) => {
+      const bounds = event.currentTarget.getBoundingClientRect();
+      const outsideRail =
+        event.clientX < bounds.left ||
+        event.clientX > bounds.right ||
+        event.clientY < bounds.top ||
+        event.clientY > bounds.bottom;
+      if (outsideRail) clearMonthDropHover();
+    },
+    [clearMonthDropHover]
+  );
   const finishTileDrag = useCallback(() => {
     clearMonthDropHover();
     setIsTileDragging(false);
     setDraggingKey(null);
+    setExpandedStackKey("");
   }, [clearMonthDropHover]);
   const positionForMonthDrop = useCallback(
     (targetMonth, key) => {
@@ -2262,7 +2279,12 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
 
   return (
     <div className={`calendar-shell ${isTileDragging ? "dragging-month" : ""}`}>
-      <div className={`month-drop-rail ${isTileDragging ? "" : "idle"}`} aria-hidden={!isTileDragging} aria-label="Move activity to another month">
+      <div
+        className={`month-drop-rail ${isTileDragging ? "" : "idle"}`}
+        aria-hidden={!isTileDragging}
+        aria-label="Move activity to another month"
+        onDragLeave={handleMonthRailDragLeave}
+      >
         {monthWindow.map(({ label, index }) => (
           <button
             key={label}
@@ -2291,7 +2313,7 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
             <small>{label.split(" ")[1]}</small>
           </button>
         ))}
-        </div>
+      </div>
       <div className="calendar-board">
         <div className="calendar-head">
           <span />
@@ -2403,7 +2425,6 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
                                   onDragStart={(dragEvent) => {
                                     dragEvent.dataTransfer.setData("text/plain", stackKey);
                                     dragEvent.dataTransfer.effectAllowed = "move";
-                                    setExpandedStackKey("");
                                     setFocusedKey(null);
                                     setDraggingKey(stackKey);
                                     setIsTileDragging(true);
