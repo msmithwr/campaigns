@@ -2165,7 +2165,9 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
   const [draggingKey, setDraggingKey] = useState(null);
   const [isTileDragging, setIsTileDragging] = useState(false);
   const [monthDropHover, setMonthDropHover] = useState("");
+  const [expandedStackKey, setExpandedStackKey] = useState("");
   const monthHoverTimerRef = useRef(null);
+  const monthDropHoverRef = useRef("");
   const flowKey = draggingKey || focusedKey;
   const flowCampaignId = flowKey?.split(":")[0];
   const flowCampaign = campaigns.find((campaign) => campaign.id === flowCampaignId);
@@ -2193,12 +2195,30 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
     window.clearTimeout(monthHoverTimerRef.current);
     monthHoverTimerRef.current = null;
   }, []);
-  const finishTileDrag = useCallback(() => {
+  const clearMonthDropHover = useCallback(() => {
     clearMonthHoverTimer();
-    setIsTileDragging(false);
-    setDraggingKey(null);
+    monthDropHoverRef.current = "";
     setMonthDropHover("");
   }, [clearMonthHoverTimer]);
+  const activateMonthDropTarget = useCallback(
+    (label, index) => {
+      if (monthDropHoverRef.current === label) return;
+      clearMonthHoverTimer();
+      monthDropHoverRef.current = label;
+      setMonthDropHover(label);
+      if (label !== month) {
+        monthHoverTimerRef.current = window.setTimeout(() => {
+          setSelectedMonthIndex(index);
+        }, 420);
+      }
+    },
+    [clearMonthHoverTimer, month, setSelectedMonthIndex]
+  );
+  const finishTileDrag = useCallback(() => {
+    clearMonthDropHover();
+    setIsTileDragging(false);
+    setDraggingKey(null);
+  }, [clearMonthDropHover]);
   const positionForMonthDrop = useCallback(
     (targetMonth, key) => {
       const sourcePosition = schedule[key] || {};
@@ -2251,18 +2271,11 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
             disabled={!isTileDragging}
             onDragEnter={(event) => {
               event.preventDefault();
-              clearMonthHoverTimer();
-              setMonthDropHover(label);
-              if (label !== month) {
-                monthHoverTimerRef.current = window.setTimeout(() => {
-                  setSelectedMonthIndex(index);
-                }, 420);
-              }
+              activateMonthDropTarget(label, index);
             }}
-            onDragOver={(event) => event.preventDefault()}
-            onDragLeave={() => {
-              clearMonthHoverTimer();
-              setMonthDropHover("");
+            onDragOver={(event) => {
+              event.preventDefault();
+              activateMonthDropTarget(label, index);
             }}
             onDrop={(event) => {
               event.preventDefault();
@@ -2304,7 +2317,9 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
                 className={`calendar-cell ${draggingKey ? "drop-ready" : ""} ${!week.days[dayIndex] ? "outside-month" : ""}`}
                 key={`${week.label}-${day}`}
                 onDragOver={(event) => {
-                  if (week.days[dayIndex]) event.preventDefault();
+                  if (!week.days[dayIndex]) return;
+                  event.preventDefault();
+                  clearMonthDropHover();
                 }}
                 onDrop={(event) => {
                   event.preventDefault();
@@ -2332,37 +2347,85 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
                     const key = eventKey(campaign, event);
                     const stackKeys = cellEvents.map((item) => eventKey(campaign, item));
                     const stackCount = stackKeys.length;
+                    const stackId = `${campaign.id}:${month}:${weekIndex}:${dayIndex}`;
                     const position = schedule[key];
                     const timingState = activityTimingState(position);
                     const meta = channelMeta[event.type] || channelMeta.task;
                     const Icon = meta.icon;
                     return (
-                      <button
-                        key={campaign.id}
-                        draggable
-                        className={`touch ${meta.className} ${position?.status || "queued"} ${timingState} ${activeCampaign?.id === campaign.id ? "active" : ""} ${
-                          flowCampaignId && flowCampaignId !== campaign.id ? "flow-dimmed" : ""
-                        } ${flowCampaignId === campaign.id ? "flow-focus" : ""}`}
-                        title={`${campaign.shortName}: ${event.title}`}
-                        style={{ "--campaign": campaign.color, "--campaign-bg": campaign.bg, "--campaign-text": campaign.textColor }}
-                        onDragStart={(dragEvent) => {
-                          dragEvent.dataTransfer.setData("text/plain", stackKeys.join("\n"));
-                          dragEvent.dataTransfer.effectAllowed = "move";
-                          setFocusedKey(null);
-                          setDraggingKey(key);
-                          setIsTileDragging(true);
-                        }}
-                        onDragEnd={finishTileDrag}
-                        onClick={() => {
-                          setFocusedKey(key);
-                          setActiveCampaignId(campaign.id);
-                          onSelectEvent({ campaign, event });
-                        }}
-                      >
-                        <Icon size={15} />
-                        <span>{eventDisplayNumber(campaign, event)}</span>
-                        {stackCount > 1 && <small className="touch-stack-count">+{stackCount - 1}</small>}
-                      </button>
+                      <React.Fragment key={campaign.id}>
+                        <button
+                          draggable
+                          className={`touch ${meta.className} ${position?.status || "queued"} ${timingState} ${activeCampaign?.id === campaign.id ? "active" : ""} ${
+                            flowCampaignId && flowCampaignId !== campaign.id ? "flow-dimmed" : ""
+                          } ${flowCampaignId === campaign.id ? "flow-focus" : ""}`}
+                          title={`${campaign.shortName}: ${event.title}`}
+                          style={{ "--campaign": campaign.color, "--campaign-bg": campaign.bg, "--campaign-text": campaign.textColor }}
+                          onDragStart={(dragEvent) => {
+                            dragEvent.dataTransfer.setData("text/plain", stackKeys.join("\n"));
+                            dragEvent.dataTransfer.effectAllowed = "move";
+                            setExpandedStackKey("");
+                            setFocusedKey(null);
+                            setDraggingKey(key);
+                            setIsTileDragging(true);
+                          }}
+                          onDragEnd={finishTileDrag}
+                          onClick={() => {
+                            setFocusedKey(key);
+                            setActiveCampaignId(campaign.id);
+                            if (stackCount > 1) {
+                              setExpandedStackKey((current) => (current === stackId ? "" : stackId));
+                              return;
+                            }
+                            setExpandedStackKey("");
+                            onSelectEvent({ campaign, event });
+                          }}
+                        >
+                          <Icon size={15} />
+                          <span>{eventDisplayNumber(campaign, event)}</span>
+                          {stackCount > 1 && <small className="touch-stack-count">+{stackCount - 1}</small>}
+                        </button>
+                        {stackCount > 1 && expandedStackKey === stackId && (
+                          <div className="touch-stack-popover">
+                            <strong>{campaign.shortName}</strong>
+                            <small>{stackCount} activities on this date</small>
+                            {cellEvents.map((stackEvent) => {
+                              const stackKey = eventKey(campaign, stackEvent);
+                              const stackPosition = schedule[stackKey];
+                              const stackMeta = channelMeta[stackEvent.type] || channelMeta.task;
+                              const StackIcon = stackMeta.icon;
+                              return (
+                                <button
+                                  key={stackKey}
+                                  type="button"
+                                  draggable
+                                  className="touch-stack-item"
+                                  onDragStart={(dragEvent) => {
+                                    dragEvent.dataTransfer.setData("text/plain", stackKey);
+                                    dragEvent.dataTransfer.effectAllowed = "move";
+                                    setExpandedStackKey("");
+                                    setFocusedKey(null);
+                                    setDraggingKey(stackKey);
+                                    setIsTileDragging(true);
+                                  }}
+                                  onDragEnd={finishTileDrag}
+                                  onClick={() => {
+                                    setExpandedStackKey("");
+                                    setFocusedKey(stackKey);
+                                    setActiveCampaignId(campaign.id);
+                                    onSelectEvent({ campaign, event: stackEvent });
+                                  }}
+                                >
+                                  <StackIcon size={14} />
+                                  <span>{eventDisplayNumber(campaign, stackEvent) || stackEvent.type}</span>
+                                  <strong>{stackEvent.title}</strong>
+                                  <small>{stackPosition?.status || "queued"}</small>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </React.Fragment>
                     );
                   })}
                 </div>
