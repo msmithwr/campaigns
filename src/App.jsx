@@ -1829,8 +1829,10 @@ function App() {
             campaigns={dashboardCampaigns}
             month={selectedMonth}
             moveEvent={moveEvent}
+            selectedMonthIndex={selectedMonthIndex}
             schedule={schedule}
             setActiveCampaignId={setActiveCampaignId}
+            setSelectedMonthIndex={setSelectedMonthIndex}
             totals={totals}
             toggleCampaign={toggleCampaign}
             updateEventStatus={updateEventStatus}
@@ -2045,8 +2047,10 @@ function Dashboard({
   completion,
   month,
   moveEvent,
+  selectedMonthIndex,
   schedule,
   setActiveCampaignId,
+  setSelectedMonthIndex,
   totals,
   updateEventStatus,
   onSelectEvent
@@ -2095,8 +2099,10 @@ function Dashboard({
           campaigns={campaigns}
           month={month}
           moveEvent={moveEvent}
+          selectedMonthIndex={selectedMonthIndex}
           schedule={schedule}
           setActiveCampaignId={setActiveCampaignId}
+          setSelectedMonthIndex={setSelectedMonthIndex}
           visible={visible}
           onSelectEvent={onSelectEvent}
         />
@@ -2152,12 +2158,18 @@ function Metric({ title, value, note, icon: Icon }) {
   );
 }
 
-function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, schedule, setActiveCampaignId, visible, onSelectEvent }) {
+function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selectedMonthIndex, schedule, setActiveCampaignId, setSelectedMonthIndex, visible, onSelectEvent }) {
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const weeks = getMonthWeeks(month);
   const [draggingKey, setDraggingKey] = useState(null);
+  const [isTileDragging, setIsTileDragging] = useState(false);
+  const [monthDropHover, setMonthDropHover] = useState("");
+  const monthHoverTimerRef = useRef(null);
   const draggingCampaignId = draggingKey?.split(":")[0];
   const draggingCampaign = campaigns.find((campaign) => campaign.id === draggingCampaignId);
+  const monthWindow = monthOrder
+    .map((label, index) => ({ label, index }))
+    .filter(({ index }) => Math.abs(index - selectedMonthIndex) <= 3);
   const flowPoints = draggingCampaignId
     ? draggingCampaign
         ?.events.map((event) => ({ event, position: schedule[eventKey(draggingCampaign, event)] }))
@@ -2174,95 +2186,180 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, schedule
         }) || []
     : [];
   const flowPath = buildFlowPath(flowPoints);
+  const clearMonthHoverTimer = useCallback(() => {
+    if (!monthHoverTimerRef.current) return;
+    window.clearTimeout(monthHoverTimerRef.current);
+    monthHoverTimerRef.current = null;
+  }, []);
+  const finishTileDrag = useCallback(() => {
+    clearMonthHoverTimer();
+    setIsTileDragging(false);
+    setDraggingKey(null);
+    setMonthDropHover("");
+  }, [clearMonthHoverTimer]);
+  const positionForMonthDrop = useCallback(
+    (targetMonth, key) => {
+      const sourcePosition = schedule[key] || {};
+      const targetWeeks = getMonthWeeks(targetMonth);
+      const sourceWeekIndex = Number.isInteger(sourcePosition.weekIndex) ? sourcePosition.weekIndex : 0;
+      const sourceDayIndex = Number.isInteger(sourcePosition.dayIndex) ? sourcePosition.dayIndex : 0;
+      const weekIndex = Math.max(0, Math.min(targetWeeks.length - 1, sourceWeekIndex));
+      if (targetWeeks[weekIndex]?.days[sourceDayIndex]) {
+        return { month: targetMonth, weekIndex, dayIndex: sourceDayIndex };
+      }
+      const sameWeekDayIndex = targetWeeks[weekIndex]?.days.findIndex(Boolean);
+      if (sameWeekDayIndex >= 0) return { month: targetMonth, weekIndex, dayIndex: sameWeekDayIndex };
+      for (let nextWeekIndex = 0; nextWeekIndex < targetWeeks.length; nextWeekIndex += 1) {
+        const dayIndex = targetWeeks[nextWeekIndex].days.findIndex(Boolean);
+        if (dayIndex >= 0) return { month: targetMonth, weekIndex: nextWeekIndex, dayIndex };
+      }
+      return { month: targetMonth, weekIndex: 0, dayIndex: 0 };
+    },
+    [schedule]
+  );
+
+  useEffect(() => {
+    if (!isTileDragging) return undefined;
+    window.addEventListener("dragend", finishTileDrag);
+    window.addEventListener("drop", finishTileDrag);
+    return () => {
+      window.removeEventListener("dragend", finishTileDrag);
+      window.removeEventListener("drop", finishTileDrag);
+    };
+  }, [finishTileDrag, isTileDragging]);
 
   return (
-    <div className="calendar-board">
-      <div className="calendar-head">
-        <span />
-        {days.map((day) => (
-          <span key={day}>{day}</span>
-        ))}
-      </div>
-      <div className="calendar-flow-area" aria-hidden="true">
-        {flowPoints.length > 1 && (
-          <svg className="flow-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <path d={flowPath} />
-          </svg>
-        )}
-      </div>
-      {weeks.map((week, weekIndex) => (
-        <div className="calendar-row" key={week.label}>
-          <div className="week-label">
-            <strong>{week.label}</strong>
-            <span>{week.range}</span>
-          </div>
-          {days.map((day, dayIndex) => (
-            <div
-              className={`calendar-cell ${draggingKey ? "drop-ready" : ""} ${!week.days[dayIndex] ? "outside-month" : ""}`}
-              key={`${week}-${day}`}
-              onDragOver={(event) => {
-                if (week.days[dayIndex]) event.preventDefault();
+    <div className={`calendar-shell ${isTileDragging ? "dragging-month" : ""}`}>
+      {isTileDragging && (
+        <div className="month-drop-rail" aria-label="Move activity to another month">
+          {monthWindow.map(({ label, index }) => (
+            <button
+              key={label}
+              className={`month-drop-target ${label === month ? "current" : ""} ${monthDropHover === label ? "hover" : ""}`}
+              type="button"
+              onDragEnter={(event) => {
+                event.preventDefault();
+                clearMonthHoverTimer();
+                setMonthDropHover(label);
+                if (label !== month) {
+                  monthHoverTimerRef.current = window.setTimeout(() => {
+                    setSelectedMonthIndex(index);
+                  }, 420);
+                }
+              }}
+              onDragOver={(event) => event.preventDefault()}
+              onDragLeave={() => {
+                clearMonthHoverTimer();
+                setMonthDropHover("");
               }}
               onDrop={(event) => {
                 event.preventDefault();
-                if (!week.days[dayIndex]) return;
                 const key = event.dataTransfer.getData("text/plain") || draggingKey;
-                if (key) moveEvent(key, { month, weekIndex, dayIndex });
-                setDraggingKey(null);
+                if (key) {
+                  moveEvent(key, positionForMonthDrop(label, key));
+                  setSelectedMonthIndex(index);
+                }
+                finishTileDrag();
               }}
             >
-              <div className="slot-grid" />
-              <div className="touch-grid">
-                {campaigns.map((campaign, slotIndex) => {
-                  if (!visible.has(campaign.id)) return <span key={campaign.id} />;
-                  const event = campaign.events.find((item) => {
-                    const position = schedule[eventKey(campaign, item)];
-                    return (
-                      position?.month === month &&
-                      position.weekIndex === weekIndex &&
-                      position.dayIndex === dayIndex &&
-                      position.status !== "paused" &&
-                      calendarTypes.has(item.type)
-                    );
-                  });
-                  if (!event || slotIndex > 5) return <span key={campaign.id} />;
-                  const key = eventKey(campaign, event);
-                  const position = schedule[key];
-                  const timingState = activityTimingState(position);
-                  const meta = channelMeta[event.type] || channelMeta.task;
-                  const Icon = meta.icon;
-                  return (
-                    <button
-                      key={campaign.id}
-                      draggable
-                      className={`touch ${meta.className} ${position?.status || "queued"} ${timingState} ${activeCampaign?.id === campaign.id ? "active" : ""} ${
-                        draggingCampaignId && draggingCampaignId !== campaign.id ? "flow-dimmed" : ""
-                      } ${draggingCampaignId === campaign.id ? "flow-focus" : ""}`}
-                      title={`${campaign.shortName}: ${event.title}`}
-                      style={{ "--campaign": campaign.color, "--campaign-bg": campaign.bg, "--campaign-text": campaign.textColor }}
-                      onDragStart={(dragEvent) => {
-                        dragEvent.dataTransfer.setData("text/plain", key);
-                        setDraggingKey(key);
-                      }}
-                      onDragEnd={() => setDraggingKey(null)}
-                      onMouseDown={() => setDraggingKey(key)}
-                      onMouseUp={() => setDraggingKey(null)}
-                      onClick={() => {
-                        setActiveCampaignId(campaign.id);
-                        onSelectEvent({ campaign, event });
-                      }}
-                    >
-                      <Icon size={15} />
-                      <span>{eventDisplayNumber(campaign, event)}</span>
-                    </button>
-                  );
-                })}
-              </div>
-              <span className="date-chip">{week.days[dayIndex]}</span>
-            </div>
+              <span>{label.split(" ")[0]}</span>
+              <small>{label.split(" ")[1]}</small>
+            </button>
           ))}
         </div>
-      ))}
+      )}
+      <div className="calendar-board">
+        <div className="calendar-head">
+          <span />
+          {days.map((day) => (
+            <span key={day}>{day}</span>
+          ))}
+        </div>
+        <div className="calendar-flow-area" aria-hidden="true">
+          {flowPoints.length > 1 && (
+            <svg className="flow-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <path d={flowPath} />
+            </svg>
+          )}
+        </div>
+        {weeks.map((week, weekIndex) => (
+          <div className="calendar-row" key={week.label}>
+            <div className="week-label">
+              <strong>{week.label}</strong>
+              <span>{week.range}</span>
+            </div>
+            {days.map((day, dayIndex) => (
+              <div
+                className={`calendar-cell ${draggingKey ? "drop-ready" : ""} ${!week.days[dayIndex] ? "outside-month" : ""}`}
+                key={`${week.label}-${day}`}
+                onDragOver={(event) => {
+                  if (week.days[dayIndex]) event.preventDefault();
+                }}
+                onDrop={(event) => {
+                  event.preventDefault();
+                  if (!week.days[dayIndex]) return;
+                  const key = event.dataTransfer.getData("text/plain") || draggingKey;
+                  if (key) moveEvent(key, { month, weekIndex, dayIndex });
+                  finishTileDrag();
+                }}
+              >
+                <div className="slot-grid" />
+                <div className="touch-grid">
+                  {campaigns.map((campaign, slotIndex) => {
+                    if (!visible.has(campaign.id)) return <span key={campaign.id} />;
+                    const event = campaign.events.find((item) => {
+                      const position = schedule[eventKey(campaign, item)];
+                      return (
+                        position?.month === month &&
+                        position.weekIndex === weekIndex &&
+                        position.dayIndex === dayIndex &&
+                        position.status !== "paused" &&
+                        calendarTypes.has(item.type)
+                      );
+                    });
+                    if (!event || slotIndex > 5) return <span key={campaign.id} />;
+                    const key = eventKey(campaign, event);
+                    const position = schedule[key];
+                    const timingState = activityTimingState(position);
+                    const meta = channelMeta[event.type] || channelMeta.task;
+                    const Icon = meta.icon;
+                    return (
+                      <button
+                        key={campaign.id}
+                        draggable
+                        className={`touch ${meta.className} ${position?.status || "queued"} ${timingState} ${activeCampaign?.id === campaign.id ? "active" : ""} ${
+                          draggingCampaignId && draggingCampaignId !== campaign.id ? "flow-dimmed" : ""
+                        } ${draggingCampaignId === campaign.id ? "flow-focus" : ""}`}
+                        title={`${campaign.shortName}: ${event.title}`}
+                        style={{ "--campaign": campaign.color, "--campaign-bg": campaign.bg, "--campaign-text": campaign.textColor }}
+                        onDragStart={(dragEvent) => {
+                          dragEvent.dataTransfer.setData("text/plain", key);
+                          dragEvent.dataTransfer.effectAllowed = "move";
+                          setDraggingKey(key);
+                          setIsTileDragging(true);
+                        }}
+                        onDragEnd={finishTileDrag}
+                        onMouseDown={() => setDraggingKey(key)}
+                        onMouseUp={() => {
+                          if (!isTileDragging) setDraggingKey(null);
+                        }}
+                        onClick={() => {
+                          setActiveCampaignId(campaign.id);
+                          onSelectEvent({ campaign, event });
+                        }}
+                      >
+                        <Icon size={15} />
+                        <span>{eventDisplayNumber(campaign, event)}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <span className="date-chip">{week.days[dayIndex]}</span>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
