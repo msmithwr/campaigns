@@ -1303,7 +1303,7 @@ function App() {
       [key]: {
         ...current[key],
         ...position,
-        status: current[key]?.status === "complete" ? "wip" : current[key]?.status || "queued"
+        status: current[key]?.status || "queued"
       }
     }));
     syncEmailAssignmentDateFromCalendarMove(key, position);
