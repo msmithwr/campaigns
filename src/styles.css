@@ -306,8 +306,13 @@ main { padding: 24px; overflow: hidden; }
 .legend { gap: 12px; flex-wrap: wrap; color: var(--cw-muted); font-size: 12px; }
 .legend span { display: inline-flex; gap: 5px; align-items: center; }
 
-.calendar-shell { display: grid; gap: 8px; min-width: 0; }
+.calendar-shell { display: grid; gap: 8px; min-width: 0; position: relative; }
 .month-drop-rail {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 8;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(86px, 1fr));
   gap: 6px;
@@ -445,8 +450,6 @@ main { padding: 24px; overflow: hidden; }
   position: relative;
   overflow: hidden;
   user-select: none;
-  -webkit-user-drag: element;
-  touch-action: none;
 }
 .touch:active { cursor: grabbing; }
 .touch.whatsapp { border-radius: 999px; }

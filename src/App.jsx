@@ -2292,7 +2292,7 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
             </div>
             {days.map((day, dayIndex) => (
               <div
-                className={`calendar-cell ${isTileDragging ? "drop-ready" : ""} ${!week.days[dayIndex] ? "outside-month" : ""}`}
+                className={`calendar-cell ${draggingKey ? "drop-ready" : ""} ${!week.days[dayIndex] ? "outside-month" : ""}`}
                 key={`${week.label}-${day}`}
                 onDragOver={(event) => {
                   if (week.days[dayIndex]) event.preventDefault();
@@ -2326,10 +2326,8 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
                     const meta = channelMeta[event.type] || channelMeta.task;
                     const Icon = meta.icon;
                     return (
-                      <div
+                      <button
                         key={campaign.id}
-                        role="button"
-                        tabIndex={0}
                         draggable
                         className={`touch ${meta.className} ${position?.status || "queued"} ${timingState} ${activeCampaign?.id === campaign.id ? "active" : ""} ${
                           flowCampaignId && flowCampaignId !== campaign.id ? "flow-dimmed" : ""
@@ -2349,17 +2347,10 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
                           setActiveCampaignId(campaign.id);
                           onSelectEvent({ campaign, event });
                         }}
-                        onKeyDown={(event) => {
-                          if (event.key !== "Enter" && event.key !== " ") return;
-                          event.preventDefault();
-                          setFocusedKey(key);
-                          setActiveCampaignId(campaign.id);
-                          onSelectEvent({ campaign, event });
-                        }}
                       >
                         <Icon size={15} />
                         <span>{eventDisplayNumber(campaign, event)}</span>
-                      </div>
+                      </button>
                     );
                   })}
                 </div>
