@@ -2242,44 +2242,43 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
 
   return (
     <div className={`calendar-shell ${isTileDragging ? "dragging-month" : ""}`}>
-      {isTileDragging && (
-        <div className="month-drop-rail" aria-label="Move activity to another month">
-          {monthWindow.map(({ label, index }) => (
-            <button
-              key={label}
-              className={`month-drop-target ${label === month ? "current" : ""} ${monthDropHover === label ? "hover" : ""}`}
-              type="button"
-              onDragEnter={(event) => {
-                event.preventDefault();
-                clearMonthHoverTimer();
-                setMonthDropHover(label);
-                if (label !== month) {
-                  monthHoverTimerRef.current = window.setTimeout(() => {
-                    setSelectedMonthIndex(index);
-                  }, 420);
-                }
-              }}
-              onDragOver={(event) => event.preventDefault()}
-              onDragLeave={() => {
-                clearMonthHoverTimer();
-                setMonthDropHover("");
-              }}
-              onDrop={(event) => {
-                event.preventDefault();
-                const keys = readDraggedKeys(event.dataTransfer);
-                if (keys.length) {
-                  keys.forEach((key) => moveEvent(key, positionForMonthDrop(label, key)));
+      <div className={`month-drop-rail ${isTileDragging ? "" : "idle"}`} aria-hidden={!isTileDragging} aria-label="Move activity to another month">
+        {monthWindow.map(({ label, index }) => (
+          <button
+            key={label}
+            className={`month-drop-target ${label === month ? "current" : ""} ${monthDropHover === label ? "hover" : ""}`}
+            type="button"
+            disabled={!isTileDragging}
+            onDragEnter={(event) => {
+              event.preventDefault();
+              clearMonthHoverTimer();
+              setMonthDropHover(label);
+              if (label !== month) {
+                monthHoverTimerRef.current = window.setTimeout(() => {
                   setSelectedMonthIndex(index);
-                }
-                finishTileDrag();
-              }}
-            >
-              <span>{label.split(" ")[0]}</span>
-              <small>{label.split(" ")[1]}</small>
-            </button>
-          ))}
+                }, 420);
+              }
+            }}
+            onDragOver={(event) => event.preventDefault()}
+            onDragLeave={() => {
+              clearMonthHoverTimer();
+              setMonthDropHover("");
+            }}
+            onDrop={(event) => {
+              event.preventDefault();
+              const keys = readDraggedKeys(event.dataTransfer);
+              if (keys.length) {
+                keys.forEach((key) => moveEvent(key, positionForMonthDrop(label, key)));
+                setSelectedMonthIndex(index);
+              }
+              finishTileDrag();
+            }}
+          >
+            <span>{label.split(" ")[0]}</span>
+            <small>{label.split(" ")[1]}</small>
+          </button>
+        ))}
         </div>
-      )}
       <div className="calendar-board">
         <div className="calendar-head">
           <span />
