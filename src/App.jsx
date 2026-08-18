@@ -2219,6 +2219,16 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
     },
     [schedule]
   );
+  const readDraggedKeys = useCallback(
+    (dataTransfer) => {
+      const serialized = dataTransfer?.getData("text/plain") || draggingKey || "";
+      return serialized
+        .split("\n")
+        .map((key) => key.trim())
+        .filter(Boolean);
+    },
+    [draggingKey]
+  );
 
   useEffect(() => {
     if (!isTileDragging) return undefined;
@@ -2256,9 +2266,9 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
               }}
               onDrop={(event) => {
                 event.preventDefault();
-                const key = event.dataTransfer.getData("text/plain") || draggingKey;
-                if (key) {
-                  moveEvent(key, positionForMonthDrop(label, key));
+                const keys = readDraggedKeys(event.dataTransfer);
+                if (keys.length) {
+                  keys.forEach((key) => moveEvent(key, positionForMonthDrop(label, key)));
                   setSelectedMonthIndex(index);
                 }
                 finishTileDrag();
@@ -2300,8 +2310,7 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
                 onDrop={(event) => {
                   event.preventDefault();
                   if (!week.days[dayIndex]) return;
-                  const key = event.dataTransfer.getData("text/plain") || draggingKey;
-                  if (key) moveEvent(key, { month, weekIndex, dayIndex });
+                  readDraggedKeys(event.dataTransfer).forEach((key) => moveEvent(key, { month, weekIndex, dayIndex }));
                   finishTileDrag();
                 }}
               >
@@ -2309,7 +2318,7 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
                 <div className="touch-grid">
                   {campaigns.map((campaign, slotIndex) => {
                     if (!visible.has(campaign.id)) return <span key={campaign.id} />;
-                    const event = campaign.events.find((item) => {
+                    const cellEvents = campaign.events.filter((item) => {
                       const position = schedule[eventKey(campaign, item)];
                       return (
                         position?.month === month &&
@@ -2319,8 +2328,11 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
                         calendarTypes.has(item.type)
                       );
                     });
+                    const event = cellEvents[0];
                     if (!event || slotIndex > 5) return <span key={campaign.id} />;
                     const key = eventKey(campaign, event);
+                    const stackKeys = cellEvents.map((item) => eventKey(campaign, item));
+                    const stackCount = stackKeys.length;
                     const position = schedule[key];
                     const timingState = activityTimingState(position);
                     const meta = channelMeta[event.type] || channelMeta.task;
@@ -2335,7 +2347,7 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
                         title={`${campaign.shortName}: ${event.title}`}
                         style={{ "--campaign": campaign.color, "--campaign-bg": campaign.bg, "--campaign-text": campaign.textColor }}
                         onDragStart={(dragEvent) => {
-                          dragEvent.dataTransfer.setData("text/plain", key);
+                          dragEvent.dataTransfer.setData("text/plain", stackKeys.join("\n"));
                           dragEvent.dataTransfer.effectAllowed = "move";
                           setFocusedKey(null);
                           setDraggingKey(key);
@@ -2350,6 +2362,7 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
                       >
                         <Icon size={15} />
                         <span>{eventDisplayNumber(campaign, event)}</span>
+                        {stackCount > 1 && <small className="touch-stack-count">+{stackCount - 1}</small>}
                       </button>
                     );
                   })}
