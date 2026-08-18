@@ -61,15 +61,17 @@ const channelMeta = {
   whatsapp: { icon: MessageCircle, label: "WhatsApp", className: "whatsapp" },
   call: { icon: Phone, label: "Call", className: "call" },
   linkedin: { icon: Linkedin, label: "LinkedIn", className: "linkedin" },
+  whitepaper: { icon: FileText, label: "Whitepaper", className: "whitepaper" },
   webinar: { icon: Sparkles, label: "Webinar", className: "webinar" },
   landing: { icon: FileText, label: "Landing", className: "landing" },
   crm: { icon: PlugZap, label: "CRM", className: "crm" },
   task: { icon: CheckCircle2, label: "Task", className: "task" }
 };
 
-const calendarTypes = new Set(["email", "whatsapp", "call", "linkedin", "webinar"]);
+const calendarTypes = new Set(["email", "whatsapp", "call", "linkedin", "whitepaper", "webinar"]);
 const fallbackLabels = {
   linkedin: "",
+  whitepaper: "WP",
   webinar: "Web",
   landing: "LP",
   crm: "CRM",
@@ -8594,7 +8596,7 @@ function Setup({ activeCampaign, campaigns, createCampaignFromSetup, setActiveCa
               </label>
             </div>
             <div className="field-picker brief-channel-picker">
-              {["email", "whatsapp", "call", "linkedin", "webinar", "landing", "task"].map((type) => (
+              {["email", "whatsapp", "call", "linkedin", "whitepaper", "webinar", "landing", "task"].map((type) => (
                 <label key={type}>
                   <input type="checkbox" checked={(campaignDraft.channelTypes || []).includes(type)} onChange={(event) => toggleDraftChannel(type, event.target.checked)} />
                   <span>{channelMeta[type]?.label || type}</span>

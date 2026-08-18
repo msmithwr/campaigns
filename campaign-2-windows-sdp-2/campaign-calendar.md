@@ -2,9 +2,9 @@
 
 ## 1. Campaign Overview
 
-Windows EC2 SDP Campaign 2 is now a one-month campaign focused on Windows SDP Savings & Modernisation Benefits. It uses the second-month wave from the Windows campaign sequence and runs in June 2026.
+Windows EC2 SDP Campaign 2 is now a one-month campaign focused on Windows SDP Savings & Modernisation Benefits. It uses the second-month wave from the Windows campaign sequence and runs in July 2026.
 
-## 2. Campaign Timeline (June 2026)
+## 2. Campaign Timeline (July 2026)
 
 The campaign contains one monthly wave with operational-efficiency messaging, SDP savings calculator promotion, WhatsApp follow-ups, sales calls, and qualified opportunity advancement.
 
@@ -12,20 +12,20 @@ The campaign contains one monthly wave with operational-efficiency messaging, SD
 
 | Month | Theme | Primary CTA |
 |-------|-------|-------------|
-| June 2026 | Windows SDP Savings & Modernisation Benefits | Windows-to-AWS TCO Comparison / SDP Savings Calculator Session |
+| July 2026 | Windows SDP Savings & Modernisation Benefits | Windows-to-AWS TCO Comparison / SDP Savings Calculator Session |
 
 ## 4. Detailed Campaign Calendar (Weekly Breakdown)
 
-### JUNE 2026 – WINDOWS SDP SAVINGS & MODERNISATION BENEFITS
+### JULY 2026 – WINDOWS SDP SAVINGS & MODERNISATION BENEFITS
 
-#### Week 1 (1–7 June)
+#### Week 1 (1–7 July)
 **Activities:**
 * Publish LinkedIn article: "Reducing Windows Infrastructure Costs by 45% Using AWS SDP"
 * Launch targeted digital ads for KSA CTOs, IT Operations Managers, Finance Directors, and Procurement teams
 * Promote Windows SDP value propositions across LinkedIn and WhatsApp campaigns
 * Review Campaign 1 engagement data and prioritise warm Windows accounts
 
-#### Week 2 (8–14 June)
+#### Week 2 (8–14 July)
 **Outbound:**
 * Email 1 to all personas (Windows SDP introduction + immediate cost benefits)
 * WhatsApp Message 1
@@ -35,7 +35,7 @@ The campaign contains one monthly wave with operational-efficiency messaging, SD
 * Focus on IT Operations Manager and Procurement Manager conversion
 * Qualify accounts for SDP Savings Calculator Sessions
 
-#### Week 3 (15–21 June)
+#### Week 3 (15–21 July)
 **Outbound:**
 * Email 2 to all personas (Windows financial modelling, SDP licensing benefits, vendor simplification)
 * WhatsApp Message 2
@@ -45,7 +45,7 @@ The campaign contains one monthly wave with operational-efficiency messaging, SD
 * Deliver Windows TCO baselines for accounts engaged during Campaign 1
 * Deliver SDP Savings Calculator Sessions for qualified prospects
 
-#### Week 4 (22–30 June)
+#### Week 4 (22–31 July)
 **Outbound:**
 * Email 3 (Windows cost-saving case study with SDP benefits)
 * WhatsApp Message 3

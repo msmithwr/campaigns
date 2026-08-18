@@ -4,10 +4,10 @@
 ## 1. Campaign Objectives
 
 ### Primary Goal
-Run the second Windows EC2 SDP wave in June 2026, building on Campaign 1 learnings and moving warm or newly segmented accounts toward TCO comparison and SDP Savings Calculator sessions.
+Run the second Windows EC2 SDP wave in July 2026, building on Campaign 1 learnings and moving warm or newly segmented accounts toward TCO comparison and SDP Savings Calculator sessions.
 
 ### Campaign Window
-**June 2026** — one-month campaign wave.
+**July 2026** — one-month campaign wave.
 
 ### Objectives
 1. Generate high-value Windows migration leads for Windows Server 2019/2022 to AWS EC2.

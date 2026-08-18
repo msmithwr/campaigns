@@ -24,7 +24,7 @@
 **Activities:**
 - **Monday:** Launch redesigned Well-Architected landing page (eng + arabic)
 - **Tuesday:** LinkedIn announcement: "Cloudwrxs: Your Trusted AWS Well-Architected Partner"
-- **Wednesday:** Activate webinar registration: "Is Your Cloud Really Well-Architected?"
+- **Wednesday:** Activate whitepaper download: "Is Your Cloud Really Well-Architected?"
 - **Thursday:** Begin persona segmentation and email list preparation
 - **Friday:** Soft outreach to strategic accounts in KSA
 
@@ -104,7 +104,7 @@
 
 **Content & Amplification:**
 - Customer success story development
-- Video testimonial recording (if available)
+- Video testimonial whitepaper PDF (if available)
 - Performance dashboard creation for internal review
 
 **Monthly KPI Review:**
@@ -122,7 +122,7 @@
 **Activities:**
 - **Monday:** LinkedIn post: "Security Pillar Masterclass Series Begins"  
 - **Tuesday:** Security-focused email campaign launch
-- **Wednesday:** Webinar promotion intensifies: "Is Your Cloud Really Well-Architected?"
+- **Wednesday:** Whitepaper promotion intensifies: "Is Your Cloud Really Well-Architected?"
 - **Thursday:** LinkedIn post: "Identity & Access Management: AWS Best Practices"
 - **Friday:** Arabic content push: Security compliance for MENA market
 
@@ -154,39 +154,39 @@
 - Compliance gap assessment offers
 - Regulatory discussion with prospects
 
-**Webinar Preparation:**
-- Final webinar content review
-- Registration push campaign
-- Speaker preparation and rehearsal
+**Whitepaper Preparation:**
+- Final whitepaper content review
+- Download push campaign
+- Content finalization and review
 
 **KPI Targets:**
 - May email performance: 30%+ open rate
 - Security assessments: 10-15 booked
-- Webinar registrations: 75-100
+- Whitepaper downloads: 75-100
 
-### Week 3 (May 15-21): Webinar Delivery + Performance Focus
+### Week 3 (May 15-21): Whitepaper Delivery + Performance Focus
 
 **Major Event:**
-- **Wednesday:** Webinar: "Is Your Cloud Really Well-Architected?" 
-  - Expected attendance: 60-80 participants
+- **Wednesday:** Whitepaper: "Is Your Cloud Really Well-Architected?" 
+  - Expected downloads: 60-80 readers
   - Live Q&A session
   - Immediate follow-up campaign launch
 
 **Outbound Activities:**
 - **Monday:** Email 2 (May wave) - Performance & reliability focus
-- **Wednesday:** Post-webinar follow-up emails (3-sequence)
+- **Wednesday:** Post-whitepaper follow-up emails (3-sequence)
 - **Thursday:** LinkedIn post: "Performance Efficiency: Right-sizing Your AWS Resources"
-- **Friday:** LinkedIn post: "Webinar Recap: Key Takeaways from WAFR Session"
+- **Friday:** LinkedIn post: "Whitepaper Recap: Key Takeaways from WAFR Session"
 
 **Sales Activities:**
-- Webinar attendee follow-up calls
+- Whitepaper reader follow-up calls
 - Performance-focused Stage 2 calls
-- Hot lead acceleration from webinar
+- Hot lead acceleration from whitepaper
 
 **KPI Targets:**
-- Webinar attendance: 60-80 people
-- Post-webinar bookings: 15-20 assessments
-- Hot lead conversion: 25% of attendees
+- Whitepaper engagement: 60-80 people
+- Post-whitepaper bookings: 15-20 assessments
+- Hot lead conversion: 25% of readers
 
 ### Week 4 (May 22-31): Reliability & Sustainability Focus
 
@@ -208,7 +208,7 @@
 
 **Monthly KPI Review:**
 - **Security Focus Results:** 40+ security assessments booked
-- **Webinar Success:** 75+ registrations, 60+ attendance
+- **Whitepaper Success:** 75+ downloads, 60+ engagement
 - **Pipeline Growth:** $1.2M-1.5M qualified opportunities
 - **Conversion Rate:** 20%+ assessment-to-opportunity conversion
 
@@ -335,7 +335,7 @@
 
 ### Content Calendar Integration
 - **LinkedIn Posts:** Align with weekly email themes
-- **Webinar:** Schedule for maximum regional attendance (May Week 3)
+- **Whitepaper:** Schedule for maximum regional engagement (May Week 3)
 - **Collateral:** Deploy new assets weekly to maintain freshness
 - **Arabic Content:** Minimum 30% of content localized for MENA market
 
@@ -354,7 +354,7 @@
 - Average email open rate: 30%+
 - Average click-through rate: 15%+
 - LinkedIn engagement rate: 8%+
-- Webinar attendance rate: 75%+
+- Whitepaper engagement rate: 75%+
 
 **Conversion Metrics:**
 - Assessment-to-opportunity conversion: 25%+

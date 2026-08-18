@@ -13,7 +13,7 @@ Campaign 2 LinkedIn content is **deeper, more technical, and more conversion-ori
 | Case Study Amplification | 3 | Proof of value with specific metrics |
 | Technical Deep-Dives | 3 | CTO and Basis Admin engagement |
 | Financial/TCO Content | 2 | CFO and Procurement pipeline |
-| Webinar Promotion | 2 | Registration and post-event content |
+| Whitepaper Promotion | 2 | Download and post-event content |
 | S/4HANA & Strategic | 2 | Executive engagement, thought leadership |
 
 ### Posting Schedule
@@ -156,14 +156,14 @@ Our SAP Landscape Health Check includes a Basis-specific assessment. Connect wit
 
 ---
 
-## Post 5 — Webinar Announcement
-**Week of 5 May | Category: Webinar Promotion**
+## Post 5 — Whitepaper Announcement
+**Week of 5 May | Category: Whitepaper Promotion**
 
-**Title:** Register Now: SAP Modernisation Masterclass — Live Webinar
+**Title:** Download Now: SAP Modernisation Masterclass — Downloadable Whitepaper
 
 **Post Content:**
 
-📢 We are hosting a live, technical webinar for SAP leaders planning modernisation and migration:
+📢 We are releasing a downloadable technical whitepaper for SAP leaders planning modernisation and migration:
 
 𝗦𝗔𝗣 𝗠𝗼𝗱𝗲𝗿𝗻𝗶𝘀𝗮𝘁𝗶𝗼𝗻 𝗠𝗮𝘀𝘁𝗲𝗿𝗰𝗹𝗮𝘀𝘀
 
@@ -184,13 +184,13 @@ This is not a product pitch. It is a 60-minute technical session built from real
 𝗪𝗵𝗼 𝘀𝗵𝗼𝘂𝗹𝗱 𝗮𝘁𝘁𝗲𝗻𝗱:
 CTOs, IT Directors, SAP Basis Administrators, CFOs evaluating SAP investments, and Procurement leaders reviewing SAP hosting contracts.
 
-📅 Date: [Webinar Date]
+📅 Date: [Whitepaper Date]
 ⏱️ Duration: 60 minutes + 15-minute Q&A
-🔗 Register: [Registration Link]
+🔗 Download: [Download Link]
 
 Seats are limited to maintain an interactive format. Secure your place now.
 
-#SAP #Webinar #SAPModernisation #S4HANA #AWS #SAPMigration #Cloudwrxs #KSA #MENA
+#SAP #Whitepaper #SAPModernisation #S4HANA #AWS #SAPMigration #Cloudwrxs #KSA #MENA
 
 ---
 
@@ -231,14 +231,14 @@ Connect with our team: https://cloudwrxs.com/aws-sap-specialization
 
 ---
 
-## Post 7 — Webinar Last-Chance Registration
-**Week of 19 May | Category: Webinar Promotion**
+## Post 7 — Whitepaper Final Download Push
+**Week of 19 May | Category: Whitepaper Promotion**
 
-**Title:** Final Week: SAP Modernisation Masterclass — Seats Filling Fast
+**Title:** Final Week: SAP Modernisation Masterclass — Download Window Open
 
 **Post Content:**
 
-⏰ Final reminder: our SAP Modernisation Masterclass webinar is this week.
+⏰ Final reminder: our SAP Modernisation Masterclass whitepaper is this week.
 
 If you are planning SAP modernisation, evaluating S/4HANA readiness, or reviewing SAP hosting costs — this session is designed for you.
 
@@ -250,25 +250,25 @@ If you are planning SAP modernisation, evaluating S/4HANA readiness, or reviewin
 ✅ Live DR failover demo — see automated recovery in under 15 minutes
 ✅ Interactive Q&A — bring your SAP questions
 
-📅 Date: [Webinar Date]
-🔗 Register: [Registration Link]
+📅 Date: [Whitepaper Date]
+🔗 Download: [Download Link]
 
-We are keeping attendance limited for interactivity. If you have been considering attending, now is the time to register.
+The download is gated so we can route follow-up to the right specialist. If you have been considering reading, now is the time to download it.
 
 See you there.
 
-#SAP #Webinar #SAPModernisation #AWS #KSA #Cloudwrxs
+#SAP #Whitepaper #SAPModernisation #AWS #KSA #Cloudwrxs
 
 ---
 
-## Post 8 — Webinar Recap & Takeaways
-**Week of 26 May | Category: Post-Webinar Content**
+## Post 8 — Whitepaper Recap & Takeaways
+**Week of 26 May | Category: Post-Whitepaper Content**
 
 **Title:** 5 Key Takeaways from the SAP Modernisation Masterclass
 
 **Post Content:**
 
-Last week, we hosted the SAP Modernisation Masterclass for SAP leaders across the region. Thank you to everyone who attended and contributed to an excellent Q&A session.
+Last week, we published the SAP Modernisation Masterclass for SAP leaders across the region. Thank you to everyone who downloaded it and shared questions with the team.
 
 Here are the five takeaways that generated the most discussion:
 
@@ -282,11 +282,11 @@ Here are the five takeaways that generated the most discussion:
 
 𝟱. 𝗧𝗵𝗲 𝗧𝗖𝗢 𝗺𝗼𝗱𝗲𝗹 𝗶𝘀 𝗺𝗼𝗿𝗲 𝗳𝗮𝘃𝗼𝘂𝗿𝗮𝗯𝗹𝗲 𝘁𝗵𝗮𝗻 𝗺𝗼𝘀𝘁 𝗖𝗙𝗢𝘀 𝗲𝘅𝗽𝗲𝗰𝘁. When all seven cost domains are modelled (compute, storage, licensing, ops, DR, facilities, opportunity cost), the case for migration is compelling.
 
-If you missed the session, the recording is available on request. And if you would like a private assessment of your SAP environment, our team is offering complimentary workshops.
+If you missed the session, the whitepaper PDF is available on request. And if you would like a private assessment of your SAP environment, our team is offering complimentary workshops.
 
 Connect with us: https://cloudwrxs.com/aws-sap-specialization
 
-#SAP #Webinar #SAPModernisation #AWS #Cloudwrxs #S4HANA #KSA
+#SAP #Whitepaper #SAPModernisation #AWS #Cloudwrxs #S4HANA #KSA
 
 ---
 

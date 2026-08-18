@@ -15,7 +15,7 @@ Campaign 1 established awareness: Cloudwrxs is an AWS SAP Competency Partner. Ca
 ### Objectives
 1. **Convert Campaign 1 engaged prospects** — move leads who opened emails, attended workshops, or clicked CTAs into deeper engagements (TCO deep-dives, S/4HANA readiness assessments, SAP landscape health checks).
 2. **Expand persona coverage** — add SAP Basis Admins and Procurement/Vendor Managers to the targeting mix, unlocking bottom-up and procurement-led entry points.
-3. **Launch the SAP Modernisation Masterclass webinar** as a mid-funnel conversion event with registration-based lead capture.
+3. **Launch the SAP Modernisation Masterclass whitepaper** as a mid-funnel conversion event with download-based lead capture.
 4. **Publish two SAP migration case studies** (Manufacturing and Financial Services/Government) to provide proof-of-value assets across all touchpoints.
 5. **Drive workshop and assessment bookings** with updated, conversion-specific CTAs:
    - SAP Modernisation Workshop (updated with deeper technical content)
@@ -26,8 +26,8 @@ Campaign 1 established awareness: Cloudwrxs is an AWS SAP Competency Partner. Ca
 ### Campaign KPIs
 - Email open rate: 32–38% (warmer audience)
 - Click-through rate: 15–22%
-- Webinar registrations: 80–120
-- Webinar attendance rate: 45–55%
+- Whitepaper downloads: 80–120
+- Whitepaper engagement rate: 45–55%
 - SAP workshops/assessments booked: 20–30 per month
 - Opportunities created: 10–15 per month
 - Opportunity win probability: 25%+
@@ -47,7 +47,7 @@ Use existing: **https://cloudwrxs.com/aws-sap-specialization** (already optimise
 - "In our recent SAP assessments across KSA, we consistently find 3 architecture gaps that delay S/4HANA readiness — here is how to close them."
 - "Organisations that migrated SAP to AWS with Cloudwrxs achieved 99.95% uptime and 2.5x faster batch processing — here is the architecture behind it."
 - Reference the manufacturing case study: proven multi-AZ HA design for SAP HANA and ASCS.
-- Invite to webinar: "SAP Modernisation Masterclass — the architecture decisions that separate successful migrations from costly delays."
+- Invite to whitepaper: "SAP Modernisation Masterclass — the architecture decisions that separate successful migrations from costly delays."
 
 **Primary CTAs:** SAP Modernisation Workshop, S/4HANA Readiness Assessment
 
@@ -61,7 +61,7 @@ Use existing: **https://cloudwrxs.com/aws-sap-specialization** (already optimise
 - "CFOs who completed our SAP TCO Deep-Dive found an average of 37% in recoverable infrastructure spend — most of it hidden in overprovisioned non-production environments."
 - "We modelled SAP hosting costs for a financial services group in the region: the AWS migration paid for itself in 14 months."
 - Reference the financial services case study: hard ROI numbers, payback period, freed budget reallocated to analytics.
-- Invite to webinar: "SAP Modernisation Masterclass — the financial model behind successful SAP-to-AWS migrations."
+- Invite to whitepaper: "SAP Modernisation Masterclass — the financial model behind successful SAP-to-AWS migrations."
 
 **Primary CTAs:** SAP TCO Deep-Dive Session, SAP Modernisation Workshop
 
@@ -75,7 +75,7 @@ Use existing: **https://cloudwrxs.com/aws-sap-specialization** (already optimise
 - "IT Managers who completed our SAP Landscape Health Check reduced incident volume by 45% within 90 days — by addressing three infrastructure gaps we identified."
 - "One IT team eliminated 20 hours per week of manual SAP maintenance after we automated their backup, refresh, and DR workflows on AWS."
 - Reference the manufacturing case study: operational transformation, team productivity gains.
-- Invite to webinar: "SAP Modernisation Masterclass — automating SAP operations on AWS."
+- Invite to whitepaper: "SAP Modernisation Masterclass — automating SAP operations on AWS."
 
 **Primary CTAs:** SAP Landscape Health Check, SAP Modernisation Workshop
 
@@ -121,12 +121,12 @@ Campaign 2 follows a tighter cadence than Campaign 1, reflecting a warmer audien
 | Email 2 | Day 8 | Case study + technical deep-dive |
 | WhatsApp 2 | Day 10 | Nudge with specific metric |
 | Call Stage 1 | Day 3–5 | Qualify interest, book workshop |
-| Email 3 | Day 16 | Webinar invitation + ROI proof |
-| WhatsApp 3 | Day 18 | Webinar reminder |
+| Email 3 | Day 16 | Whitepaper invitation + ROI proof |
+| WhatsApp 3 | Day 18 | Whitepaper reminder |
 | Call Stage 2 | Day 10–12 | Follow up on case study, deepen conversation |
 | Email 4 | Day 24 | Final conversion push + urgency |
 | WhatsApp 4 | Day 26 | Final reminder |
-| Call Stage 3 | Day 18–20 | Webinar follow-up or assessment booking |
+| Call Stage 3 | Day 18–20 | Whitepaper follow-up or assessment booking |
 | Call Stage 4 | Day 25–28 | Final conversion attempt |
 
 ---
@@ -197,14 +197,14 @@ Best regards,
 
 ---
 
-#### Email 3 — Webinar Invitation + S/4HANA Readiness
-**Subject:** "Invitation: SAP Modernisation Masterclass — Live Webinar"
+#### Email 3 — Whitepaper Invitation + S/4HANA Readiness
+**Subject:** "Invitation: SAP Modernisation Masterclass — Downloadable Whitepaper"
 
 Hi [Name],
 
 SAP S/4HANA migration timelines are accelerating. Organisations that delay architecture planning now face compressed timelines, higher costs, and greater risk later.
 
-I am inviting you to our upcoming **SAP Modernisation Masterclass** — a live, technical webinar designed for technology leaders planning SAP transformation:
+I am inviting you to our upcoming **SAP Modernisation Masterclass** — a downloadable technical whitepaper designed for technology leaders planning SAP transformation:
 
 **What You Will Learn:**
 - The architecture decisions that separate successful SAP migrations from costly delays
@@ -213,9 +213,9 @@ I am inviting you to our upcoming **SAP Modernisation Masterclass** — a live, 
 - Live demonstration: automated SAP DR failover on AWS
 - Financial modelling: building the business case for SAP modernisation
 
-**Date:** [Webinar Date]
+**Date:** [Whitepaper Date]
 **Duration:** 60 minutes + 15-minute Q&A
-**Register:** [Registration Link]
+**Download:** [Download Link]
 
 This is not a product pitch. It is a technical session built from our experience delivering SAP migrations across the region.
 
@@ -309,12 +309,12 @@ Warm regards,
 
 ---
 
-#### Email 3 — Webinar Invitation + Financial Governance
+#### Email 3 — Whitepaper Invitation + Financial Governance
 **Subject:** "Invitation: SAP Modernisation Masterclass — The Financial Model"
 
 Dear [Name],
 
-I am inviting you to our upcoming **SAP Modernisation Masterclass** — a live webinar that includes dedicated coverage of the financial model behind successful SAP-to-AWS migrations:
+I am inviting you to our upcoming **SAP Modernisation Masterclass** — a downloadable whitepaper that includes dedicated coverage of the financial model behind successful SAP-to-AWS migrations:
 
 **Financial Topics Covered:**
 - SAP TCO comparison methodology: on-prem vs AWS (with real benchmark data)
@@ -323,9 +323,9 @@ I am inviting you to our upcoming **SAP Modernisation Masterclass** — a live w
 - Capex-to-opex conversion models that improve financial predictability
 - Case study deep-dive: the 14-month payback story
 
-**Date:** [Webinar Date]
+**Date:** [Whitepaper Date]
 **Duration:** 60 minutes + 15-minute Q&A
-**Register:** [Registration Link]
+**Download:** [Download Link]
 
 This session brings together technical and financial perspectives — ideal for CFOs who need to evaluate SAP modernisation as both a technology initiative and a financial decision.
 
@@ -419,12 +419,12 @@ Best,
 
 ---
 
-#### Email 3 — Webinar Invitation + Operations Track
+#### Email 3 — Whitepaper Invitation + Operations Track
 **Subject:** "Invitation: SAP Modernisation Masterclass — Operations Deep-Dive"
 
 Hi [Name],
 
-I am inviting you to our upcoming **SAP Modernisation Masterclass** webinar. This session includes a dedicated operations track covering:
+I am inviting you to our upcoming **SAP Modernisation Masterclass** whitepaper. This whitepaper includes a dedicated operations track covering:
 
 - Automating SAP backups, refreshes, and DR on AWS
 - Monitoring SAP workloads with CloudWatch and Solution Manager integration
@@ -432,11 +432,11 @@ I am inviting you to our upcoming **SAP Modernisation Masterclass** webinar. Thi
 - Real-world demo: automated SAP system refresh in under 45 minutes
 - Operations team transformation: from reactive to strategic
 
-**Date:** [Webinar Date]
+**Date:** [Whitepaper Date]
 **Duration:** 60 minutes + 15-minute Q&A
-**Register:** [Registration Link]
+**Download:** [Download Link]
 
-This is a practical session built from real SAP operations engagements — not theory. If your team spends more time maintaining SAP than improving it, this webinar will show you what modern SAP operations look like.
+This is a practical session built from real SAP operations engagements — not theory. If your team spends more time maintaining SAP than improving it, this whitepaper will show you what modern SAP operations look like.
 
 Would you like to register?
 
@@ -524,12 +524,12 @@ Best regards,
 
 ---
 
-#### Email 3 — Webinar Invitation: Technical Track
-**Subject:** "Webinar: SAP Modernisation Masterclass — Basis Technical Track"
+#### Email 3 — Whitepaper Invitation: Technical Track
+**Subject:** "Whitepaper: SAP Modernisation Masterclass — Basis Technical Track"
 
 Hi [Name],
 
-I am inviting you to our **SAP Modernisation Masterclass** webinar, which includes dedicated technical content for SAP Basis professionals:
+I am inviting you to our **SAP Modernisation Masterclass** whitepaper, which includes dedicated technical content for SAP Basis professionals:
 
 **Basis-Relevant Topics:**
 - SAP-certified AWS instance selection: choosing the right EC2 family for HANA, App, and ASCS
@@ -539,9 +539,9 @@ I am inviting you to our **SAP Modernisation Masterclass** webinar, which includ
 - Monitoring SAP with CloudWatch: Basis-relevant metrics and alerting
 - Live demo: automated SAP system refresh from production snapshot
 
-**Date:** [Webinar Date]
+**Date:** [Whitepaper Date]
 **Duration:** 60 minutes + 15-minute Q&A
-**Register:** [Registration Link]
+**Download:** [Download Link]
 
 This is a technical session — not a sales presentation. If you are evaluating AWS for SAP or want to understand what modern SAP Basis operations look like on cloud, this is for you.
 
@@ -638,7 +638,7 @@ Warm regards,
 
 ---
 
-#### Email 3 — Financial Case Study + Webinar
+#### Email 3 — Financial Case Study + Whitepaper
 **Subject:** "Case Study: Procurement Team Saves $2.1M Over 3 Years on SAP Hosting"
 
 Dear [Name],
@@ -657,10 +657,10 @@ A procurement team at a regional financial services group was evaluating SAP hos
 - **No hardware lock-in** — instance types can be changed as workloads evolve
 - **Improved SLA** with 99.95% uptime vs previous 98.4%
 
-I am also inviting you to our **SAP Modernisation Masterclass** webinar, which includes financial modelling content relevant to procurement evaluation.
+I am also inviting you to our **SAP Modernisation Masterclass** whitepaper, which includes financial modelling content relevant to procurement evaluation.
 
-**Date:** [Webinar Date]
-**Register:** [Registration Link]
+**Date:** [Whitepaper Date]
+**Download:** [Download Link]
 
 Shall I arrange a TCO Deep-Dive for [Company Name]?
 
@@ -707,7 +707,7 @@ Hi [Name], hope you are well. I shared an email about SAP architecture gaps we a
 Hello [Name], following up — a manufacturing client achieved 99.95% SAP uptime and 42% cost reduction after we redesigned their SAP architecture on AWS. I sent the full case study. Would a similar review be useful for your landscape?
 
 **Message 3 (Day 18)**
-Salam [Name], quick note — we are hosting a SAP Modernisation Masterclass webinar covering architecture decisions, S/4HANA readiness, and live DR failover demo. Technical, not sales. Shall I send the registration link?
+Salam [Name], quick note — we are releasing a SAP Modernisation Masterclass whitepaper covering architecture decisions, S/4HANA readiness, and live DR failover demo. Technical, not sales. Shall I send the download link?
 
 **Message 4 (Day 26)**
 Hi [Name], final follow-up. If S/4HANA is on your roadmap, our complimentary Readiness Assessment gives you a clear starting point — architecture, timeline, cost, and risk. Takes 2–3 hours of your team's time. Worth doing before Q3 planning.
@@ -721,7 +721,7 @@ Dear [Name], hope you are well. I sent a note about SAP cost findings across KSA
 Hello [Name], following up with a relevant case study: a financial services group saved $2.1M over 3 years on SAP hosting after our TCO assessment. I shared the details via email. Would you like to explore similar savings?
 
 **Message 3 (Day 18)**
-Hi [Name], we are hosting a SAP Modernisation Masterclass webinar that includes financial modelling content — TCO methodology, business case frameworks, and the 14-month payback case study. Shall I send registration details?
+Hi [Name], we are releasing a SAP Modernisation Masterclass whitepaper that includes financial modelling content — TCO methodology, business case frameworks, and the 14-month payback case study. Shall I send download details?
 
 **Message 4 (Day 26)**
 Dear [Name], final reminder about our complimentary SAP TCO Deep-Dive. In 90 minutes, we baseline your SAP costs and model AWS savings. CFOs tell us it is the clearest view of SAP cost they have ever received. Shall I arrange the session?
@@ -735,7 +735,7 @@ Hi [Name], hope you are well. I shared some SAP operational quick wins that save
 Hello [Name], a relevant case study: an IT team reduced their SAP operational workload by 65% after we automated backups, refreshes, and DR workflows. I sent the full details. Would a similar assessment be useful for your team?
 
 **Message 3 (Day 18)**
-Salam [Name], we are hosting a SAP Modernisation Masterclass webinar with a dedicated operations track — automation demos, monitoring setup, and real-world before/after metrics. Shall I register you?
+Salam [Name], we are releasing a SAP Modernisation Masterclass whitepaper with a dedicated operations track — automation demos, monitoring setup, and real-world before/after metrics. Shall I register you?
 
 **Message 4 (Day 26)**
 Hi [Name], final follow-up on the complimentary SAP Landscape Health Check. It covers performance, backups, DR readiness, and cost optimisation — takes about 2 hours of your team's time and delivers a prioritised action plan. Worth doing before Q3. Shall I arrange it?
@@ -749,7 +749,7 @@ Hi [Name], hope you are well. I sent an email about SAP Basis on AWS — faster 
 Hello [Name], quick follow-up — a Basis team we work with reduced their HANA column store reorg time from 6 hours to 47 minutes after moving to AWS. I shared the technical details. Would you like to see how your HANA landscape compares?
 
 **Message 3 (Day 18)**
-Salam [Name], we are running a SAP Modernisation Masterclass webinar with Basis-relevant technical content — instance selection, HANA backup on S3, system copy automation, and HA configuration. Technical, not theory. Shall I send the registration link?
+Salam [Name], we are releasing a SAP Modernisation Masterclass whitepaper with Basis-relevant technical content — instance selection, HANA backup on S3, system copy automation, and HA configuration. Technical, not theory. Shall I send the download link?
 
 **Message 4 (Day 26)**
 Hi [Name], final note. Our complimentary SAP Basis Health Check covers HANA health, kernel alignment, backup integrity, transport management, and performance baseline. Takes about 2 hours and delivers specific recommendations. Let me know if useful.
@@ -763,7 +763,7 @@ Dear [Name], hope you are well. I sent an email about SAP hosting contract bench
 Hello [Name], following up with a relevant case: a procurement team saved $2.1M over 3 years by switching SAP hosting from on-prem renewal to AWS. I shared the full breakdown. Would you like us to model similar numbers for [Company Name]?
 
 **Message 3 (Day 18)**
-Hi [Name], we are hosting a SAP Modernisation Masterclass webinar covering financial modelling and TCO methodology — useful content for evaluating SAP hosting options. Shall I send registration details?
+Hi [Name], we are releasing a SAP Modernisation Masterclass whitepaper covering financial modelling and TCO methodology — useful content for evaluating SAP hosting options. Shall I send download details?
 
 **Message 4 (Day 26)**
 Dear [Name], final reminder — our complimentary SAP TCO Deep-Dive delivers a full cost comparison document suitable for procurement evaluation and board presentation. 90 minutes, vendor-neutral analysis. Shall I arrange it before Q3 contract reviews begin?
@@ -794,9 +794,9 @@ The architecture decisions that delivered those results are quite specific — m
 
 Would you be interested in a focused architecture review?"
 
-**Stage 3 Call (Day 18–20): After Email 3 (Webinar)**
+**Stage 3 Call (Day 18–20): After Email 3 (Whitepaper)**
 Script:
-"Hello [Name], I wanted to follow up on the SAP Modernisation Masterclass webinar invitation. It is a technical session — architecture decisions, S/4HANA readiness, live DR failover demo — designed for technology leaders planning SAP transformation.
+"Hello [Name], I wanted to follow up on the SAP Modernisation Masterclass whitepaper invitation. It is a technical session — architecture decisions, S/4HANA readiness, live DR failover demo — designed for technology leaders planning SAP transformation.
 
 We are keeping it to a small group to maintain an interactive format. Would you like me to reserve a place for you?
 
@@ -830,9 +830,9 @@ We can model a similar comparison for your SAP environment. The session provides
 
 Would you like to schedule it?"
 
-**Stage 3 Call (Day 18–20): After Email 3 (Webinar)**
+**Stage 3 Call (Day 18–20): After Email 3 (Whitepaper)**
 Script:
-"Hello [Name], calling about the SAP Modernisation Masterclass webinar. It includes dedicated financial content — TCO comparison methodology, business case frameworks, and the 14-month payback case study.
+"Hello [Name], calling about the SAP Modernisation Masterclass whitepaper. It includes dedicated financial content — TCO comparison methodology, business case frameworks, and the 14-month payback case study.
 
 It is relevant for CFOs evaluating SAP modernisation as both a technology initiative and a financial decision. Shall I register you?
 
@@ -864,9 +864,9 @@ Script:
 
 We can assess your SAP operations and identify the quickest wins. Would you be open to a SAP Landscape Health Check?"
 
-**Stage 3 Call (Day 18–20): After Email 3 (Webinar)**
+**Stage 3 Call (Day 18–20): After Email 3 (Whitepaper)**
 Script:
-"Hello [Name], I wanted to follow up on the SAP Modernisation Masterclass webinar. It includes a practical operations track — automation demos, monitoring setup, and real-world metrics from SAP teams we have worked with.
+"Hello [Name], I wanted to follow up on the SAP Modernisation Masterclass whitepaper. It includes a practical operations track — automation demos, monitoring setup, and real-world metrics from SAP teams we have worked with.
 
 Would you like to register? Or if a direct assessment is more useful, we can arrange the SAP Landscape Health Check instead."
 
@@ -896,9 +896,9 @@ If your HANA performance is not where you want it, or if system copy times are i
 
 Would you be interested in the assessment?"
 
-**Stage 3 Call (Day 18–20): After Email 3 (Webinar)**
+**Stage 3 Call (Day 18–20): After Email 3 (Whitepaper)**
 Script:
-"Hello [Name], I wanted to follow up on the SAP Modernisation Masterclass webinar. It includes Basis-relevant technical content — instance selection for HANA, backup architecture with Backint and S3, system copy automation, and HA configuration.
+"Hello [Name], I wanted to follow up on the SAP Modernisation Masterclass whitepaper. It includes Basis-relevant technical content — instance selection for HANA, backup architecture with Backint and S3, system copy automation, and HA configuration.
 
 It is a technical session, not a sales pitch. Would you like to register? Or if you prefer, we can arrange the Basis Health Check directly."
 
@@ -926,11 +926,11 @@ Script:
 
 If you are evaluating SAP hosting partners, we can provide a structured vendor information package alongside the TCO analysis. Would that help your procurement process?"
 
-**Stage 3 Call (Day 18–20): After Email 3 (Case Study + Webinar)**
+**Stage 3 Call (Day 18–20): After Email 3 (Case Study + Whitepaper)**
 Script:
 "Hello [Name], calling about the SAP hosting case study I shared — the procurement team that saved $2.1M over 3 years. The financial model we built for them is the same methodology we use in our SAP TCO Deep-Dive.
 
-We are also hosting a webinar with financial modelling content. Would you prefer the webinar, or a private TCO session for your team?"
+We are also hosting a whitepaper with financial modelling content. Would you prefer the whitepaper, or a private TCO session for your team?"
 
 **Stage 4 Call (Day 25–28): Final Conversion**
 Script:

@@ -521,7 +521,7 @@ Book Your Complimentary Well-Architected Review
 ### Step 3: Confirmation Page
 - Thank you message with personalized details
 - Calendar link to book discovery call (Calendly or HubSpot meetings integration)
-- "While you wait" content: link to webinar recording, downloadable WAFR one-pager
+- "While you wait" content: link to whitepaper PDF, downloadable WAFR one-pager
 - Social sharing buttons: "Share this with a colleague"
 
 ### Step 4: Automated Follow-up

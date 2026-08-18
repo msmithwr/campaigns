@@ -354,4 +354,260 @@ Emphasise value and comprehensiveness of free assessment. Use language that buil
 - Cultural localisation for imagery and messaging
 - Dual-language form support and validation
 
+---
+
+## ARABIC PAGE COPY
+
+Use this Arabic copy as the default RTL page content. Keep AWS, SDP, Windows Server, and Cloudwrxs product names in English where this improves clarity for technical and executive buyers.
+
+### HERO SECTION
+
+**Headline (Arabic):**
+"خفض تكاليف تراخيص Windows بنسبة 40-60% مع تحسين الأداء والأمان"
+
+**Subheadline (Arabic):**
+"برنامج AWS Software Discount Program (SDP) مع Cloudwrxs: حوّل بنية Windows Server من عبء تشغيلي إلى ميزة استراتيجية للأعمال"
+
+**Hero Copy (Arabic):**
+"تساعد Cloudwrxs، بصفتها AWS Advanced Tier Services Partner، المؤسسات في المملكة العربية السعودية ومنطقة الشرق الأوسط على تحقيق وفورات كبيرة في تكاليف تراخيص Windows Server من خلال برنامج AWS Software Discount Program (SDP). نساعدكم على تحديث بنية Windows وتحويلها إلى منصة أكثر كفاءة ومرونة وأماناً، مع خطة واضحة لتقليل التكاليف وتحسين الاستعداد التشغيلي."
+
+**Primary CTA Buttons (Arabic):**
+- "احجز تقييم جاهزية ترحيل Windows مجاناً"
+- "احسب وفورات SDP"
+- "حمّل دليل تحديث Windows"
+
+### PROBLEM IDENTIFICATION SECTION
+
+**Section Title (Arabic):**
+"تحديات بنية Windows التي تعيق نمو أعمالكم"
+
+**Financial Challenges (Arabic):**
+- ارتفاع مستمر في تكاليف تراخيص Windows Server
+- اتفاقيات ترخيص معقدة وصعبة التنبؤ
+- هدر في التراخيص بسبب الإفراط في التخصيص أو ضعف الاستخدام
+- تأثير غير متوقع على الميزانية نتيجة تغييرات أسعار Microsoft
+
+**Operational Challenges (Arabic):**
+- استهلاك وقت فرق تقنية المعلومات في التحديثات والصيانة اليدوية
+- تعقيد النسخ الاحتياطي والتعافي من الكوارث
+- صعوبة التوسع بسرعة عند نمو الأعمال
+- انشغال الفرق بالمهام التشغيلية بدلاً من المبادرات الاستراتيجية
+
+**Security & Compliance Challenges (Arabic):**
+- مخاطر أمنية مرتبطة بأنظمة Windows القديمة
+- تعقيد الاستعداد للتدقيق والامتثال
+- سياسات أمنية غير موحدة عبر بيئات Windows
+- محدودية الرؤية على وضع الأمان والمخاطر
+
+**Strategic Challenges (Arabic):**
+- بنية تقليدية تحد من التحول الرقمي
+- صعوبة تحديث التطبيقات أو نقلها إلى نماذج أكثر مرونة
+- اعتماد زائد على بنية محلية جامدة
+- تراكم ديون تقنية يمنع الاستثمار في الابتكار
+
+### SOLUTION OVERVIEW SECTION
+
+**Section Title (Arabic):**
+"برنامج AWS SDP: مسار شامل لتحديث Windows وتقليل التكاليف"
+
+**Pillar 1: Immediate Cost Reduction (Arabic):**
+- خفض تكاليف تراخيص Windows Server بنسبة 40-60%
+- تقليل هدر التراخيص والموارد غير المستخدمة
+- نموذج تكلفة أكثر وضوحاً وارتباطاً بالاستهلاك الفعلي
+- تبسيط إدارة الموردين من خلال علاقة AWS واحدة
+
+**Pillar 2: Operational Excellence (Arabic):**
+- أتمتة تحديثات Windows وتقليل وقت الصيانة
+- قدرات AWS للنسخ الاحتياطي والتعافي من الكوارث
+- مرونة في التوسع حسب احتياجات الأعمال
+- تحرير وقت فرق تقنية المعلومات للتركيز على التطوير والابتكار
+
+**Pillar 3: Enhanced Security & Compliance (Arabic):**
+- تعزيز أمان أحمال Windows باستخدام خدمات AWS الأصلية
+- مراقبة امتثال أكثر وضوحاً وقابلية للتقرير
+- تقليل التعقيد في الاستعداد للتدقيق
+- تحسين الرؤية على المخاطر والسياسات الأمنية
+
+**Pillar 4: Strategic Business Enablement (Arabic):**
+- تحديث تطبيقات Windows تدريجياً وبمنهجية عملية
+- بنية هجينة تدعم الانتقال المنظم إلى السحابة
+- أساس تقني يدعم الابتكار الرقمي
+- كفاءة تشغيلية تمنح الأعمال قدرة أكبر على المنافسة
+
+### CLOUDWRXS EXPERTISE SECTION
+
+**Section Title (Arabic):**
+"لماذا Cloudwrxs: خبرة مثبتة في تحديث Windows داخل المملكة والمنطقة"
+
+**AWS Partnership Excellence (Arabic):**
+- شريك AWS Advanced Tier Services Partner
+- منهجية عملية لتقييم وتنفيذ فرص SDP
+- وصول مباشر إلى خبرات وبرامج AWS
+- دعم تقني واستشاري خلال رحلة التحديث
+
+**Regional Market Leadership (Arabic):**
+- فهم عميق لاحتياجات المؤسسات في السعودية ومنطقة الشرق الأوسط
+- أسلوب تنفيذ يناسب ثقافة الأعمال المحلية
+- خبرة في المتطلبات التنظيمية والامتثال
+- دعم فني واستشاري باللغتين العربية والإنجليزية
+
+**Proven Results Delivery (Arabic):**
+- تنفيذ أكثر من 50 مشروع ترحيل وتحديث Windows
+- متوسط وفورات بلغ 47% في تكاليف التراخيص
+- نسبة رضا ونجاح مشاريع بلغت 85%
+- تقليل مخاطر الانقطاع أثناء التحول
+
+### SUCCESS STORIES SECTION
+
+**Section Title (Arabic):**
+"نتائج واقعية: قصص نجاح في تحديث Windows"
+
+**Case Study 1: Manufacturing Enterprise (Arabic):**
+**Challenge:** أكثر من 200 خادم Windows مع عبء تشغيلي مرتفع.
+**Solution:** ترحيل شامل باستخدام SDP مع أتمتة العمليات.
+**Results:**
+- خفض تكاليف التراخيص بنسبة 45%
+- تحسين الكفاءة التشغيلية بنسبة 60%
+- تقليل وقت صيانة Windows بنسبة 90%
+- تعزيز الوضع الأمني والاستعداد للامتثال
+
+**Case Study 2: Technology Company (Arabic):**
+**Challenge:** بنية Windows قديمة تحد من تحديث التطبيقات.
+**Solution:** تحديث تدريجي للتطبيقات وبنية هجينة على AWS.
+**Results:**
+- خفض تكاليف البنية بنسبة 40%
+- تسريع دورات نشر التطبيقات بثلاثة أضعاف
+- بنية Windows أكثر حداثة ومرونة
+- تحسين سرعة الاستجابة لاحتياجات السوق
+
+**Case Study 3: Regional Group (Arabic):**
+**Challenge:** تعقيد تراخيص Windows وإدارة الموردين.
+**Solution:** تنفيذ SDP مع تحسين نموذج الشراء والإدارة.
+**Results:**
+- خفض تكاليف تراخيص Windows بنسبة 50%
+- تبسيط العلاقة مع الموردين
+- تحسين الجاهزية للتدقيق والامتثال
+- إعادة توجيه الميزانية إلى مبادرات استراتيجية
+
+### ASSESSMENT OFFERING SECTION
+
+**Section Title (Arabic):**
+"تقييم مجاني لجاهزية ترحيل Windows: اكتشفوا فرص التوفير والتحسين"
+
+**Current State Analysis (Arabic):**
+- حصر بيئة Windows الحالية وتحليل الاستخدام
+- تحديد خط الأساس لتكاليف التراخيص وفرص التحسين
+- تقييم الكفاءة التشغيلية ومجالات التطوير
+- مراجعة الوضع الأمني وتوصيات التحسين
+
+**SDP Savings Calculator (Arabic):**
+- مقارنة تفصيلية بين تكاليف الترخيص الحالية وفرص SDP
+- توقعات تحسين تكاليف البنية التحتية
+- قياس أثر تحسين الكفاءة التشغيلية
+- تحليل العائد على الاستثمار وفترة الاسترداد
+
+**Strategic Roadmap Development (Arabic):**
+- استراتيجية تحديث Windows وخطة زمنية واضحة
+- منهجية ترحيل وإدارة مخاطر
+- تقييم أثر الأعمال وإدارة التغيير
+- مؤشرات نجاح قابلة للقياس والمتابعة
+
+**Assessment Deliverables (Arabic):**
+- تقرير شامل عن بيئة Windows الحالية
+- حسابات وفورات SDP مع توقعات مالية واضحة
+- خارطة طريق للتحول بمراحل تنفيذ عملية
+- ملخص تنفيذي بالتوصيات والخطوات التالية
+
+### CALL-TO-ACTION SECTION
+
+**Form Title (Arabic):**
+"احجزوا تقييم جاهزية ترحيل Windows مجاناً"
+
+**Form Fields (Arabic Labels):**
+- الاسم الكامل
+- المسمى الوظيفي
+- اسم الشركة
+- البريد الإلكتروني
+- رقم الهاتف
+- حجم بيئة Windows Server الحالية
+- التحدي الأساسي في بيئة Windows
+- الجدول الزمني المفضل للتقييم
+- متطلبات إضافية
+
+**Secondary CTA Options (Arabic):**
+- "حمّل دليل Windows SDP"
+- "احجز جلسة حساب وفورات SDP"
+- "اطلب ورشة تحديث Windows"
+
+### TRUST & CREDIBILITY SECTION
+
+**Section Title (Arabic):**
+"شريك موثوق لتحديث Windows على AWS"
+
+**Trust Points (Arabic):**
+- شريك AWS Advanced Tier Services Partner
+- خبرة في مشاريع Windows وAWS داخل المنطقة
+- التزام بأمن البيانات والخصوصية
+- فهم للمتطلبات التنظيمية مثل SAMA وCITC
+- نهج استشاري يركز على النتائج التجارية وليس التقنية فقط
+
+### ARABIC FORM OPTIONS
+
+**Current Windows Server Environment Size:**
+- أقل من 50 خادماً
+- 50-200 خادم
+- 200-500 خادم
+- أكثر من 500 خادم
+
+**Primary Windows Challenge:**
+- خفض التكاليف
+- تحسين الكفاءة التشغيلية
+- تعزيز الأمان
+- التحديث الاستراتيجي
+
+**Preferred Assessment Timeline:**
+- خلال أسبوعين
+- خلال شهر
+- خلال 3 أشهر
+- تخطيط مستقبلي
+
+### LANGUAGE TOGGLE REQUIREMENTS
+
+- Provide an English / Arabic toggle near the top navigation.
+- Arabic view must use RTL layout for body copy and form labels.
+- Keep technical acronyms readable: AWS, SDP, Windows Server, Cloudwrxs.
+- Calendar CTA should use the same calendar link in both languages.
+- Form submission and CTA tracking must preserve language selection.
+
+---
+
+## WEBSITE BUILD HANDOFF
+
+**Target page slug:** `/windows-sdp2/`
+
+**Primary calendar CTA URL:**
+`https://calendar.google.com/calendar/u/0?cid=bWF0dGhldy5zbWl0aC13cmlnaHRAY2xvdWR3cnhzLmNvbQ`
+
+**WordPress/ACF Pro implementation note:**
+Cloudwrxs uses Advanced Custom Fields Pro. Store the calendar URL in an editable ACF field so the website team can update it without code changes. Recommended field name: `windows_sdp2_calendar_url`.
+
+**Recommended ACF fields:**
+- `windows_sdp2_calendar_url`
+- `windows_sdp2_guide_download_url`
+- `windows_sdp2_video_url`
+- `windows_sdp2_primary_language`
+- `windows_sdp2_ga4_conversion_event`
+- `windows_sdp2_hubspot_form_id`
+
+**Required tracking parameters:**
+Preserve incoming campaign tracking parameters where possible:
+- `campaignId`
+- `persona`
+- `link`
+- `email`
+- `utm_source`
+- `utm_medium`
+- `utm_campaign`
+- `utm_content`
+
 This comprehensive landing page brief provides Cloudwrxs with detailed specifications for creating a high-converting Windows SDP landing page that effectively supports Campaign 2 objectives while maintaining professional standards appropriate for KSA/MENA business audiences.

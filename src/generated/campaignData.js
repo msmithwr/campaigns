@@ -1,4 +1,4 @@
-export const generatedAt = "2026-06-26T23:00:54.192Z";
+export const generatedAt = "2026-08-18T17:01:14.125Z";
 export const campaigns = [
   {
     "id": "campaign-1-windows-sdp-1",
@@ -281,19 +281,20 @@ export const campaigns = [
     "bg": "#c5ddf7",
     "textColor": "#0c3d6b",
     "budget": "$10,000",
-    "objective": "Run the second Windows EC2 SDP wave in June 2026, building on Campaign 1 learnings and moving warm or newly segmented accounts toward TCO comparison and SDP Savings Calculator sessions.",
+    "objective": "Run the second Windows EC2 SDP wave in July 2026, building on Campaign 1 learnings and moving warm or newly segmented accounts toward TCO comparison and SDP Savings Calculator sessions.",
     "personas": [],
     "files": [
       "campaign-calendar.md",
       "campaign-overview.md",
       "landing-page-brief.md",
       "linkedin-calendar.md",
-      "video-script.md"
+      "video-script.md",
+      "windows-sdp2-webserver-handoff.md"
     ],
     "events": [
       {
         "id": "week-1-1",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 1",
         "section": "Activities",
         "type": "linkedin",
@@ -302,7 +303,7 @@ export const campaigns = [
       },
       {
         "id": "week-1-2",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 1",
         "section": "Activities",
         "type": "task",
@@ -311,7 +312,7 @@ export const campaigns = [
       },
       {
         "id": "week-1-3",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 1",
         "section": "Activities",
         "type": "whatsapp",
@@ -320,7 +321,7 @@ export const campaigns = [
       },
       {
         "id": "week-1-4",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 1",
         "section": "Activities",
         "type": "task",
@@ -329,7 +330,7 @@ export const campaigns = [
       },
       {
         "id": "week-2-5",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 2",
         "section": "Outbound",
         "type": "email",
@@ -338,7 +339,7 @@ export const campaigns = [
       },
       {
         "id": "week-2-6",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 2",
         "section": "Outbound",
         "type": "whatsapp",
@@ -347,7 +348,7 @@ export const campaigns = [
       },
       {
         "id": "week-2-7",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 2",
         "section": "Sales Activities",
         "type": "call",
@@ -356,7 +357,7 @@ export const campaigns = [
       },
       {
         "id": "week-2-8",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 2",
         "section": "Sales Activities",
         "type": "task",
@@ -365,7 +366,7 @@ export const campaigns = [
       },
       {
         "id": "week-2-9",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 2",
         "section": "Sales Activities",
         "type": "task",
@@ -374,7 +375,7 @@ export const campaigns = [
       },
       {
         "id": "week-3-10",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 3",
         "section": "Outbound",
         "type": "email",
@@ -383,7 +384,7 @@ export const campaigns = [
       },
       {
         "id": "week-3-11",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 3",
         "section": "Outbound",
         "type": "whatsapp",
@@ -392,7 +393,7 @@ export const campaigns = [
       },
       {
         "id": "week-3-12",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 3",
         "section": "Sales Activities",
         "type": "call",
@@ -401,7 +402,7 @@ export const campaigns = [
       },
       {
         "id": "week-3-13",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 3",
         "section": "Sales Activities",
         "type": "task",
@@ -410,7 +411,7 @@ export const campaigns = [
       },
       {
         "id": "week-3-14",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 3",
         "section": "Sales Activities",
         "type": "task",
@@ -419,7 +420,7 @@ export const campaigns = [
       },
       {
         "id": "week-4-15",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 4",
         "section": "Outbound",
         "type": "email",
@@ -428,7 +429,7 @@ export const campaigns = [
       },
       {
         "id": "week-4-16",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 4",
         "section": "Outbound",
         "type": "whatsapp",
@@ -437,7 +438,7 @@ export const campaigns = [
       },
       {
         "id": "week-4-17",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 4",
         "section": "Sales Activities",
         "type": "call",
@@ -446,7 +447,7 @@ export const campaigns = [
       },
       {
         "id": "week-4-18",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 4",
         "section": "Sales Activities",
         "type": "task",
@@ -455,7 +456,7 @@ export const campaigns = [
       },
       {
         "id": "week-4-19",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 4",
         "section": "Sales Activities",
         "type": "task",
@@ -464,7 +465,7 @@ export const campaigns = [
       },
       {
         "id": "week-4-20",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 4",
         "section": "KPI Targets",
         "type": "task",
@@ -473,7 +474,7 @@ export const campaigns = [
       },
       {
         "id": "week-4-21",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 4",
         "section": "KPI Targets",
         "type": "task",
@@ -482,7 +483,7 @@ export const campaigns = [
       },
       {
         "id": "week-4-22",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 4",
         "section": "KPI Targets",
         "type": "task",
@@ -491,7 +492,7 @@ export const campaigns = [
       },
       {
         "id": "week-4-23",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 4",
         "section": "KPI Targets",
         "type": "task",
@@ -500,7 +501,7 @@ export const campaigns = [
       },
       {
         "id": "week-4-24",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 4",
         "section": "KPI Targets",
         "type": "task",
@@ -509,7 +510,7 @@ export const campaigns = [
       },
       {
         "id": "week-4-25",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 4",
         "section": "KPI Targets",
         "type": "task",
@@ -518,7 +519,7 @@ export const campaigns = [
       },
       {
         "id": "week-4-26",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 4",
         "section": "KPI Targets",
         "type": "task",
@@ -527,7 +528,7 @@ export const campaigns = [
       },
       {
         "id": "week-4-27",
-        "month": "June 2026",
+        "month": "July 2026",
         "week": "Week 4",
         "section": "KPI Targets",
         "type": "task",
@@ -598,7 +599,7 @@ export const campaigns = [
       "case-study-2.md",
       "collateral-brief.md",
       "linkedin-calendar.md",
-      "webinar-package.md"
+      "whitepaper-package.md"
     ],
     "events": [
       {
@@ -633,9 +634,9 @@ export const campaigns = [
         "month": "April 2026",
         "week": "Week 1",
         "section": "Marketing Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Update existing landing page (https://cloudwrxs.com/aws-sap-specialization) with case study links and webinar pre-registration"
+        "title": "Update existing landing page (https://cloudwrxs.com/aws-sap-specialization) with case study links and whitepaper download CTA"
       },
       {
         "id": "week-1-5",
@@ -876,9 +877,9 @@ export const campaigns = [
         "month": "April 2026",
         "week": "Week 4",
         "section": "Outbound",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Begin webinar pre-promotion (teaser emails to engaged contacts)"
+        "title": "Begin whitepaper pre-promotion (teaser emails to engaged contacts)"
       },
       {
         "id": "week-4-32",
@@ -914,7 +915,7 @@ export const campaigns = [
         "section": "Sales Activities",
         "type": "task",
         "label": "",
-        "title": "Begin drafting account-specific recommendations for workshop attendees"
+        "title": "Begin drafting account-specific recommendations for workshop readers"
       },
       {
         "id": "week-4-36",
@@ -993,18 +994,18 @@ export const campaigns = [
         "month": "May 2026",
         "week": "Week 1",
         "section": "Marketing Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Open webinar registration: \"SAP Modernisation Masterclass\""
+        "title": "Open whitepaper download: \"SAP Modernisation Masterclass\""
       },
       {
         "id": "week-1-45",
         "month": "May 2026",
         "week": "Week 1",
         "section": "Marketing Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Launch webinar registration page with full copy"
+        "title": "Launch whitepaper download page with full copy"
       },
       {
         "id": "week-1-46",
@@ -1013,7 +1014,7 @@ export const campaigns = [
         "section": "Marketing Activities",
         "type": "email",
         "label": "E4",
-        "title": "Send Pre-Webinar Email 1 (registration invitation) to full database"
+        "title": "Send Whitepaper Email 1 (download invitation) to full database"
       },
       {
         "id": "week-1-47",
@@ -1029,18 +1030,18 @@ export const campaigns = [
         "month": "May 2026",
         "week": "Week 1",
         "section": "LinkedIn",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Post 5: Webinar announcement — \"SAP Modernisation Masterclass: Register Now\""
+        "title": "Post 5: Whitepaper announcement — \"SAP Modernisation Masterclass: Download Now\""
       },
       {
         "id": "week-1-49",
         "month": "May 2026",
         "week": "Week 1",
         "section": "Sales Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Personal webinar invitations to warm leads and workshop attendees from April"
+        "title": "Personal whitepaper invitations to warm leads and workshop readers from April"
       },
       {
         "id": "week-1-50",
@@ -1067,7 +1068,7 @@ export const campaigns = [
         "section": "Outbound",
         "type": "email",
         "label": "E5",
-        "title": "Email 3 to all 5 personas (webinar invitation + ROI proof)"
+        "title": "Email 3 to all 5 personas (whitepaper invitation + ROI proof)"
       },
       {
         "id": "week-2-53",
@@ -1076,7 +1077,7 @@ export const campaigns = [
         "section": "Outbound",
         "type": "whatsapp",
         "label": "W5",
-        "title": "WhatsApp Message 3 (webinar reminder)"
+        "title": "WhatsApp Message 3 (whitepaper reminder)"
       },
       {
         "id": "week-2-54",
@@ -1085,7 +1086,7 @@ export const campaigns = [
         "section": "Outbound",
         "type": "email",
         "label": "E6",
-        "title": "Pre-Webinar Email 2 (content teaser + speaker introduction)"
+        "title": "Whitepaper Email 2 (content teaser + content preview)"
       },
       {
         "id": "week-2-55",
@@ -1103,16 +1104,16 @@ export const campaigns = [
         "section": "Sales Activities",
         "type": "call",
         "label": "C4",
-        "title": "Stage 3 Calls (webinar follow-up or assessment booking)"
+        "title": "Stage 3 Calls (whitepaper follow-up or assessment booking)"
       },
       {
         "id": "week-2-57",
         "month": "May 2026",
         "week": "Week 2",
         "section": "Sales Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Drive webinar registrations through personal outreach"
+        "title": "Drive whitepaper downloads through personal outreach"
       },
       {
         "id": "week-2-58",
@@ -1128,9 +1129,9 @@ export const campaigns = [
         "month": "May 2026",
         "week": "Week 2",
         "section": "KPI Checkpoint",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Webinar registration count (target: 50+ by end of Week 2)"
+        "title": "Whitepaper download count (target: 50+ by end of Week 2)"
       },
       {
         "id": "week-2-60",
@@ -1148,7 +1149,7 @@ export const campaigns = [
         "section": "Activities",
         "type": "email",
         "label": "E8",
-        "title": "Pre-Webinar Email 3 (final reminder, day before webinar)"
+        "title": "Whitepaper Email 3 (final reminder, day before whitepaper)"
       },
       {
         "id": "week-3-62",
@@ -1157,7 +1158,7 @@ export const campaigns = [
         "section": "Activities",
         "type": "whatsapp",
         "label": "W6",
-        "title": "WhatsApp reminders to registered attendees"
+        "title": "WhatsApp reminders to whitepaper readers"
       },
       {
         "id": "week-3-63",
@@ -1166,16 +1167,16 @@ export const campaigns = [
         "section": "Activities",
         "type": "linkedin",
         "label": "",
-        "title": "Final LinkedIn push: Post 7 (webinar last-chance registration)"
+        "title": "Final LinkedIn push: Post 7 (whitepaper final download push)"
       },
       {
         "id": "week-3-64",
         "month": "May 2026",
         "week": "Week 3",
         "section": "Activities",
-        "type": "task",
+        "type": "whitepaper",
         "label": "",
-        "title": "Deliver \"SAP Modernisation Masterclass\" — 60 min + 15 min Q&A"
+        "title": "Publish \"SAP Modernisation Masterclass\" gated whitepaper and route follow-up questions"
       },
       {
         "id": "week-3-65",
@@ -1202,7 +1203,7 @@ export const campaigns = [
         "section": "Activities",
         "type": "email",
         "label": "E9",
-        "title": "Post-Webinar Email 1 (thank you + recording + next steps) — within 24 hours"
+        "title": "Post-Whitepaper Email 1 (thank you + whitepaper PDF + next steps) — within 24 hours"
       },
       {
         "id": "week-3-68",
@@ -1211,7 +1212,7 @@ export const campaigns = [
         "section": "Activities",
         "type": "whatsapp",
         "label": "W7",
-        "title": "WhatsApp follow-up to attendees: \"Thanks for joining — would you like a private session?\""
+        "title": "WhatsApp follow-up to readers: \"Thanks for downloading — would you like a private session?\""
       },
       {
         "id": "week-3-69",
@@ -1220,7 +1221,7 @@ export const campaigns = [
         "section": "Activities",
         "type": "crm",
         "label": "",
-        "title": "CRM update: tag all attendees and no-shows separately"
+        "title": "CRM update: tag all downloaders and non-engaged contacts separately"
       },
       {
         "id": "week-3-70",
@@ -1229,25 +1230,25 @@ export const campaigns = [
         "section": "Sales Activities",
         "type": "call",
         "label": "C5",
-        "title": "Immediate follow-up calls to webinar attendees (within 48 hours)"
+        "title": "Immediate follow-up calls to whitepaper readers (within 48 hours)"
       },
       {
         "id": "week-3-71",
         "month": "May 2026",
         "week": "Week 3",
         "section": "Sales Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Book workshops/assessments from webinar-generated interest"
+        "title": "Book workshops/assessments from whitepaper-generated interest"
       },
       {
         "id": "week-3-72",
         "month": "May 2026",
         "week": "Week 3",
         "section": "Sales Activities",
-        "type": "task",
+        "type": "whitepaper",
         "label": "",
-        "title": "Send recording to no-shows with personalised note"
+        "title": "Send whitepaper PDF to no-shows with personalised note"
       },
       {
         "id": "week-4-73",
@@ -1256,7 +1257,7 @@ export const campaigns = [
         "section": "Outbound",
         "type": "email",
         "label": "E10",
-        "title": "Post-Webinar Email 2 (case study + specific CTA based on webinar content)"
+        "title": "Post-Whitepaper Email 2 (case study + specific CTA based on whitepaper content)"
       },
       {
         "id": "week-4-74",
@@ -1265,7 +1266,7 @@ export const campaigns = [
         "section": "Outbound",
         "type": "email",
         "label": "E11",
-        "title": "Post-Webinar Email 3 (final conversion push for webinar audience)"
+        "title": "Post-Whitepaper Email 3 (final conversion push for whitepaper audience)"
       },
       {
         "id": "week-4-75",
@@ -1281,9 +1282,9 @@ export const campaigns = [
         "month": "May 2026",
         "week": "Week 4",
         "section": "LinkedIn",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Post 8: Webinar highlights and key takeaways (post-event content)"
+        "title": "Post 8: Whitepaper highlights and key takeaways (post-event content)"
       },
       {
         "id": "week-4-77",
@@ -1292,16 +1293,16 @@ export const campaigns = [
         "section": "Sales Activities",
         "type": "call",
         "label": "C6",
-        "title": "Stage 3 Calls for webinar attendees"
+        "title": "Stage 3 Calls for whitepaper readers"
       },
       {
         "id": "week-4-78",
         "month": "May 2026",
         "week": "Week 4",
         "section": "Sales Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Convert webinar-generated interest into workshop bookings"
+        "title": "Convert whitepaper-generated interest into workshop bookings"
       },
       {
         "id": "week-4-79",
@@ -1335,9 +1336,9 @@ export const campaigns = [
         "month": "May 2026",
         "week": "Week 4",
         "section": "Sales Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Webinar performance analysis (registrations, attendance rate, lead quality)"
+        "title": "Whitepaper performance analysis (downloads, reader engagement, lead quality)"
       },
       {
         "id": "week-4-83",
@@ -1346,34 +1347,34 @@ export const campaigns = [
         "section": "Sales Activities",
         "type": "call",
         "label": "C7",
-        "title": "Pipeline assessment: opportunities from webinar vs email/call sequences"
+        "title": "Pipeline assessment: opportunities from whitepaper vs email/call sequences"
       },
       {
         "id": "week-4-84",
         "month": "May 2026",
         "week": "Week 4",
         "section": "Sales Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Webinar registrations: 80–120"
+        "title": "Whitepaper downloads: 80–120"
       },
       {
         "id": "week-4-85",
         "month": "May 2026",
         "week": "Week 4",
         "section": "Sales Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Webinar attendance rate: 45–55%"
+        "title": "Whitepaper engagement rate: 45–55%"
       },
       {
         "id": "week-4-86",
         "month": "May 2026",
         "week": "Week 4",
         "section": "Sales Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "15 SAP workshops/assessments booked (including webinar conversions)"
+        "title": "15 SAP workshops/assessments booked (including whitepaper conversions)"
       },
       {
         "id": "week-4-87",
@@ -1389,18 +1390,18 @@ export const campaigns = [
         "month": "May 2026",
         "week": "Week 4",
         "section": "Sales Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Email open rate: 34–38% (warmer audience + webinar interest)"
+        "title": "Email open rate: 34–38% (warmer audience + whitepaper interest)"
       },
       {
         "id": "week-1-89",
         "month": "June 2026",
         "week": "Week 1",
         "section": "Marketing Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Distribute webinar recording as gated on-demand content"
+        "title": "Distribute whitepaper PDF as gated on-demand content"
       },
       {
         "id": "week-1-90",
@@ -1416,9 +1417,9 @@ export const campaigns = [
         "month": "June 2026",
         "week": "Week 1",
         "section": "Marketing Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Publish webinar-derived content pieces (blog posts, social snippets)"
+        "title": "Publish whitepaper-derived content pieces (blog posts, social snippets)"
       },
       {
         "id": "week-1-92",
@@ -1452,9 +1453,9 @@ export const campaigns = [
         "month": "June 2026",
         "week": "Week 1",
         "section": "Sales Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Follow up with all webinar attendees who have not yet booked assessments"
+        "title": "Follow up with all whitepaper readers who have not yet booked assessments"
       },
       {
         "id": "week-2-96",
@@ -1713,9 +1714,9 @@ export const campaigns = [
         "month": "June 2026",
         "week": "Week 4",
         "section": "Sales Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "May → Message 3 (webinar focus)"
+        "title": "May → Message 3 (whitepaper focus)"
       },
       {
         "id": "week-4-125",
@@ -1740,18 +1741,18 @@ export const campaigns = [
         "month": "June 2026",
         "week": "Week 4",
         "section": "Sales Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Update with: case study links, webinar registration CTA, updated workshop descriptions"
+        "title": "Update with: case study links, whitepaper download CTA, updated workshop descriptions"
       },
       {
         "id": "week-4-128",
         "month": "June 2026",
         "week": "Week 4",
         "section": "Sales Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Webinar gets its own registration page (linked from landing page)"
+        "title": "Whitepaper gets its own download page (linked from landing page)"
       },
       {
         "id": "week-4-129",
@@ -1767,9 +1768,9 @@ export const campaigns = [
         "month": "June 2026",
         "week": "Week 4",
         "section": "Sales Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Monitor landing page conversions and webinar registrations"
+        "title": "Monitor landing page conversions and whitepaper downloads"
       },
       {
         "id": "week-4-131",
@@ -1805,7 +1806,7 @@ export const campaigns = [
         "section": "Sales Activities",
         "type": "whatsapp",
         "label": "W12",
-        "title": "Opportunities created (by source: email, webinar, call, WhatsApp)"
+        "title": "Opportunities created (by source: email, whitepaper, call, WhatsApp)"
       },
       {
         "id": "week-4-135",
@@ -1848,9 +1849,9 @@ export const campaigns = [
         "month": "June 2026",
         "week": "Week 4",
         "section": "Sales Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Webinar performance (May report)"
+        "title": "Whitepaper performance (May report)"
       },
       {
         "id": "week-4-140",
@@ -1877,7 +1878,7 @@ export const campaigns = [
         "section": "Sales Activities",
         "type": "whatsapp",
         "label": "W13",
-        "title": "Channel analysis: email vs webinar vs call vs WhatsApp effectiveness"
+        "title": "Channel analysis: email vs whitepaper vs call vs WhatsApp effectiveness"
       },
       {
         "id": "week-4-143",
@@ -1921,7 +1922,7 @@ export const campaigns = [
       },
       {
         "number": 5,
-        "title": "Register Now: SAP Modernisation Masterclass — Live Webinar",
+        "title": "Download Now: SAP Modernisation Masterclass — Downloadable Whitepaper",
         "date": ""
       },
       {
@@ -1931,7 +1932,7 @@ export const campaigns = [
       },
       {
         "number": 7,
-        "title": "Final Week: SAP Modernisation Masterclass — Seats Filling Fast",
+        "title": "Final Week: SAP Modernisation Masterclass — Download Window Open",
         "date": ""
       },
       {
@@ -1966,9 +1967,9 @@ export const campaigns = [
       "12 SAP workshops/assessments booked",
       "6 opportunities created",
       "---",
-      "Webinar registrations: 80–120",
-      "Webinar attendance rate: 45–55%",
-      "15 SAP workshops/assessments booked (including webinar conversions)"
+      "Whitepaper downloads: 80–120",
+      "Whitepaper engagement rate: 45–55%",
+      "15 SAP workshops/assessments booked (including whitepaper conversions)"
     ],
     "metrics": {
       "plannedTouchpoints": 144,
@@ -2003,7 +2004,7 @@ export const campaigns = [
       "cto-deck-outline.md",
       "linkedin-calendar.md",
       "page-redesign-brief.md",
-      "webinar-package.md"
+      "whitepaper-package.md"
     ],
     "events": [
       {
@@ -2029,9 +2030,9 @@ export const campaigns = [
         "month": "April 2026",
         "week": "Week 1",
         "section": "Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Wednesday: Activate webinar registration: \"Is Your Cloud Really Well-Architected?\""
+        "title": "Wednesday: Activate whitepaper download: \"Is Your Cloud Really Well-Architected?\""
       },
       {
         "id": "week-1-4",
@@ -2443,9 +2444,9 @@ export const campaigns = [
         "month": "April 2026",
         "week": "Week 4",
         "section": "Sales Activities",
-        "type": "task",
+        "type": "whitepaper",
         "label": "",
-        "title": "Video testimonial recording (if available)"
+        "title": "Video testimonial whitepaper PDF (if available)"
       },
       {
         "id": "week-4-50",
@@ -2515,9 +2516,9 @@ export const campaigns = [
         "month": "May 2026",
         "week": "Week 1",
         "section": "Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Wednesday: Webinar promotion intensifies: \"Is Your Cloud Really Well-Architected?\""
+        "title": "Wednesday: Whitepaper promotion intensifies: \"Is Your Cloud Really Well-Architected?\""
       },
       {
         "id": "week-1-58",
@@ -2686,9 +2687,9 @@ export const campaigns = [
         "month": "May 2026",
         "week": "Week 2",
         "section": "Sales Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Final webinar content review"
+        "title": "Final whitepaper content review"
       },
       {
         "id": "week-2-77",
@@ -2697,7 +2698,7 @@ export const campaigns = [
         "section": "Sales Activities",
         "type": "task",
         "label": "",
-        "title": "Registration push campaign"
+        "title": "Download push campaign"
       },
       {
         "id": "week-2-78",
@@ -2706,7 +2707,7 @@ export const campaigns = [
         "section": "Sales Activities",
         "type": "task",
         "label": "",
-        "title": "Speaker preparation and rehearsal"
+        "title": "Content finalization and review"
       },
       {
         "id": "week-2-79",
@@ -2731,18 +2732,18 @@ export const campaigns = [
         "month": "May 2026",
         "week": "Week 2",
         "section": "KPI Targets",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Webinar registrations: 75-100"
+        "title": "Whitepaper downloads: 75-100"
       },
       {
         "id": "week-3-82",
         "month": "May 2026",
         "week": "Week 3",
         "section": "Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Wednesday: Webinar: \"Is Your Cloud Really Well-Architected?\""
+        "title": "Wednesday: Whitepaper: \"Is Your Cloud Really Well-Architected?\""
       },
       {
         "id": "week-3-83",
@@ -2751,7 +2752,7 @@ export const campaigns = [
         "section": "Activities",
         "type": "task",
         "label": "",
-        "title": "Expected attendance: 60-80 participants"
+        "title": "Expected downloads: 60-80 readers"
       },
       {
         "id": "week-3-84",
@@ -2785,9 +2786,9 @@ export const campaigns = [
         "month": "May 2026",
         "week": "Week 3",
         "section": "Outbound Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Wednesday: Post-webinar follow-up emails (3-sequence)"
+        "title": "Wednesday: Post-whitepaper follow-up emails (3-sequence)"
       },
       {
         "id": "week-3-88",
@@ -2805,7 +2806,7 @@ export const campaigns = [
         "section": "Outbound Activities",
         "type": "linkedin",
         "label": "",
-        "title": "Friday: LinkedIn post: \"Webinar Recap: Key Takeaways from WAFR Session\""
+        "title": "Friday: LinkedIn post: \"Whitepaper Recap: Key Takeaways from WAFR Session\""
       },
       {
         "id": "week-3-90",
@@ -2814,7 +2815,7 @@ export const campaigns = [
         "section": "Sales Activities",
         "type": "call",
         "label": "C6",
-        "title": "Webinar attendee follow-up calls"
+        "title": "Whitepaper reader follow-up calls"
       },
       {
         "id": "week-3-91",
@@ -2830,27 +2831,27 @@ export const campaigns = [
         "month": "May 2026",
         "week": "Week 3",
         "section": "Sales Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Hot lead acceleration from webinar"
+        "title": "Hot lead acceleration from whitepaper"
       },
       {
         "id": "week-3-93",
         "month": "May 2026",
         "week": "Week 3",
         "section": "KPI Targets",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Webinar attendance: 60-80 people"
+        "title": "Whitepaper engagement: 60-80 people"
       },
       {
         "id": "week-3-94",
         "month": "May 2026",
         "week": "Week 3",
         "section": "KPI Targets",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Post-webinar bookings: 15-20 assessments"
+        "title": "Post-whitepaper bookings: 15-20 assessments"
       },
       {
         "id": "week-3-95",
@@ -2859,7 +2860,7 @@ export const campaigns = [
         "section": "KPI Targets",
         "type": "task",
         "label": "",
-        "title": "Hot lead conversion: 25% of attendees"
+        "title": "Hot lead conversion: 25% of readers"
       },
       {
         "id": "week-4-96",
@@ -2965,9 +2966,9 @@ export const campaigns = [
         "month": "May 2026",
         "week": "Week 4",
         "section": "Sales Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Webinar Success: 75+ registrations, 60+ attendance"
+        "title": "Whitepaper Success: 75+ downloads, 60+ engagement"
       },
       {
         "id": "week-4-108",
@@ -3604,9 +3605,9 @@ export const campaigns = [
         "month": "June 2026",
         "week": "Week 4",
         "section": "Sales Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Webinar: Schedule for maximum regional attendance (May Week 3)"
+        "title": "Whitepaper: Schedule for maximum regional engagement (May Week 3)"
       },
       {
         "id": "week-4-179",
@@ -3685,9 +3686,9 @@ export const campaigns = [
         "month": "June 2026",
         "week": "Week 4",
         "section": "Sales Activities",
-        "type": "webinar",
+        "type": "whitepaper",
         "label": "",
-        "title": "Webinar attendance rate: 75%+"
+        "title": "Whitepaper engagement rate: 75%+"
       },
       {
         "id": "week-4-188",

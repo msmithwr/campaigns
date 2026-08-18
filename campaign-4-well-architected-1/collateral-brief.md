@@ -290,22 +290,22 @@ Design: High-contrast conversion design. Bold headline "Book Your Free Well-Arch
 
 ---
 
-### Webinar Promotional Graphics
+### Whitepaper Promotional Graphics
 
-#### Webinar Announcement Banner
+#### Whitepaper Announcement Banner
 **Dimensions:** 1200 x 627 px (LinkedIn), 1080 x 1080 px (Instagram/square), 1200 x 628 px (email)
-**Design:** Dark professional background, webinar title "Is Your Cloud Really Well-Architected?" in large white text, speaker headshots with name/title, date/time prominently displayed, "Register Free" CTA, Cloudwrxs + AWS logos
+**Design:** Dark professional background, whitepaper title "Is Your Cloud Really Well-Architected?" in large white text, content imagery with name/title, date/time prominently displayed, "Download Free" CTA, Cloudwrxs + AWS logos
 
-#### Webinar Countdown Graphics (set of 3)
+#### Whitepaper Countdown Graphics (set of 3)
 **Dimensions:** 1080 x 1080 px
 **Designs:**
-- "1 Week Away" — Preview of what attendees will learn
-- "3 Days Away" — Speaker spotlight with brief bios
+- "1 Week Away" — Preview of what readers will learn
+- "3 Days Away" — Author insight with brief bios
 - "Tomorrow!" — Final reminder with join link QR code
 
-#### Webinar Recording Thumbnail
+#### Whitepaper PDF Thumbnail
 **Dimensions:** 1280 x 720 px
-**Design:** Professional thumbnail with webinar title, speaker photos, "Watch the Recording" overlay, play button icon, Cloudwrxs branding
+**Design:** Professional thumbnail with whitepaper title, content visuals, "Download the Whitepaper" overlay, play button icon, Cloudwrxs branding
 
 ---
 

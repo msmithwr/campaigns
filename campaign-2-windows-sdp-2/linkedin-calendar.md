@@ -1,9 +1,9 @@
 # Windows EC2 SDP Campaign 2 — LinkedIn Content Calendar
-## June 2026, 4 Posts
+## July 2026, 4 Posts
 
 ## Posting Strategy
 
-Campaign 2 uses one LinkedIn post per week in June 2026. The content supports the Windows SDP Savings & Modernisation Benefits theme and drives the Windows-to-AWS TCO Comparison / SDP Savings Calculator Session CTA.
+Campaign 2 uses one LinkedIn post per week in July 2026. The content supports the Windows SDP Savings & Modernisation Benefits theme and drives the Windows-to-AWS TCO Comparison / SDP Savings Calculator Session CTA.
 
 | Week | Post | Purpose |
 |------|------|---------|
@@ -20,7 +20,7 @@ Campaign 2 uses one LinkedIn post per week in June 2026. The content supports th
 
 Following our May Windows modernisation campaign, Cloudwrxs is launching the next Windows EC2 SDP wave for organisations ready to quantify cost savings and operational improvements.
 
-This June campaign focuses on:
+This July campaign focuses on:
 * Windows SDP licensing optimisation
 * Windows-to-AWS TCO comparison
 * Operational simplification for IT teams
@@ -50,7 +50,7 @@ AWS can simplify that operating model:
 
 Cloudwrxs helps IT teams identify which Windows workloads are good candidates for optimisation and which should be prioritised for migration planning.
 
-Our June SDP Savings Calculator Session can quantify both cost and operational-efficiency opportunities.
+Our July SDP Savings Calculator Session can quantify both cost and operational-efficiency opportunities.
 
 #ITOperations #WindowsAutomation #AWSSDP #CloudEfficiency
 
@@ -88,7 +88,7 @@ Cloudwrxs helps organisations move from broad cost pressure to a practical Windo
 * Operational simplification opportunities
 * Recommended next steps for assessment or migration
 
-June is the Campaign 2 window for Windows TCO Comparisons and SDP Savings Calculator Sessions.
+July is the Campaign 2 window for Windows TCO Comparisons and SDP Savings Calculator Sessions.
 
 If your Windows cost or licensing model needs clarity, connect with Cloudwrxs to schedule a review.
 
@@ -96,7 +96,7 @@ If your Windows cost or licensing model needs clarity, connect with Cloudwrxs to
 
 ## Engagement Guidelines
 
-* Post once per week during June 2026.
+* Post once per week during July 2026.
 * Prioritise Tuesday, Wednesday, or Thursday at 09:00-10:00 or 13:00-14:00 Riyadh time.
 * Tag relevant Cloudwrxs leadership on Posts 1 and 4.
 * Track LinkedIn clicks, TCO form submissions, calculator session bookings, and HubSpot campaign attribution.

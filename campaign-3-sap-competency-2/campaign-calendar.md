@@ -5,14 +5,14 @@
 
 ## 1. Campaign Overview
 
-This calendar operationalises the SAP Competency Campaign 2, building on the awareness established in Campaign 1 (Jan–Mar 2026). The focus shifts to **conversion** — targeting warmer prospects, expanding to new personas (SAP Basis Admin, Procurement/Vendor Manager), and introducing a webinar and case studies as mid-funnel conversion assets.
+This calendar operationalises the SAP Competency Campaign 2, building on the awareness established in Campaign 1 (Jan–Mar 2026). The focus shifts to **conversion** — targeting warmer prospects, expanding to new personas (SAP Basis Admin, Procurement/Vendor Manager), and introducing a whitepaper and case studies as mid-funnel conversion assets.
 
 ### Monthly Themes
 
 | Month | Theme | Primary CTA |
 |---|---|---|
 | April 2026 | Re-engagement & Conversion Acceleration | SAP Modernisation Workshop (updated), SAP Landscape Health Check |
-| May 2026 | Webinar-Led Generation & Case Study Amplification | SAP Modernisation Masterclass (webinar), SAP TCO Deep-Dive |
+| May 2026 | Whitepaper-Led Generation & Case Study Amplification | SAP Modernisation Masterclass (whitepaper), SAP TCO Deep-Dive |
 | June 2026 | S/4HANA Readiness & Pipeline Conversion | S/4HANA Readiness Assessment, Final conversion push |
 
 ### Target Personas
@@ -38,7 +38,7 @@ This calendar operationalises the SAP Competency Campaign 2, building on the awa
 - Publish Case Study 1 (Manufacturing) on website and distribute via email/LinkedIn
 - Publish Case Study 2 (Financial Services/Government) on website
 - Launch updated LinkedIn content calendar (Post 1: Campaign 2 launch — conversion messaging)
-- Update existing landing page (https://cloudwrxs.com/aws-sap-specialization) with case study links and webinar pre-registration
+- Update existing landing page (https://cloudwrxs.com/aws-sap-specialization) with case study links and whitepaper download CTA
 - Finalise persona segmentation: re-segment Campaign 1 engaged contacts + add new SAP Basis and Procurement lists
 - Distribute updated battlecard and one-pager collateral to sales team
 
@@ -99,7 +99,7 @@ This calendar operationalises the SAP Competency Campaign 2, building on the awa
 
 **Outbound:**
 - Continue WhatsApp follow-ups for non-responders
-- Begin webinar pre-promotion (teaser emails to engaged contacts)
+- Begin whitepaper pre-promotion (teaser emails to engaged contacts)
 
 **LinkedIn:**
 - Post 4: HANA on AWS technical deep-dive (Basis Admin targeting)
@@ -107,7 +107,7 @@ This calendar operationalises the SAP Competency Campaign 2, building on the awa
 **Sales Activities:**
 - Stage 2 continued for slower-responding personas
 - Deliver first 10–15 SAP workshops/health checks (target)
-- Begin drafting account-specific recommendations for workshop attendees
+- Begin drafting account-specific recommendations for workshop readers
 - Procurement persona outreach: vendor credential packages
 
 **Monthly Review:**
@@ -123,23 +123,23 @@ This calendar operationalises the SAP Competency Campaign 2, building on the awa
 
 ---
 
-### MAY 2026 — WEBINAR-LED GENERATION & CASE STUDY AMPLIFICATION
+### MAY 2026 — WHITEPAPER-LED GENERATION & CASE STUDY AMPLIFICATION
 
 ---
 
 #### Week 1 (1–7 May)
 
 **Marketing Activities:**
-- Open webinar registration: "SAP Modernisation Masterclass"
-- Launch webinar registration page with full copy
-- Send Pre-Webinar Email 1 (registration invitation) to full database
+- Open whitepaper download: "SAP Modernisation Masterclass"
+- Launch whitepaper download page with full copy
+- Send Whitepaper Email 1 (download invitation) to full database
 - Amplify case studies on LinkedIn with paid promotion
 
 **LinkedIn:**
-- Post 5: Webinar announcement — "SAP Modernisation Masterclass: Register Now"
+- Post 5: Whitepaper announcement — "SAP Modernisation Masterclass: Download Now"
 
 **Sales Activities:**
-- Personal webinar invitations to warm leads and workshop attendees from April
+- Personal whitepaper invitations to warm leads and workshop readers from April
 - Stage 1 Calls to new contacts from Basis Admin and Procurement lists
 - Continue delivering SAP workshops for April bookings
 
@@ -148,77 +148,77 @@ This calendar operationalises the SAP Competency Campaign 2, building on the awa
 #### Week 2 (8–14 May)
 
 **Outbound:**
-- Email 3 to all 5 personas (webinar invitation + ROI proof)
-- WhatsApp Message 3 (webinar reminder)
-- Pre-Webinar Email 2 (content teaser + speaker introduction)
+- Email 3 to all 5 personas (whitepaper invitation + ROI proof)
+- WhatsApp Message 3 (whitepaper reminder)
+- Whitepaper Email 2 (content teaser + content preview)
 
 **LinkedIn:**
 - Post 6: SAP TCO methodology — what a real assessment reveals
 
 **Sales Activities:**
-- Stage 3 Calls (webinar follow-up or assessment booking)
-- Drive webinar registrations through personal outreach
+- Stage 3 Calls (whitepaper follow-up or assessment booking)
+- Drive whitepaper downloads through personal outreach
 - Procurement outreach: TCO comparison sessions
 
 **KPI Checkpoint:**
-- Webinar registration count (target: 50+ by end of Week 2)
+- Whitepaper download count (target: 50+ by end of Week 2)
 - Email 3 engagement metrics
 
 ---
 
 #### Week 3 (15–21 May)
 
-**WEBINAR WEEK**
+**WHITEPAPER WEEK**
 
-**Pre-Webinar:**
-- Pre-Webinar Email 3 (final reminder, day before webinar)
-- WhatsApp reminders to registered attendees
-- Final LinkedIn push: Post 7 (webinar last-chance registration)
+**Whitepaper:**
+- Whitepaper Email 3 (final reminder, day before whitepaper)
+- WhatsApp reminders to whitepaper readers
+- Final LinkedIn push: Post 7 (whitepaper final download push)
 
-**Webinar Day (Target: Wednesday 20 May):**
-- Deliver "SAP Modernisation Masterclass" — 60 min + 15 min Q&A
+**Whitepaper Launch Day (Target: Wednesday 20 May):**
+- Publish "SAP Modernisation Masterclass" gated whitepaper and route follow-up questions
 - Live polling and Q&A capture
 - Record session for on-demand distribution
 
-**Post-Webinar (Same Week):**
-- Post-Webinar Email 1 (thank you + recording + next steps) — within 24 hours
-- WhatsApp follow-up to attendees: "Thanks for joining — would you like a private session?"
-- CRM update: tag all attendees and no-shows separately
+**Post-Whitepaper (Same Week):**
+- Post-Whitepaper Email 1 (thank you + whitepaper PDF + next steps) — within 24 hours
+- WhatsApp follow-up to readers: "Thanks for downloading — would you like a private session?"
+- CRM update: tag all downloaders and non-engaged contacts separately
 
 **Sales Activities:**
-- Immediate follow-up calls to webinar attendees (within 48 hours)
-- Book workshops/assessments from webinar-generated interest
-- Send recording to no-shows with personalised note
+- Immediate follow-up calls to whitepaper readers (within 48 hours)
+- Book workshops/assessments from whitepaper-generated interest
+- Send whitepaper PDF to no-shows with personalised note
 
 ---
 
 #### Week 4 (22–31 May)
 
 **Outbound:**
-- Post-Webinar Email 2 (case study + specific CTA based on webinar content)
-- Post-Webinar Email 3 (final conversion push for webinar audience)
+- Post-Whitepaper Email 2 (case study + specific CTA based on whitepaper content)
+- Post-Whitepaper Email 3 (final conversion push for whitepaper audience)
 - Continue WhatsApp follow-ups
 
 **LinkedIn:**
-- Post 8: Webinar highlights and key takeaways (post-event content)
+- Post 8: Whitepaper highlights and key takeaways (post-event content)
 
 **Sales Activities:**
-- Stage 3 Calls for webinar attendees
-- Convert webinar-generated interest into workshop bookings
+- Stage 3 Calls for whitepaper readers
+- Convert whitepaper-generated interest into workshop bookings
 - Deliver TCO Deep-Dives for CFO and Procurement personas
 - Begin S/4HANA readiness conversations for June push
 
 **Monthly Review:**
 - May KPI review
-- Webinar performance analysis (registrations, attendance rate, lead quality)
-- Pipeline assessment: opportunities from webinar vs email/call sequences
+- Whitepaper performance analysis (downloads, reader engagement, lead quality)
+- Pipeline assessment: opportunities from whitepaper vs email/call sequences
 
 **May KPI Targets:**
-- Webinar registrations: 80–120
-- Webinar attendance rate: 45–55%
-- 15 SAP workshops/assessments booked (including webinar conversions)
+- Whitepaper downloads: 80–120
+- Whitepaper engagement rate: 45–55%
+- 15 SAP workshops/assessments booked (including whitepaper conversions)
 - 10 opportunities created
-- Email open rate: 34–38% (warmer audience + webinar interest)
+- Email open rate: 34–38% (warmer audience + whitepaper interest)
 
 ---
 
@@ -229,9 +229,9 @@ This calendar operationalises the SAP Competency Campaign 2, building on the awa
 #### Week 1 (1–7 June)
 
 **Marketing Activities:**
-- Distribute webinar recording as gated on-demand content
+- Distribute whitepaper PDF as gated on-demand content
 - Launch S/4HANA readiness-focused messaging across all channels
-- Publish webinar-derived content pieces (blog posts, social snippets)
+- Publish whitepaper-derived content pieces (blog posts, social snippets)
 
 **LinkedIn:**
 - Post 9: S/4HANA readiness — "What organisations planning for 2027 need to start now"
@@ -239,7 +239,7 @@ This calendar operationalises the SAP Competency Campaign 2, building on the awa
 **Sales Activities:**
 - Prioritise pipeline: rank all opportunities by conversion probability
 - Schedule S/4HANA Readiness Assessments for interested organisations
-- Follow up with all webinar attendees who have not yet booked assessments
+- Follow up with all whitepaper readers who have not yet booked assessments
 
 ---
 
@@ -309,8 +309,8 @@ This calendar operationalises the SAP Competency Campaign 2, building on the awa
 | Metric | Target |
 |---|---|
 | Total SAP workshops/assessments completed | 50–70 |
-| Webinar registrations | 80–120 |
-| Webinar attendance rate | 45–55% |
+| Whitepaper downloads | 80–120 |
+| Whitepaper engagement rate | 45–55% |
 | Opportunities created | 30–40 |
 | Opportunity win probability | 25%+ |
 | SAP migration projects scoped | 6–10 |
@@ -331,13 +331,13 @@ This calendar operationalises the SAP Competency Campaign 2, building on the awa
 
 **Sequence Per Persona:**
 - April → Messages 1 & 2
-- May → Message 3 (webinar focus)
+- May → Message 3 (whitepaper focus)
 - June → Message 4 (final conversion)
 
 ### Landing Page
 - Use existing: https://cloudwrxs.com/aws-sap-specialization
-- Update with: case study links, webinar registration CTA, updated workshop descriptions
-- Webinar gets its own registration page (linked from landing page)
+- Update with: case study links, whitepaper download CTA, updated workshop descriptions
+- Whitepaper gets its own download page (linked from landing page)
 
 ### Call Scripts — Execution Plan
 
@@ -351,7 +351,7 @@ This calendar operationalises the SAP Competency Campaign 2, building on the awa
 **Sales Team Instructions:**
 1. Follow persona-aligned scripts — do not mix messaging across personas
 2. Reference specific SAP metrics and case study data points in every call
-3. Every call attempts to convert to a workshop, assessment, or webinar registration — not a full sales conversation
+3. Every call attempts to convert to a workshop, assessment, or whitepaper download — not a full sales conversation
 4. Log detailed notes after each call for reporting and CRM tracking
 5. For Basis Admin calls: speak technical language, reference specific SAP components
 6. For Procurement calls: lead with financial data, partner credentials, and contract comparison
@@ -362,23 +362,23 @@ This calendar operationalises the SAP Competency Campaign 2, building on the awa
 
 ### Weekly Activities
 - Review WhatsApp responses and engagement signals
-- Monitor landing page conversions and webinar registrations
+- Monitor landing page conversions and whitepaper downloads
 - Adjust call scripts based on objection patterns
 - A/B test email subject lines (ongoing)
 
 ### Monthly Reporting
 - SAP lead numbers by persona
-- Opportunities created (by source: email, webinar, call, WhatsApp)
+- Opportunities created (by source: email, whitepaper, call, WhatsApp)
 - Workshops and assessments delivered
 - SAP workload pipeline value
 - MQL-to-SQL conversion rates
 - Case study engagement metrics
-- Webinar performance (May report)
+- Whitepaper performance (May report)
 
 ### Campaign Close Report (End of June)
 - Full campaign performance vs KPI targets
 - Persona-level analysis: which personas converted best
-- Channel analysis: email vs webinar vs call vs WhatsApp effectiveness
+- Channel analysis: email vs whitepaper vs call vs WhatsApp effectiveness
 - Case study impact on conversion rates
 - Recommendations for Campaign 3
 

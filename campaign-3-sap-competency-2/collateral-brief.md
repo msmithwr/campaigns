@@ -106,7 +106,7 @@ This collateral brief provides comprehensive specifications for all marketing as
 
 **Secondary CTAs (Engagement-Focused):**
 1. **SAP Landscape Health Check** - Current state analysis and optimization opportunities
-2. **"SAP Modernization Masterclass" Webinar** - Educational content with expert Q&A
+2. **"SAP Modernization Masterclass" Whitepaper** - Educational content with expert Q&A
 3. **Case Study Deep-Dive Session** - Detailed review of relevant customer success story
 
 **Supporting CTAs (Nurturing-Focused):**
@@ -118,7 +118,7 @@ This collateral brief provides comprehensive specifications for all marketing as
 
 **Workshop Conversion Targets:**
 - **Email Campaign:** 12-15% workshop booking rate from engaged prospects
-- **Webinar Attendees:** 30-40% workshop booking rate post-webinar
+- **Whitepaper Readers:** 30-40% workshop booking rate post-whitepaper
 - **LinkedIn Engagement:** 8-12% workshop booking rate from content engagement
 - **WhatsApp Follow-up:** 20-25% workshop booking rate from personalized outreach
 
@@ -408,13 +408,13 @@ This collateral brief provides comprehensive specifications for all marketing as
 
 ### Email Header Graphics
 
-#### Graphic Set A: Webinar Series
+#### Graphic Set A: Whitepaper Series
 **"SAP Modernization Masterclass" Email Headers:**
 
-**Registration Email Header:**
+**Download Email Header:**
 - Dimensions: 800x200 pixels
-- Design: Professional webinar branding with date/time prominence
-- Elements: Cloudwrxs logo, AWS SAP Competency badge, speaker photos
+- Design: Professional whitepaper branding with date/time prominence
+- Elements: Cloudwrxs logo, AWS SAP Competency badge, content visuals
 - Text Overlay: "SAP Modernisation Masterclass - April 24, 2026"
 - Color Scheme: AWS blue with orange accents, white background
 
@@ -477,9 +477,9 @@ This collateral brief provides comprehensive specifications for all marketing as
 
 **Event Promotion Graphics:**
 - Dimensions: 1200x627 pixels
-- Design: Event-focused with registration urgency
-- Elements: Date/time prominence, speaker photos, agenda highlights
-- Text Overlay: Event details and registration CTA
+- Design: Event-focused with download urgency
+- Elements: Date/time prominence, content visuals, agenda highlights
+- Text Overlay: Event details and download CTA
 - Branding: Co-branded with AWS for partnership credibility
 
 #### WhatsApp/Mobile Graphics
@@ -513,9 +513,9 @@ This collateral brief provides comprehensive specifications for all marketing as
 
 **Campaign-Specific Format:**
 - Dimensions: 650x140 pixels  
-- Elements: Campaign messaging, webinar promotion, workshop booking
+- Elements: Campaign messaging, whitepaper promotion, workshop booking
 - Design: Campaign-themed with current month's focus
-- CTA: Rotating monthly (Workshop booking, webinar registration, case study download)
+- CTA: Rotating monthly (Workshop booking, whitepaper download, case study download)
 - Tracking: UTM parameters for email signature conversion tracking
 
 ---

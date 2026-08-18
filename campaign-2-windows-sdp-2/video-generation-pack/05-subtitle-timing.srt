@@ -1,0 +1,35 @@
+1
+00:00:00,000 --> 00:00:08,000
+Managing Windows Server infrastructure is becoming increasingly expensive and complex.
+إدارة البنية التحتية لنظام Windows Server تزداد تكلفة وتعقيداً.
+
+2
+00:00:08,000 --> 00:00:18,000
+High licensing costs, manual maintenance overhead, and security vulnerabilities are holding your business back.
+ارتفاع تكاليف التراخيص، والصيانة اليدوية، والمخاطر الأمنية، كلها عوامل تعيق نمو الأعمال.
+
+3
+00:00:18,000 --> 00:00:28,000
+AWS SDP with Cloudwrxs transforms Windows infrastructure through a practical, proven approach.
+برنامج AWS SDP مع Cloudwrxs يساعدكم على تحديث بنية Windows بطريقة عملية ومدروسة.
+
+4
+00:00:28,000 --> 00:00:38,000
+Achieve 40-60% licensing cost reduction, improved performance, enhanced security, and simplified operations.
+حققوا خفضاً في تكاليف التراخيص بنسبة 40-60%، مع تحسين الأداء وتعزيز الأمان وتبسيط العمليات.
+
+5
+00:00:38,000 --> 00:00:48,000
+Your IT team can focus on innovation, not maintenance.
+يمكن لفريق تقنية المعلومات التركيز على الابتكار، بدلاً من الصيانة اليومية.
+
+6
+00:00:48,000 --> 00:00:55,000
+Real transformation delivers stronger efficiency, lower costs, and a smoother cloud journey.
+التحول الناجح يحقق كفاءة أعلى، وتكاليف أقل، ومساراً أكثر سلاسة إلى السحابة.
+
+7
+00:00:55,000 --> 00:01:00,000
+Book your free Windows Migration Readiness Assessment today.
+احجزوا تقييم جاهزية ترحيل Windows مجاناً اليوم.
+

@@ -88,6 +88,7 @@ function classifyActivity(text) {
   if (lower.includes("whatsapp")) return "whatsapp";
   if (/call|stage \d/.test(lower)) return "call";
   if (lower.includes("linkedin")) return "linkedin";
+  if (lower.includes("whitepaper")) return "whitepaper";
   if (lower.includes("webinar")) return "webinar";
   if (lower.includes("landing page") || lower.includes("page")) return "landing";
   if (lower.includes("crm") || lower.includes("hubspot")) return "crm";

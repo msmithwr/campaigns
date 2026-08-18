@@ -1,0 +1,12 @@
+order,file_name,start_seconds,end_seconds,duration_seconds,scene,notes
+1,clip-01-riyadh-windows-problem.mp4,0,8,8,Problem introduction,Riyadh office and Windows estate dashboard
+2,clip-02-licensing-cost-pressure.mp4,8,13,5,Current challenges,Licensing cost pressure
+3,clip-03-operations-security-pressure.mp4,13,18,5,Current challenges,Maintenance and security pressure
+4,clip-04-aws-sdp-cloudwrxs-introduction.mp4,18,28,10,Solution introduction,AWS SDP and Cloudwrxs transformation
+5,clip-05-cost-savings-benefit.mp4,28,33,5,Benefits showcase,Cost savings panel
+6,clip-06-performance-benefit.mp4,33,38,5,Benefits showcase,Performance panel
+7,clip-07-security-compliance-benefit.mp4,38,43,5,Benefits showcase,Security and compliance panel
+8,clip-08-operational-simplification.mp4,43,48,5,Benefits showcase,Operations panel
+9,clip-09-proof-point-results.mp4,48,55,7,Proof point,Example results dashboard
+10,clip-10-book-free-assessment-cta.mp4,55,60,5,Call to action,Final Cloudwrxs CTA
+
