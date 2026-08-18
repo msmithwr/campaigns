@@ -2161,22 +2161,24 @@ function Metric({ title, value, note, icon: Icon }) {
 function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selectedMonthIndex, schedule, setActiveCampaignId, setSelectedMonthIndex, visible, onSelectEvent }) {
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const weeks = getMonthWeeks(month);
+  const [focusedKey, setFocusedKey] = useState(null);
   const [draggingKey, setDraggingKey] = useState(null);
   const [isTileDragging, setIsTileDragging] = useState(false);
   const [monthDropHover, setMonthDropHover] = useState("");
   const monthHoverTimerRef = useRef(null);
-  const draggingCampaignId = draggingKey?.split(":")[0];
-  const draggingCampaign = campaigns.find((campaign) => campaign.id === draggingCampaignId);
+  const flowKey = draggingKey || focusedKey;
+  const flowCampaignId = flowKey?.split(":")[0];
+  const flowCampaign = campaigns.find((campaign) => campaign.id === flowCampaignId);
   const monthWindow = monthOrder
     .map((label, index) => ({ label, index }))
     .filter(({ index }) => Math.abs(index - selectedMonthIndex) <= 3);
-  const flowPoints = draggingCampaignId
-    ? draggingCampaign
-        ?.events.map((event) => ({ event, position: schedule[eventKey(draggingCampaign, event)] }))
+  const flowPoints = flowCampaignId
+    ? flowCampaign
+        ?.events.map((event) => ({ event, position: schedule[eventKey(flowCampaign, event)] }))
         .filter(({ event, position }) => position?.month === month && position.status !== "paused" && calendarTypes.has(event.type))
         .sort((a, b) => a.position.weekIndex - b.position.weekIndex || a.position.dayIndex - b.position.dayIndex)
         .map(({ position }) => {
-          const slotIndex = campaigns.findIndex((campaign) => campaign.id === draggingCampaignId);
+          const slotIndex = campaigns.findIndex((campaign) => campaign.id === flowCampaignId);
           const slotColumn = slotIndex % 3;
           const slotRow = Math.floor(slotIndex / 3);
           return {
@@ -2290,7 +2292,7 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
             </div>
             {days.map((day, dayIndex) => (
               <div
-                className={`calendar-cell ${draggingKey ? "drop-ready" : ""} ${!week.days[dayIndex] ? "outside-month" : ""}`}
+                className={`calendar-cell ${isTileDragging ? "drop-ready" : ""} ${!week.days[dayIndex] ? "outside-month" : ""}`}
                 key={`${week.label}-${day}`}
                 onDragOver={(event) => {
                   if (week.days[dayIndex]) event.preventDefault();
@@ -2324,33 +2326,40 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
                     const meta = channelMeta[event.type] || channelMeta.task;
                     const Icon = meta.icon;
                     return (
-                      <button
+                      <div
                         key={campaign.id}
+                        role="button"
+                        tabIndex={0}
                         draggable
                         className={`touch ${meta.className} ${position?.status || "queued"} ${timingState} ${activeCampaign?.id === campaign.id ? "active" : ""} ${
-                          draggingCampaignId && draggingCampaignId !== campaign.id ? "flow-dimmed" : ""
-                        } ${draggingCampaignId === campaign.id ? "flow-focus" : ""}`}
+                          flowCampaignId && flowCampaignId !== campaign.id ? "flow-dimmed" : ""
+                        } ${flowCampaignId === campaign.id ? "flow-focus" : ""}`}
                         title={`${campaign.shortName}: ${event.title}`}
                         style={{ "--campaign": campaign.color, "--campaign-bg": campaign.bg, "--campaign-text": campaign.textColor }}
                         onDragStart={(dragEvent) => {
                           dragEvent.dataTransfer.setData("text/plain", key);
                           dragEvent.dataTransfer.effectAllowed = "move";
+                          setFocusedKey(null);
                           setDraggingKey(key);
                           setIsTileDragging(true);
                         }}
                         onDragEnd={finishTileDrag}
-                        onMouseDown={() => setDraggingKey(key)}
-                        onMouseUp={() => {
-                          if (!isTileDragging) setDraggingKey(null);
-                        }}
                         onClick={() => {
+                          setFocusedKey(key);
+                          setActiveCampaignId(campaign.id);
+                          onSelectEvent({ campaign, event });
+                        }}
+                        onKeyDown={(event) => {
+                          if (event.key !== "Enter" && event.key !== " ") return;
+                          event.preventDefault();
+                          setFocusedKey(key);
                           setActiveCampaignId(campaign.id);
                           onSelectEvent({ campaign, event });
                         }}
                       >
                         <Icon size={15} />
                         <span>{eventDisplayNumber(campaign, event)}</span>
-                      </button>
+                      </div>
                     );
                   })}
                 </div>
