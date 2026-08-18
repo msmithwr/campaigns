@@ -70,6 +70,9 @@ const channelMeta = {
 
 const calendarTypes = new Set(["email", "whatsapp", "call", "linkedin", "whitepaper", "webinar"]);
 const fallbackLabels = {
+  email: "E",
+  whatsapp: "W",
+  call: "C",
   linkedin: "",
   whitepaper: "WP",
   webinar: "Web",
@@ -444,6 +447,19 @@ function eventDisplayNumber(campaign, event) {
     return String(campaign.events.filter((item) => item.type === "linkedin").findIndex((item) => item.id === event.id) + 1);
   }
   return fallbackLabels[event.type] || "";
+}
+
+function nextEventLabel(campaign, sourceEvent, type = sourceEvent?.type || "task") {
+  const sourceLabel = String(sourceEvent?.label || "").trim();
+  const sourcePrefix = type === sourceEvent?.type ? sourceLabel.match(/^[^\d]+/)?.[0] || "" : "";
+  const prefix = sourcePrefix || fallbackLabels[type] || channelMeta[type]?.label || "Activity";
+  const typeNumbers = (campaign?.events || [])
+    .filter((event) => event.type === type)
+    .map((event) => Number(labelNumber(event.label)))
+    .filter(Boolean);
+  const sourceNumber = Number(labelNumber(sourceLabel)) || 0;
+  const nextNumber = Math.max(sourceNumber, ...typeNumbers, 0) + 1;
+  return `${prefix}${nextNumber}`;
 }
 
 function assignmentKeyOf(assignment = {}) {
@@ -926,6 +942,8 @@ function App() {
   const [visible, setVisible] = useState(() => new Set(generatedCampaigns.map((campaign) => campaign.id)));
   const [dashboardStatusFilter, setDashboardStatusFilter] = useState(() => new Set(campaignStatusFilters.map((status) => status.id)));
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [duplicateDraft, setDuplicateDraft] = useState(null);
+  const [campaignFocusKey, setCampaignFocusKey] = useState("");
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(defaultMonthIndex);
   const [schedule, setSchedule] = useState(() => loadStoredSchedule());
   const [activityFeedback, setActivityFeedback] = useState({});
@@ -981,6 +999,30 @@ function App() {
     }
     return response;
   }, [auth?.idToken, expireAuthSession]);
+
+  useEffect(() => {
+    if (activeTab !== "campaigns" || !campaignFocusKey) return undefined;
+    const timer = window.setTimeout(() => {
+      const row = document.querySelector(`[data-activity-key="${campaignFocusKey}"]`);
+      if (row) {
+        row.scrollIntoView({ behavior: "smooth", block: "center" });
+        row.focus({ preventScroll: true });
+        setActivityFeedback((current) => ({
+          ...current,
+          [campaignFocusKey]: "confirm"
+        }));
+        window.setTimeout(() => {
+          setActivityFeedback((current) => {
+            const next = { ...current };
+            delete next[campaignFocusKey];
+            return next;
+          });
+        }, 900);
+      }
+      setCampaignFocusKey("");
+    }, 120);
+    return () => window.clearTimeout(timer);
+  }, [activeTab, campaignFocusKey, campaignRecords]);
 
   const totals = useMemo(() => campaignTotals(dashboardCampaigns), [dashboardCampaigns]);
 
@@ -1687,6 +1729,74 @@ function App() {
     flashActivityRows([eventKey(campaign, sourceEvent), eventKey(campaign, newEvent)]);
   }
 
+  function openDuplicateActivityForm(campaign, sourceEvent) {
+    const sourceDate = dateFromPosition(schedule[eventKey(campaign, sourceEvent)] || {});
+    const plannedDate = sourceDate ? addDays(sourceDate, 2) : addDays(new Date(), 2);
+    const type = sourceEvent.type || "task";
+    setDuplicateDraft({
+      campaignId: campaign.id,
+      sourceEventId: sourceEvent.id,
+      type,
+      label: nextEventLabel(campaign, sourceEvent, type),
+      title: `${sourceEvent.title || channelMeta[type]?.label || "Campaign activity"} copy`,
+      section: sourceEvent.section || "Activities",
+      plannedDate: dateToInputValue(plannedDate),
+      status: "queued"
+    });
+  }
+
+  function saveDuplicateActivity() {
+    if (!duplicateDraft) return;
+    const campaign = campaignRecords.find((item) => item.id === duplicateDraft.campaignId);
+    if (!campaign) return;
+    const sourceEvent = campaign.events.find((event) => event.id === duplicateDraft.sourceEventId) || selectedEvent?.event || {};
+    const sourceIndex = campaign.events.findIndex((event) => event.id === sourceEvent.id);
+    const nextPosition = positionFromDate(inputValueToDate(duplicateDraft.plannedDate)) || positionFromDate(new Date()) || { month: selectedMonth, weekIndex: 0, dayIndex: 0 };
+    const newEvent = {
+      id: `activity-${Date.now()}`,
+      month: nextPosition.month,
+      week: `Week ${nextPosition.weekIndex + 1}`,
+      section: duplicateDraft.section || sourceEvent.section || "Activities",
+      type: duplicateDraft.type || sourceEvent.type || "task",
+      label: duplicateDraft.label || nextEventLabel(campaign, sourceEvent, duplicateDraft.type),
+      title: duplicateDraft.title || `New ${channelMeta[duplicateDraft.type]?.label || "campaign"} activity`
+    };
+    const nextEvents =
+      sourceIndex >= 0
+        ? [...campaign.events.slice(0, sourceIndex + 1), newEvent, ...campaign.events.slice(sourceIndex + 1)]
+        : [...campaign.events, newEvent];
+
+    setCampaignRecords((current) =>
+      current.map((item) =>
+        item.id === campaign.id
+          ? {
+              ...item,
+              events: nextEvents
+            }
+          : item
+      )
+    );
+    setSchedule((current) => ({
+      ...current,
+      [eventKey(campaign, newEvent)]: {
+        ...nextPosition,
+        status: duplicateDraft.status || "queued"
+      }
+    }));
+    const newKey = eventKey(campaign, newEvent);
+    flashActivityRows([eventKey(campaign, sourceEvent), newKey]);
+    setSelectedEvent({ campaign: { ...campaign, events: nextEvents }, event: newEvent });
+    setDuplicateDraft(null);
+  }
+
+  function goToCampaignActivity(campaign, event) {
+    const key = eventKey(campaign, event);
+    setActiveCampaignId(campaign.id);
+    setSelectedEvent(null);
+    setActiveTab("campaigns");
+    setCampaignFocusKey(key);
+  }
+
   function moveCampaignEvent(campaign, sourceEvent, direction) {
     const fromIndex = campaign.events.findIndex((event) => event.id === sourceEvent.id);
     const toIndex = fromIndex + direction;
@@ -2002,8 +2112,20 @@ function App() {
           event={selectedEvent.event}
           campaign={selectedEvent.campaign}
           scheduleItem={schedule[eventKey(selectedEvent.campaign, selectedEvent.event)]}
+          onDuplicate={() => openDuplicateActivityForm(selectedEvent.campaign, selectedEvent.event)}
+          onGoToCampaign={() => goToCampaignActivity(selectedEvent.campaign, selectedEvent.event)}
           updateEventStatus={updateEventStatus}
           onClose={() => setSelectedEvent(null)}
+        />
+      )}
+      {duplicateDraft && (
+        <DuplicateActivityModal
+          draft={duplicateDraft}
+          campaign={campaignRecords.find((campaign) => campaign.id === duplicateDraft.campaignId)}
+          sourceEvent={campaignRecords.find((campaign) => campaign.id === duplicateDraft.campaignId)?.events.find((event) => event.id === duplicateDraft.sourceEventId) || selectedEvent?.event}
+          onCancel={() => setDuplicateDraft(null)}
+          onChange={setDuplicateDraft}
+          onSave={saveDuplicateActivity}
         />
       )}
     </div>
@@ -2863,7 +2985,7 @@ function CampaignActivityEditorRow({
   const eventDate = dateFromPosition(scheduleItem || {});
 
   return (
-    <article className={`campaign-activity-edit-row ${feedbackEffect ? `feedback-active ${feedbackEffect}` : ""}`}>
+    <article className={`campaign-activity-edit-row ${feedbackEffect ? `feedback-active ${feedbackEffect}` : ""}`} data-activity-key={key} tabIndex={-1}>
       <div className="activity-edit-actions">
         <button className={`activity-icon ${meta.className}`} title="View activity details" onClick={() => onSelectEvent({ campaign, event })}>
           <Icon size={15} />
@@ -9964,7 +10086,79 @@ function SettingsPanel({ activeCampaign, authHeaders, campaignApiUrl, onSaveSend
   );
 }
 
-function EventDrawer({ event, campaign, scheduleItem, updateEventStatus, onClose }) {
+function DuplicateActivityModal({ draft, campaign, sourceEvent, onCancel, onChange, onSave }) {
+  function updateDraft(field, value) {
+    onChange((current) => {
+      if (!current) return current;
+      const next = {
+        ...current,
+        [field]: value
+      };
+      if (field === "type") {
+        next.label = nextEventLabel(campaign, sourceEvent, value);
+      }
+      return next;
+    });
+  }
+
+  return (
+    <div className="modal-backdrop" role="presentation">
+      <section className="panel duplicate-activity-modal" role="dialog" aria-modal="true" aria-label="Duplicate campaign activity">
+        <div className="section-head">
+          <div>
+            <p className="eyebrow">Duplicate activity</p>
+            <h2>{campaign?.shortName || "Campaign activity"}</h2>
+          </div>
+          <button className="close" onClick={onCancel}>Close</button>
+        </div>
+        <p className="modal-helper-text">Create a new campaign component from the selected calendar tile. Adjust the date, label, and title before saving.</p>
+        <div className="duplicate-activity-form">
+          <label>
+            <span>Type</span>
+            <select value={draft.type} onChange={(event) => updateDraft("type", event.target.value)}>
+              {Object.entries(channelMeta).map(([type, item]) => (
+                <option key={type} value={type}>{item.label}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <span>Label</span>
+            <input value={draft.label || ""} onChange={(event) => updateDraft("label", event.target.value)} />
+          </label>
+          <label>
+            <span>Date</span>
+            <input type="date" value={draft.plannedDate || ""} onChange={(event) => updateDraft("plannedDate", event.target.value)} />
+          </label>
+          <label>
+            <span>Status</span>
+            <select value={draft.status || "queued"} onChange={(event) => updateDraft("status", event.target.value)}>
+              {workflowStatuses.map((status) => (
+                <option key={status.id} value={status.id}>{status.label}</option>
+              ))}
+            </select>
+          </label>
+          <label className="wide-field">
+            <span>Title</span>
+            <input value={draft.title || ""} onChange={(event) => updateDraft("title", event.target.value)} />
+          </label>
+          <label className="wide-field">
+            <span>Section</span>
+            <input value={draft.section || ""} onChange={(event) => updateDraft("section", event.target.value)} />
+          </label>
+        </div>
+        <div className="editor-actions modal-actions">
+          <button className="secondary-button" onClick={onCancel}>Cancel</button>
+          <button className="primary-button" onClick={onSave}>
+            <Copy size={15} />
+            Create duplicate
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function EventDrawer({ event, campaign, scheduleItem, onDuplicate, onGoToCampaign, updateEventStatus, onClose }) {
   const meta = channelMeta[event.type] || channelMeta.task;
   const Icon = meta.icon;
   const key = eventKey(campaign, event);
@@ -9980,6 +10174,16 @@ function EventDrawer({ event, campaign, scheduleItem, updateEventStatus, onClose
     <div className="drawer-backdrop" onClick={onClose}>
       <aside className="drawer" onClick={(event) => event.stopPropagation()}>
         <button className="close" onClick={onClose}>Close</button>
+        <div className="drawer-top-actions">
+          <button className="secondary-button compact" onClick={onDuplicate}>
+            <Copy size={15} />
+            Duplicate
+          </button>
+          <button className="primary-button compact" onClick={onGoToCampaign}>
+            <Target size={15} />
+            Go to campaign
+          </button>
+        </div>
         <span className={`drawer-icon ${meta.className}`}>
           <Icon size={18} />
           {meta.label}

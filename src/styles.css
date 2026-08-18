@@ -834,6 +834,10 @@ main { padding: 24px; overflow: hidden; }
   border-color: var(--cw-orange);
   background: color-mix(in srgb, var(--cw-orange) 8%, #fff);
 }
+.campaign-activity-edit-row:focus {
+  outline: 3px solid color-mix(in srgb, var(--cw-orange) 64%, transparent);
+  outline-offset: 2px;
+}
 .activity-edit-actions {
   display: grid;
   grid-template-columns: repeat(5, 26px);
@@ -1144,6 +1148,27 @@ select { min-height: 40px; }
 .delete-confirm-panel {
   width: min(620px, 100%);
   box-shadow: 0 24px 70px rgba(5, 18, 16, 0.32);
+}
+.duplicate-activity-modal {
+  width: min(760px, 100%);
+  max-height: min(760px, calc(100vh - 48px));
+  overflow: auto;
+  box-shadow: 0 24px 70px rgba(5, 18, 16, 0.32);
+}
+.duplicate-activity-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.duplicate-activity-form label {
+  display: grid;
+  gap: 6px;
+  color: var(--cw-ink);
+  font-size: 12px;
+  font-weight: 800;
+}
+.duplicate-activity-form .wide-field {
+  grid-column: 1 / -1;
 }
 .delete-warning {
   border: 1px solid color-mix(in srgb, var(--cw-red) 34%, #fff);
@@ -3296,6 +3321,12 @@ select { min-height: 40px; }
   background: var(--cw-panel);
   border-radius: 8px;
   padding: 8px 10px;
+}
+.drawer-top-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 12px;
 }
 .drawer-icon { display: inline-flex; width: auto; padding: 0 10px; gap: 7px; margin-top: 18px; }
 .drawer dl { display: grid; gap: 8px; margin: 18px 0; }
