@@ -816,7 +816,7 @@ main { padding: 24px; overflow: hidden; }
   border-radius: 8px;
   padding: 10px;
   display: grid;
-  grid-template-columns: 150px 120px 90px 132px 116px;
+  grid-template-columns: 150px 120px 90px 132px 116px 92px;
   gap: 9px;
   align-items: end;
 }
@@ -863,6 +863,23 @@ main { padding: 24px; overflow: hidden; }
 .campaign-activity-edit-row select {
   min-height: 34px;
   padding: 7px 9px;
+}
+.campaign-activity-edit-row .calendar-visible-toggle {
+  align-content: end;
+  gap: 4px;
+}
+.campaign-activity-edit-row .calendar-visible-toggle input {
+  min-height: 0;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  accent-color: var(--cw-green);
+}
+.campaign-activity-edit-row .calendar-visible-toggle small {
+  color: var(--cw-muted);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.1;
 }
 .status-pill, .component-status-select {
   border-radius: 999px;

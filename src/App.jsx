@@ -70,7 +70,8 @@ const channelMeta = {
 
 const calendarTypes = new Set(["email", "whatsapp", "call", "linkedin", "whitepaper", "webinar"]);
 function isCalendarActivity(event = {}) {
-  return calendarTypes.has(event.type) || event.calendarVisible === true;
+  if (typeof event.calendarVisible === "boolean") return event.calendarVisible;
+  return calendarTypes.has(event.type);
 }
 
 const fallbackLabels = {
@@ -830,7 +831,7 @@ function campaignActivitiesForState(sourceCampaigns, schedule) {
         timezone: event.timezone || "",
         uniqueClickCount: event.uniqueClickCount || 0,
         uniqueOpenCount: event.uniqueOpenCount || 0,
-        calendarVisible: event.calendarVisible === true
+        calendarVisible: typeof event.calendarVisible === "boolean" ? event.calendarVisible : undefined
       };
     })
   );
@@ -3024,6 +3025,7 @@ function CampaignActivityEditorRow({
   const key = eventKey(campaign, event);
   const status = scheduleItem?.status || "queued";
   const eventDate = dateFromPosition(scheduleItem || {});
+  const visibleOnCalendar = isCalendarActivity(event);
 
   return (
     <article className={`campaign-activity-edit-row ${feedbackEffect ? `feedback-active ${feedbackEffect}` : ""}`} data-activity-key={key} tabIndex={-1}>
@@ -3067,6 +3069,15 @@ function CampaignActivityEditorRow({
             <option key={option.id} value={option.id}>{option.label}</option>
           ))}
         </select>
+      </label>
+      <label className="calendar-visible-toggle">
+        <span>Calendar</span>
+        <input
+          type="checkbox"
+          checked={visibleOnCalendar}
+          onChange={(changeEvent) => updateCampaignEvent(campaign, event, "calendarVisible", changeEvent.target.checked)}
+        />
+        <small>{calendarTypes.has(event.type) ? "Default on" : "Default off"}</small>
       </label>
       <label className="wide-field">
         <span>Title</span>
