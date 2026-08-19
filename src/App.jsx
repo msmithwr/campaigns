@@ -69,6 +69,10 @@ const channelMeta = {
 };
 
 const calendarTypes = new Set(["email", "whatsapp", "call", "linkedin", "whitepaper", "webinar"]);
+function isCalendarActivity(event = {}) {
+  return calendarTypes.has(event.type) || event.calendarVisible === true;
+}
+
 const fallbackLabels = {
   email: "E",
   whatsapp: "W",
@@ -825,7 +829,8 @@ function campaignActivitiesForState(sourceCampaigns, schedule) {
         subject: event.subject || "",
         timezone: event.timezone || "",
         uniqueClickCount: event.uniqueClickCount || 0,
-        uniqueOpenCount: event.uniqueOpenCount || 0
+        uniqueOpenCount: event.uniqueOpenCount || 0,
+        calendarVisible: event.calendarVisible === true
       };
     })
   );
@@ -1287,6 +1292,44 @@ function App() {
       else next.add(id);
       return next;
     });
+  }
+
+  function buildStatePayload(nextCampaignRecords = campaignRecords, nextSchedule = schedule, overrides = {}) {
+    return {
+      campaignSetups: campaignSetupsForState(nextCampaignRecords, nextSchedule),
+      campaignActivities: campaignActivitiesForState(nextCampaignRecords, nextSchedule),
+      templates: emailTemplates,
+      assignments: emailAssignments,
+      senderProfiles,
+      audienceLists,
+      contactEngagement,
+      googleSheetSources,
+      integrationSettings,
+      playbooks,
+      contentAssets: [...whatsappTemplates, ...callScripts],
+      deletedAudienceListIds,
+      deletedAudienceContacts,
+      deletedPlaybookIds,
+      deletedContentAssetIds,
+      ...overrides
+    };
+  }
+
+  async function saveStateSnapshot(nextCampaignRecords = campaignRecords, nextSchedule = schedule, overrides = {}) {
+    if (!campaignApiUrl) return { ok: true, savedAt: nowIso(), storage: "local" };
+    if (authEnabled && !auth?.idToken) throw new Error("Sign in again before saving changes.");
+
+    const response = await fetch(`${campaignApiUrl}/state`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        ...authHeaders
+      },
+      body: JSON.stringify(buildStatePayload(nextCampaignRecords, nextSchedule, overrides))
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.message || `API save failed: ${response.status}`);
+    return result;
   }
 
   async function saveSenderProfilesNow(nextSenderProfiles = senderProfiles) {
@@ -1759,34 +1802,32 @@ function App() {
       section: duplicateDraft.section || sourceEvent.section || "Activities",
       type: duplicateDraft.type || sourceEvent.type || "task",
       label: duplicateDraft.label || nextEventLabel(campaign, sourceEvent, duplicateDraft.type),
-      title: duplicateDraft.title || `New ${channelMeta[duplicateDraft.type]?.label || "campaign"} activity`
+      title: duplicateDraft.title || `New ${channelMeta[duplicateDraft.type]?.label || "campaign"} activity`,
+      calendarVisible: true
     };
     const nextEvents =
       sourceIndex >= 0
         ? [...campaign.events.slice(0, sourceIndex + 1), newEvent, ...campaign.events.slice(sourceIndex + 1)]
         : [...campaign.events, newEvent];
-
-    setCampaignRecords((current) =>
-      current.map((item) =>
-        item.id === campaign.id
-          ? {
-              ...item,
-              events: nextEvents
-            }
-          : item
-      )
-    );
-    setSchedule((current) => ({
-      ...current,
+    const nextCampaign = { ...campaign, events: nextEvents };
+    const nextCampaignRecords = campaignRecords.map((item) => (item.id === campaign.id ? nextCampaign : item));
+    const nextSchedule = {
+      ...schedule,
       [eventKey(campaign, newEvent)]: {
         ...nextPosition,
         status: duplicateDraft.status || "queued"
       }
-    }));
+    };
+
+    setCampaignRecords(nextCampaignRecords);
+    setSchedule(nextSchedule);
     const newKey = eventKey(campaign, newEvent);
     flashActivityRows([eventKey(campaign, sourceEvent), newKey]);
-    setSelectedEvent({ campaign: { ...campaign, events: nextEvents }, event: newEvent });
+    setSelectedEvent({ campaign: nextCampaign, event: newEvent });
+    const nextMonthIndex = monthOrder.indexOf(nextPosition.month);
+    if (nextMonthIndex >= 0) setSelectedMonthIndex(nextMonthIndex);
     setDuplicateDraft(null);
+    saveStateSnapshot(nextCampaignRecords, nextSchedule).catch((error) => console.error(error));
   }
 
   function goToCampaignActivity(campaign, event) {
@@ -2300,7 +2341,7 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
   const flowPoints = flowCampaignId
     ? flowCampaign
         ?.events.map((event) => ({ event, position: schedule[eventKey(flowCampaign, event)] }))
-        .filter(({ event, position }) => position?.month === month && position.status !== "paused" && calendarTypes.has(event.type))
+        .filter(({ event, position }) => position?.month === month && position.status !== "paused" && isCalendarActivity(event))
         .sort((a, b) => a.position.weekIndex - b.position.weekIndex || a.position.dayIndex - b.position.dayIndex)
         .map(({ position }) => {
           const slotIndex = campaigns.findIndex((campaign) => campaign.id === flowCampaignId);
@@ -2483,7 +2524,7 @@ function CalendarOverlay({ campaigns, activeCampaign, month, moveEvent, selected
                         position.weekIndex === weekIndex &&
                         position.dayIndex === dayIndex &&
                         position.status !== "paused" &&
-                        calendarTypes.has(item.type)
+                        isCalendarActivity(item)
                       );
                     });
                     const event = cellEvents[0];
